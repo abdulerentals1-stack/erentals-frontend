@@ -36,7 +36,7 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
             <ShoppingCart size={18} /> Cart
           </Link>
 
-          <Link href="/myaccount/Request%20Quote" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+          <Link href="/orders" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
             <FileText size={18} /> Quote
           </Link>
 
@@ -52,7 +52,7 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
               </button>
             </>
           ) : (
-            <Link href="/auth/login" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+            <Link href="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
               <User size={18} /> Login / Signup
             </Link>
           )}

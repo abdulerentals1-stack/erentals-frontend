@@ -105,7 +105,7 @@ const Navbar = () => {
             {user ? (
               <DropDown />
             ) : (
-              <Link href="/auth/login" className="flex items-center gap-1 text-sm text-gray-700 hover:text-black">
+              <Link href="/login" className="flex items-center gap-1 text-sm text-gray-700 hover:text-black">
                 <UserRound className="w-5 h-5" />
                 Login / Signup
               </Link>

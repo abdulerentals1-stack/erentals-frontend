@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     await logoutUser();
     setUser(null);
     setAccessToken(null);
-    router.push('/auth/login');
+    router.push('/login');
   };
 
   useEffect(() => {
