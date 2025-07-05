@@ -8,7 +8,8 @@ export default function ServiceToggle({ formData, setFormData }) {
     <div className="flex gap-2 mt-4">
       <Button
         className={`px-4 py-6 flex-1/2 rounded border ${
-          !formData.withService ? 'bg-black text-white' : 'bg-white text-black'
+          !formData.withService  ? 'bg-[#003459] text-white hover:bg-[#002c4a] active:bg-[#00243b]'
+            : 'bg-white text-[#003459] hover:bg-gray-100 active:bg-gray-200'
         }`}
         onClick={() => setFormData((p) => ({ ...p, withService: false }))}
       >
@@ -16,7 +17,8 @@ export default function ServiceToggle({ formData, setFormData }) {
       </Button>
       <Button
         className={`px-4 py-6 flex-1/2 rounded border ${
-          formData.withService ? 'bg-black text-white' : 'bg-white text-black'
+          formData.withService ? 'bg-[#003459] text-white hover:bg-[#002c4a] active:bg-[#00243b]'
+            : 'bg-white text-[#003459] hover:bg-gray-100 active:bg-gray-200'
         }`}
         onClick={() => setFormData((p) => ({ ...p, withService: true }))}
       >

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { addOrUpdateCartItem } from '@/services/cartService';
 import { Button } from '@/components/ui/button';
+import { FileText, ShoppingCart, Package } from 'lucide-react';
 
 export default function ProductActionButtons({ product, formData }) {
   const { user } = useAuth();
@@ -39,14 +40,26 @@ export default function ProductActionButtons({ product, formData }) {
 
   return (
     <div className="grid grid-cols-3 gap-2 mt-4">
-      <Button className="btn border py-6" onClick={() => toast.info('Quote feature coming soon')}>
-        ➕ Quote
+      <Button
+        className="py-6 bg-[#003459] text-white flex items-center justify-center gap-2"
+        onClick={() => toast.info('Quote feature coming soon')}
+      >
+        <FileText size={18} />
+        Quote
       </Button>
-      <Button className="btn border py-6" onClick={handleAddToCart}>
-        🛒 Cart
+      <Button
+        className="py-6 bg-[#003459] text-white flex items-center justify-center gap-2"
+        onClick={handleAddToCart}
+      >
+        <ShoppingCart size={18} />
+        Cart
       </Button>
-      <Button className="btn border py-6" onClick={() => toast.info('Rental coming soon')}>
-        📦 Rent
+      <Button
+        className="py-6 bg-[#003459] text-white flex items-center justify-center gap-2"
+        onClick={() => toast.info('Rental coming soon')}
+      >
+        <Package size={18} />
+        Rent
       </Button>
     </div>
   );

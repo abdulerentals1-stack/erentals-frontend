@@ -2,7 +2,7 @@ import api from '@/lib/axios';
 
 // ➕ Add or Update Cart Item
 export const addOrUpdateCartItem = async (payload) => {
-    console.log(payload)
+
   const { data } = await api.post('/cart', payload);
   return data;
 };

@@ -17,6 +17,9 @@ export default function ProductInfoSection({ product }) {
     withService: false,
   });
 
+  const unit = product?.thresholds?.[0]?.unit || '';
+
+
   const [priceData, setPriceData] = useState(null);
 
   useEffect(() => {
@@ -56,7 +59,8 @@ export default function ProductInfoSection({ product }) {
         <ProductInputs
             pricingType={product.pricingType}
             formData={inputs}
-            setFormData={setInputs}
+            setFormData={setInputs}  
+            unitinfo={unit}
             />
         <ServiceToggle formData={inputs} setFormData={setInputs} />
 

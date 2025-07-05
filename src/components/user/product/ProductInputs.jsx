@@ -3,7 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { useEffect } from 'react';
 
-export default function ProductInputs({ pricingType, formData, setFormData }) {
+export default function ProductInputs({ pricingType, formData, setFormData, unitinfo }) {
   const update = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: Number(value) }));
   };
@@ -30,7 +30,7 @@ export default function ProductInputs({ pricingType, formData, setFormData }) {
 
       {pricingType === 'quantity' && (
         <div>
-          <label className="block text-sm font-medium">Quantity</label>
+        <label className="block text-sm font-medium">Quantity({unitinfo})</label>
           <Input
             type="number"
             min={1}
@@ -44,7 +44,7 @@ export default function ProductInputs({ pricingType, formData, setFormData }) {
       {['length_width', 'area'].includes(pricingType) && (
         <>
           <div>
-            <label className="block text-sm font-medium">Length</label>
+            <label className="block text-sm font-medium">Length ({unitinfo})</label>
             <Input
               type="number"
               min={1}
@@ -58,7 +58,7 @@ export default function ProductInputs({ pricingType, formData, setFormData }) {
 
       {pricingType === 'area' && (
         <div>
-          <label className="block text-sm font-medium">Width</label>
+          <label className="block text-sm font-medium">Width ({unitinfo})</label>
           <Input
             type="number"
             min={1}

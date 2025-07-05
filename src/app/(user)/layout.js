@@ -4,6 +4,7 @@ import { AuthProvider } from "../../context/AuthContext";
 import Link from "next/link";
 import Navbar from "@/components/layouts/Navbar";
 import { Toaster } from 'sonner';
+import Footer from "@/components/layouts/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,9 +37,10 @@ export default function RootLayout({ children }) {
             <main className="flex-1">{children}</main>
 
             {/* Footer */}
-            <footer className="bg-white border-t py-4 text-center text-sm text-gray-500">
+            {/* <footer className="bg-white border-t py-4 text-center text-sm text-gray-500">
               &copy; {new Date().getFullYear()} MyApp. All rights reserved.
-            </footer>
+            </footer> */}
+            <Footer />
           </div>
         </AuthProvider>
       </body>

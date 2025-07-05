@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { addOrUpdateCartItem } from '@/services/cartService';
 import { useRouter } from 'next/navigation';
+import { ShoppingCart } from 'lucide-react';
 
 export default function AddToCartButton({ product }) {
   const { user } = useAuth();
@@ -42,8 +43,13 @@ export default function AddToCartButton({ product }) {
 
 
   return (
-    <Button onClick={handleAdd} variant="ghost" className="rounded-none border-r">
-      🛒 Cart
+   <Button 
+      onClick={handleAdd} 
+      variant="ghost" 
+      className="rounded-none border-r gap-2"
+    >
+      <ShoppingCart className="w-4 h-4" style={{ color: '#003459' }} />
+      Cart
     </Button>
   );
 }

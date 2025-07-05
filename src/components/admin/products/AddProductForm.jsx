@@ -90,7 +90,7 @@ export default function AddProductForm() {
   });
 
   const onSubmit = async (values) => {
-    console.log("helo")
+    
     try {
       const payload = {
         ...values,
@@ -102,12 +102,11 @@ export default function AddProductForm() {
       };
 
       if (slug) {
-        console.log("helo update slud")
+        
   await updateProduct(productId, payload);
   toast.success('Product updated successfully');
 } else if (!slug) {
   await createProduct(payload);
-  console.log("helo updateclear")
   toast.success('Product created successfully');
 }
 

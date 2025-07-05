@@ -52,11 +52,11 @@ export default function BannerCarousel() {
 
   return (
     <div
-      className="relative w-full group"
+      className="relative w-full group bg-gray-50"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div ref={sliderRef} className="keen-slider overflow-hidden h-56 sm:h-72 md:h-80 lg:h-[22rem] xl:h-[25rem]">
+      <div ref={sliderRef} className="keen-slider overflow-hidden h-56 sm:h-72 md:h-[65vh] lg:h-[70vh] md:rounded-xl">
         {banners.map((banner, idx) => (
           <div key={idx} className="keen-slider__slide relative">
             <Link href={banner.link || '#'} className="block w-full h-full relative">

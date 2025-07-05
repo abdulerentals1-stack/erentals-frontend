@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { FileText } from 'lucide-react';
 
 export default function AddToQuoteButton({ product }) {
   const { user } = useAuth();
@@ -18,8 +19,13 @@ export default function AddToQuoteButton({ product }) {
   };
 
   return (
-    <Button onClick={handleAdd} variant="ghost" className="rounded-none border-r">
-      🧾 Quote
+    <Button 
+      onClick={handleAdd} 
+      variant="ghost" 
+      className="rounded-none border-r gap-2"
+    >
+      <FileText className="w-4 h-4" style={{ color: '#003459' }} />
+      Quote
     </Button>
   );
 }

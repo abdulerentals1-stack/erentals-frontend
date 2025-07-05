@@ -29,7 +29,7 @@ const Navbar = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchField) {
-      router.push(`/product-search?value=${searchField}`);
+      router.push(`/product-search?search=${encodeURIComponent(searchField)}`);
     }
   };
 
@@ -39,19 +39,20 @@ const Navbar = () => {
 
   return (
     <header className="relative md:h-[5.2rem] h-16 bg-white w-full">
-      <nav className="border-b fixed bg-white top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-2 sm:px-12 md:px-16 lg:px-20 2xl:px-28 justify-between items-center">
+      <nav className="border-b fixed bg-white top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 justify-between items-center">
         <div className="flex items-center justify-between w-full gap-4 md:gap-10">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className='space-x-2'>
-              {/* <Image
-                src={''}
-                alt="Logo"
-                width={160}
-                height={60}
-                className="h-full w-full object-contain mix-blend-multiply"
-              /> */}
-              e-Renalts
+              <Image
+                  src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+                  alt="Logo"
+                  width={80}
+                  height={40}
+                  priority // 👈 forces SSR load
+                  className="h-full w-full object-contain mix-blend-multiply"
+                />
+              {/* e-Renalts */}
             </Link>
           </div>
 

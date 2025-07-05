@@ -11,7 +11,7 @@ const SearchBar = ({ searchUI, setSearchUI }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchField.trim()) {
-      router.push(`/product-search?value=${searchField}`);
+      router.push(`/product-search?search=${encodeURIComponent(searchField)}`);
       setSearchUI(false);
     }
   };
