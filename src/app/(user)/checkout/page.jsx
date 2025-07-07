@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const [addresses, setAddresses] = useState([]);
   const { user } = useAuth();
 
-  console.log(user)
+
 
   if (!user) {
     toast.error('Please login to add items to cart.');
