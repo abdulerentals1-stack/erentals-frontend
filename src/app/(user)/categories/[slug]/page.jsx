@@ -34,7 +34,6 @@ export default async function CategoryPage({ params, searchParams }) {
 
   const productData = await productRes.json();
 
-  console.log(productData)
   const products = productData?.products || [];
   const total = productData?.total || 0;
 
