@@ -12,18 +12,21 @@ export default function ProductDetailsTabs({ product }) {
   const [activeTab, setActiveTab] = useState('description');
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'description':
-        return <p className="text-sm text-gray-700 whitespace-pre-line">{product.description}</p>;
-      case 'faq':
-        return <p className="text-sm text-gray-700 whitespace-pre-line">{product.faq}</p>;
-      case 'delivery':
-        return <p className="text-sm text-gray-700 whitespace-pre-line">{product.deliveryAndPickup}</p>;
-      case 'terms':
-        return <p className="text-sm text-gray-700 whitespace-pre-line">{product.termsAndConditions}</p>;
-      default:
-        return null;
-    }
+    const contentMap = {
+      description: product.description,
+      faq: product.faq,
+      delivery: product.deliveryAndPickup,
+      terms: product.termsAndConditions,
+    };
+
+    const html = contentMap[activeTab] || '';
+
+    return (
+      <div
+        className="prose max-w-none text-sm text-gray-800 leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
   };
 
   return (
@@ -44,9 +47,7 @@ export default function ProductDetailsTabs({ product }) {
         ))}
       </div>
 
-      <div className="bg-white p-4 rounded shadow-sm border">
-        {renderContent()}
-      </div>
+      <div className="bg-white p-4 rounded shadow-sm border">{renderContent()}</div>
     </div>
   );
 }

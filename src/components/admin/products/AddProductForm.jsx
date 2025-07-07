@@ -22,6 +22,7 @@ import { getAllProducts } from "@/services/productService";
 import { useParams, useRouter } from "next/navigation";
 
 import { toast } from "sonner";
+import RichTextEditor from "@/lib/RichTextEditor";
 
 const formSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -274,20 +275,34 @@ export default function AddProductForm() {
 
       <div>
         <Label>Description</Label>
-        <Textarea rows={4} {...register("description")} />
+        <RichTextEditor
+          value={watch('description')}
+          onChange={(value) => setValue('description', value)}
+        />
       </div>
       <div>
-        <Label>Terms and Conditions</Label>
-        <Textarea rows={4} {...register("termsAndConditions")} />
-      </div>
-      <div>
-        <Label>Delivery and Pickup</Label>
-        <Textarea rows={4} {...register("deliveryAndPickup")} />
-      </div>
-      <div>
-        <Label>FAQs</Label>
-        <Textarea rows={4} {...register("faq")} />
-      </div>
+  <Label>Terms and Conditions</Label>
+  <RichTextEditor
+    value={watch('termsAndConditions')}
+    onChange={(val) => setValue('termsAndConditions', val)}
+  />
+</div>
+
+<div>
+  <Label>Delivery and Pickup</Label>
+  <RichTextEditor
+    value={watch('deliveryAndPickup')}
+    onChange={(val) => setValue('deliveryAndPickup', val)}
+  />
+</div>
+
+<div>
+  <Label>FAQs</Label>
+  <RichTextEditor
+    value={watch('faq')}
+    onChange={(val) => setValue('faq', val)}
+  />
+</div>
 
       <div>
         <Label>Thresholds</Label>
