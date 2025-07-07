@@ -27,6 +27,20 @@ const DropDown = () => {
             className="block px-4 py-2 hover:bg-gray-100 text-sm"
             onClick={() => setOpen(false)}
           >
+            Orders
+          </Link>
+          <Link
+            href="/address"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            Address
+          </Link>
+          <Link
+            href="/address"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm"
+            onClick={() => setOpen(false)}
+          >
             Profile
           </Link>
           <button

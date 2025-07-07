@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {
   X, User, LogOut, Home, ShoppingCart, FileText, Box,
-  Facebook, Instagram, Twitter, Linkedin,
+  Facebook, Instagram, Twitter, Linkedin, Phone, LifeBuoy,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -16,8 +16,10 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
         isOpen ? 'translate-x-0' : 'translate-x-full'
       } transition-transform duration-300 flex flex-col justify-between`}
     >
+      
+
       {/* Top Menu */}
-      <div>
+      <div className="flex-1 overflow-auto">
         <div className="flex items-center justify-between p-4 border-b">
           <p className="font-semibold">Menu</p>
           <X onClick={() => setIsOpen(false)} className="cursor-pointer" />
@@ -32,12 +34,28 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
             <Box size={18} /> All Products
           </Link>
 
-          <Link href="/checkout" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+          <Link
+            href={user ? "/checkout" : "/login"}
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2"
+          >
             <ShoppingCart size={18} /> Cart
           </Link>
 
-          <Link href="/orders" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-            <FileText size={18} /> Quote
+          <Link
+            href={user ? "/orders" : "/login"}
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2"
+          >
+            <FileText size={18} /> Orders
+          </Link>
+
+          <Link
+            href={user ? "/address" : "/login"}
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2"
+          >
+            <FileText size={18} /> Address
           </Link>
 
           <hr className="border-gray-200" />
@@ -57,7 +75,23 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
             </Link>
           )}
         </nav>
+        {/* Support Section */}
+      <div className="p-4 border-b flex flex-col space-y-2 border-t gap-2">
+        <div className="flex items-center gap-2 text-sm text-gray-700">
+          <LifeBuoy size={18} />
+          Support
+        </div>
+        <a
+          href="tel:+919876543210"
+          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
+        >
+          <Phone size={18} />
+          +91-9876543210
+        </a>
       </div>
+      </div>
+
+      
 
       {/* Bottom Social Links */}
       <div className="p-4 border-t">

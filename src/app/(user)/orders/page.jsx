@@ -11,12 +11,25 @@ import { Badge } from "@/components/ui/badge";
 import { DownloadIcon, EyeIcon, XIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const route = useRouter()
+
+  const { user } = useAuth();
+  
+    if (!user) {
+      toast.error("Please login to add items to cart.");
+      return route.push("/login");
+    }
+  
+    if (user?.role === "admin") {
+      toast.error("Admin not able to Checkout cart.");
+      return route.push("/admin/dashboard");
+    }
 
   const fetchOrders = async () => {
     try {

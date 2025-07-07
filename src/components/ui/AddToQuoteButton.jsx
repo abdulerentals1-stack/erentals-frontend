@@ -15,7 +15,7 @@ export default function AddToQuoteButton({ product }) {
     }
 
     // TODO: Replace with actual quote API
-    toast.success('Request sent to quote team (mock)');
+    toast.info('📞 This service is not available online. Please contact our team at +91-9876543210 for a quote.');
   };
 
   return (

@@ -6,11 +6,13 @@ import { useState, useCallback } from 'react';
 import { ShoppingCart, Search, Menu, FileText, Camera, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 import DropDown from './DropDown';
 import MobileSidebar from './MobileSidebar';
 import SearchBar from './SearchBar';
 import LocationSelect from './LocationSelect';
+import SearchMobile from '../user/SearchMobile';
 
 const Navbar = () => {
   const [iconShow, setIconShow] = useState(true);
@@ -37,9 +39,14 @@ const Navbar = () => {
     setIconShow((prev) => !prev);
   }, []);
 
+  const handleQuoteClick = (e) => {
+    e.preventDefault(); // prevent redirect if used inside a <Link>
+    toast.info('📞 This service is not available online. Please contact our team at +91-9876543210 for a quote.');
+  };
+
   return (
-    <header className="relative md:h-[5.2rem] h-16 bg-white w-full">
-      <nav className="border-b fixed bg-white top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 justify-between items-center">
+    <header className="relative border-b md:h-[5.2rem] h-32 bg-white w-full">
+      <nav className="fixed bg-white md:border-b top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 justify-between items-center">
         <div className="flex items-center justify-between w-full gap-4 md:gap-10">
           {/* Logo */}
           <div className="flex items-center">
@@ -58,9 +65,9 @@ const Navbar = () => {
 
           {/* Mobile menu icons */}
           <div className="md:hidden flex items-center gap-4">
-            <button onClick={() => setSearchUI(true)}>
+            {/* <button onClick={() => setSearchUI(true)}>
               <Search className="w-5 h-5" />
-            </button>
+            </button> */}
             <Link href="/checkout">
               <ShoppingCart className="w-5 h-5" />
             </Link>
@@ -89,10 +96,10 @@ const Navbar = () => {
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/myaccount/Request%20Quote" className="flex items-center gap-1 text-sm text-gray-700 hover:text-black">
+            <p onClick={(e) =>handleQuoteClick(e)} className="flex cursor-pointer items-center gap-1 text-sm text-gray-700 hover:text-black">
               <FileText className="w-5 h-5" />
               Quote
-            </Link>
+            </p>
 
             <span className="border-l h-6 mx-2" />
 
@@ -114,10 +121,12 @@ const Navbar = () => {
           </div>
         </div>
 
+
         {/* Mobile overlays */}
-        <MobileSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+        {/* <MobileSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} /> */}
         <SearchBar searchUI={searchUI} setSearchUI={setSearchUI} />
       </nav>
+      <SearchMobile />
     </header>
   );
 };

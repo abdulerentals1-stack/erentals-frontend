@@ -12,7 +12,7 @@ export default function ProductActionButtons({ product, formData }) {
   const router = useRouter();
 
   const handleAddToCart = async () => {
-    if (!user) return router.push('/auth/login');
+    if (!user) return router.push('/login');
 
     try {
       const payload = {

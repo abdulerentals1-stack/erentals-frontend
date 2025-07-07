@@ -13,7 +13,7 @@ export default function AddToRentalButton({ product }) {
   const handleAdd = async () => {
     if (!user) {
       toast.error('Please login to continue.');
-      return router.push('/auth/login');
+      return router.push('/login');
     }
 
     try {
