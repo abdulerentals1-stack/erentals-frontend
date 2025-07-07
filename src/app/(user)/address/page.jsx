@@ -3,9 +3,11 @@ import AddressList from "@/components/user/AddressList";
 import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const { user } = useAuth();
+  const router = useRouter()
 
   if (!user) {
     toast.error("Please login to add items to cart.");
