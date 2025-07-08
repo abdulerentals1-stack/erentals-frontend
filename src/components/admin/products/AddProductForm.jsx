@@ -23,6 +23,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 import RichTextEditor from "@/lib/RichTextEditor";
+import AIPromptModal from "@/utils/AIPromptModal";
 
 const formSchema = z.object({
   name: z.string().min(1, "Required"),
@@ -274,14 +275,14 @@ export default function AddProductForm() {
       </div>
 
       <div>
-        <Label>Description</Label>
+        <Label>Description <AIPromptModal /></Label>
         <RichTextEditor
           value={watch('description')}
           onChange={(value) => setValue('description', value)}
         />
       </div>
       <div>
-  <Label>Terms and Conditions</Label>
+  <Label>Terms and Conditions <AIPromptModal /></Label>
   <RichTextEditor
     value={watch('termsAndConditions')}
     onChange={(val) => setValue('termsAndConditions', val)}
@@ -289,7 +290,7 @@ export default function AddProductForm() {
 </div>
 
 <div>
-  <Label>Delivery and Pickup</Label>
+  <Label>Delivery and Pickup <AIPromptModal /></Label>
   <RichTextEditor
     value={watch('deliveryAndPickup')}
     onChange={(val) => setValue('deliveryAndPickup', val)}
@@ -297,7 +298,7 @@ export default function AddProductForm() {
 </div>
 
 <div>
-  <Label>FAQs</Label>
+  <Label>FAQs <AIPromptModal /></Label>
   <RichTextEditor
     value={watch('faq')}
     onChange={(val) => setValue('faq', val)}
@@ -347,15 +348,15 @@ export default function AddProductForm() {
       </div>
 
       <div>
-        <Label>Meta Title</Label>
+        <Label>Meta Title <AIPromptModal /></Label>
         <Input {...register("metaTitle")} />
       </div>
       <div>
-        <Label>Meta Description</Label>
+        <Label>Meta Description <AIPromptModal /></Label>
         <Textarea rows={3} {...register("metaDescription")} />
       </div>
       <div>
-        <Label>Meta Keywords (comma-separated)</Label>
+        <Label>Meta Keywords (comma-separated) <AIPromptModal /></Label>
         <Input {...register("metaKeywords")} />
       </div>
 
