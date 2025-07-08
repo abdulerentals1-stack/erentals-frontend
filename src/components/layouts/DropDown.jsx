@@ -13,7 +13,7 @@ const DropDown = () => {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 text-sm text-gray-700 hover:text-black"
+        className="flex items-center gap-1 cursor-pointer text-sm text-gray-700 hover:text-black"
       >
         <User className="w-5 h-5" />
         {user?.name?.split(' ')[0] || 'User'}
@@ -45,7 +45,7 @@ const DropDown = () => {
           </Link>
           <button
             onClick={logout}
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
+            className="w-full text-left cursor-pointer px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
           >
             <LogOut className="w-4 h-4 inline-block mr-2" />
             Logout

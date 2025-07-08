@@ -31,7 +31,7 @@ export default function ProductDetailsTabs({ product }) {
 
   return (
     <div className="mt-10">
-      <div className="flex flex-wrap gap-2 border-b border-gray-200 mb-4">
+      <div className="flex gap-2 border-b overflow-x-auto whitespace-nowrap scrollbar-hide border-gray-200 mb-4">
         {tabs.map((tab) => (
           <button
             key={tab.key}

@@ -3,6 +3,7 @@ import "../../globals.css";
 import Link from "next/link";
 import Sidebar from "@/components/admin/Sidebar";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
+        <AuthProvider>
          <Toaster position="top-center" richColors />
         <div className="min-h-screen">
           {/* Top Navbar */}
@@ -48,6 +50,7 @@ export default function RootLayout({ children }) {
             © {new Date().getFullYear()} Admin Dashboard. All rights reserved.
           </footer>
         </div>
+        </AuthProvider>
       </body>
     </html>
   );

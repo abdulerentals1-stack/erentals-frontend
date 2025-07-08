@@ -18,7 +18,6 @@ import CouponBox from '@/components/user/CouponBox';
 import DeliveryOptions from '@/components/user/DeliveryOptions';
 import PaymentMethodSelector from '@/components/user/PaymentMethodSelector';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/AuthContext';
 
 const schema = z.object({
   addressId: z.string().min(1, "Please select an address"),
@@ -31,19 +30,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState(null);
   const [addresses, setAddresses] = useState([]);
-  const { user } = useAuth();
 
-
-
-  if (!user) {
-    toast.error('Please login to add items to cart.');
-    return router.push('/login');
-  }
-
-  if (user?.role === 'admin') {
-    toast.error('Admin not able to Checkout cart.');
-    return router.push('/admin/dashboard');
-  }
 
   const {
     register,
@@ -89,7 +76,7 @@ export default function CheckoutPage() {
     try {
       await placeOrder(data);
       toast.success('Order placed!');
-      router.push('/myaccount/orders');
+      router.push('/orders');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Order failed');
     }

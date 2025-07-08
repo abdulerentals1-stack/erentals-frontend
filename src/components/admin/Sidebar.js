@@ -9,9 +9,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useAuth } from '@/context/AuthContext';
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   const navItemClass = "block px-4 py-2 rounded hover:bg-gray-800 transition";
 
@@ -85,7 +87,7 @@ export default function Sidebar() {
               </AccordionItem>
             </Accordion>
 
-            <Link href="/admin/settings" className={navItemClass}>⚙️ Settings</Link>
+            <button onClick={logout} className={navItemClass}>🚪 Logout</button>
           </nav>
         </div>
       </aside>

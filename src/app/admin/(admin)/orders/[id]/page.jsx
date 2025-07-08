@@ -33,6 +33,7 @@ export default function OrderDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [productSearch, setProductSearch] = useState("");
   const [coupons, setCoupons] = useState([]);
+  const [updateorder, setUpdateorder] = useState(true);
 
   useEffect(() => {
     fetchOrder();
@@ -84,18 +85,21 @@ export default function OrderDetailsPage() {
   };
 
   const handleSubmit = async (e) => {
+    setUpdateorder(false)
     e.preventDefault();
     try {
       const res = await adminUpdateOrder(id, {
         items,
         transportationCharge: Number(transportationCharge),
-        couponCode: couponCode.trim() || null,
+        couponCode: couponCode?.trim() || null,
       });
       fetchOrder();
       alert("Order updated successfully");
     } catch (err) {
       console.error("Error updating order", err);
       alert("Failed to update order");
+    }finally{
+      setUpdateorder(true)
     }
   };
 
@@ -122,7 +126,7 @@ export default function OrderDetailsPage() {
   if (loading || !order) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-6">
+    <div className="p-4 mt-12 md:mt-0 max-w-4xl mx-auto space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Order #{order._id.slice(-6)}</CardTitle>
@@ -333,8 +337,8 @@ export default function OrderDetailsPage() {
           </Select>
         </div>
 
-        <div className="flex gap-4">
-          <Button type="submit">Update Order</Button>
+        <div className="flex gap-4 flex-wrap">
+          <Button type="submit" disabled={!updateorder}>{updateorder ? "Update Order" : "Updating..."}</Button>
           <Select value={status} onValueChange={(val) => setStatus(val)}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Change Status" />
