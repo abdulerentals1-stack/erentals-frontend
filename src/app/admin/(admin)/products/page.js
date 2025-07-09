@@ -47,7 +47,7 @@ export default function AllProductsPage() {
   ];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto mt-12 md:mt-0">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-semibold">All Products</h1>
         <Button onClick={() => router.push('/admin/products/add')}>+ Add New</Button>

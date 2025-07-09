@@ -53,7 +53,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 mt-12 md:mt-0">
       <h2 className="text-2xl font-semibold">Admin Dashboard</h2>
 
       {/* Charts */}

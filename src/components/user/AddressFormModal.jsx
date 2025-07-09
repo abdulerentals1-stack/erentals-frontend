@@ -71,7 +71,7 @@ export default function AddressFormDialog({ existing, onSaved }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={existing ? "outline" : "default"}>
+        <Button variant={existing ? "outline" : "default"} >
           {existing ? "Edit" : "Add New Address"}
         </Button>
       </DialogTrigger>

@@ -43,7 +43,7 @@ export default function AdminOrdersPage() {
   }, [status]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 mt-12 md:mt-0">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-3">
         <h1 className="text-2xl font-semibold">Admin Orders</h1>
         <Select value={status} onValueChange={setStatus}>

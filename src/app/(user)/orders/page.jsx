@@ -76,7 +76,7 @@ export default function MyOrders() {
     );
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28">
       <h2 className="text-xl font-bold">My Orders</h2>
 
       {orders.map((order) => (
@@ -110,6 +110,7 @@ export default function MyOrders() {
            <Button
               size="sm"
               variant="outline"
+              className='cursor-pointer'
               onClick={() => route.push(`/orders/${order._id}`)}
             >
               <EyeIcon className="w-4 h-4 mr-1" />
@@ -120,6 +121,7 @@ export default function MyOrders() {
               <Button
                 size="sm"
                 variant="destructive"
+                className='cursor-pointer'
                 onClick={() => handleCancelOrder(order._id)}
               >
                 <XIcon className="w-4 h-4 mr-1" />
@@ -131,6 +133,7 @@ export default function MyOrders() {
               <Button
                 size="sm"
                 variant="secondary"
+                className='cursor-pointer'
                 onClick={() => window.open(order.invoiceUrl, "_blank")}
               >
                 <DownloadIcon className="w-4 h-4 mr-1" />
