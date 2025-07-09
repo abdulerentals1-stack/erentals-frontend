@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { loginUser } from '@/services/authService';
@@ -8,9 +8,12 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { useAuthStatus } from '@/utils/authUtils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { isLoggedIn, isAdmin, ready } = useAuthStatus();
   const { setAccessToken, setUser } = useAuth();
 
   const [form, setForm] = useState({ emailOrPhone: '', password: '' });
@@ -38,6 +41,18 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!ready) return; // avoid flickering during hydration
+
+    if (isLoggedIn) {
+      router.push('/');
+    } else if (isAdmin) {
+      router.push('/admin/dashboard');
+    }
+  }, [isLoggedIn, isAdmin, ready]);
+
+  if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4">

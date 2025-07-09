@@ -18,6 +18,8 @@ import CouponBox from '@/components/user/CouponBox';
 import DeliveryOptions from '@/components/user/DeliveryOptions';
 import PaymentMethodSelector from '@/components/user/PaymentMethodSelector';
 import { Button } from '@/components/ui/button';
+import { useAuthStatus } from '@/utils/authUtils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const schema = z.object({
   addressId: z.string().min(1, "Please select an address"),
@@ -30,6 +32,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState(null);
   const [addresses, setAddresses] = useState([]);
+  const { isLoggedIn, isAdmin, ready } = useAuthStatus();
 
 
   const {
@@ -82,7 +85,23 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!cart) return <p>Loading cart...</p>;
+   useEffect(() => {
+          if (!ready) return; // avoid flickering during hydration
+      
+          if (!isLoggedIn) {
+            router.push('/login');
+          } else if (isAdmin) {
+            router.push('/admin/dashboard');
+          }
+        }, [isLoggedIn, isAdmin, ready]);
+      
+  if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
+
+  if (!cart) return <div className='space-y-2'>
+    <Skeleton className="w-full h-20 rounded-xl" />
+    <Skeleton className="w-full h-40 rounded-xl" />
+    <Skeleton className="w-full h-20 rounded-xl" />
+  </div>;
 
 
   return (

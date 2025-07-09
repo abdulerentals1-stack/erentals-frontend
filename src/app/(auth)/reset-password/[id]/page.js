@@ -1,16 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { resetPassword } from '@/services/authService';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { useAuthStatus } from '@/utils/authUtils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ResetPasswordPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { isLoggedIn, isAdmin, ready } = useAuthStatus();
   const [form, setForm] = useState({
     password: '',
     confirmPassword: ''
@@ -45,6 +48,19 @@ export default function ResetPasswordPage() {
       setLoading(false);
     }
   };
+
+
+   useEffect(() => {
+        if (!ready) return; // avoid flickering during hydration
+    
+        if (isLoggedIn) {
+          router.push('/');
+        } else if (isAdmin) {
+          router.push('/admin/dashboard');
+        }
+      }, [isLoggedIn, isAdmin, ready]);
+    
+      if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4">

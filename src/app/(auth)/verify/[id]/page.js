@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { verifyEmail } from '@/services/authService';
 import { toast } from 'sonner';
 import { Loader, CheckCircle2, XCircle } from 'lucide-react';
+import { useAuthStatus } from '@/utils/authUtils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function VerifyPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { isLoggedIn, isAdmin, ready } = useAuthStatus();
+  
 
   const [status, setStatus] = useState('idle'); // idle, loading, success, error
   const [message, setMessage] = useState('');
@@ -27,6 +31,18 @@ export default function VerifyPage() {
       toast.error('Verification failed');
     }
   };
+
+  useEffect(() => {
+          if (!ready) return; // avoid flickering during hydration
+      
+          if (isLoggedIn) {
+            router.push('/');
+          } else if (isAdmin) {
+            router.push('/admin/dashboard');
+          }
+        }, [isLoggedIn, isAdmin, ready]);
+      
+    if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-4 text-center space-y-4">

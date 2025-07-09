@@ -11,26 +11,18 @@ import { Badge } from "@/components/ui/badge";
 import { DownloadIcon, EyeIcon, XIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { useAuthStatus } from "@/utils/authUtils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const route = useRouter()
+  const { isLoggedIn, isAdmin, ready } = useAuthStatus();
 
-  const { user } = useAuth();
-  
-    if (!user) {
-      toast.error("Please login to add items to cart.");
-      return route.push("/login");
-    }
-  
-    if (user?.role === "admin") {
-      toast.error("Admin not able to Checkout cart.");
-      return route.push("/admin/dashboard");
-    }
+
 
   const fetchOrders = async () => {
     try {
@@ -64,6 +56,18 @@ export default function MyOrders() {
   useEffect(() => {
     fetchOrders();
   }, []);
+
+      useEffect(() => {
+        if (!ready) return; // avoid flickering during hydration
+    
+        if (!isLoggedIn) {
+          route.push("/login");
+        } else if (isAdmin) {
+          route.push("/admin/dashboard");
+        }
+      }, [isLoggedIn, isAdmin, ready]);
+    
+      if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   if (loading) return <div className="p-4">Loading orders...</div>;
 
