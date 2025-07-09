@@ -91,6 +91,7 @@ export default function OrderDetailsPage() {
       const res = await adminUpdateOrder(id, {
         items,
         transportationCharge: Number(transportationCharge),
+        labourCharge: Number(order.labourCharge || 0),
         couponCode: couponCode?.trim() || null,
       });
       fetchOrder();
@@ -188,6 +189,11 @@ export default function OrderDetailsPage() {
           </p>
 
           <p>
+            <strong>Labour Charges:</strong> ₹
+            {order.labourCharge?.toFixed(2) || 0}
+          </p>
+
+          <p>
             <strong>SGST:</strong> ₹{order.sgst?.toFixed(2)}
           </p>
           <p>
@@ -214,16 +220,7 @@ export default function OrderDetailsPage() {
                 </p>
 
                 {/* Quantity / Length / Area Inputs */}
-                {item.product.pricingType === "quantity" && (
-                  <Input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleItemChange(index, "quantity", e.target.value)
-                    }
-                    placeholder="Quantity"
-                  />
-                )}
+
                 {item.product.pricingType === "length_width" && (
                   <Input
                     type="number"
@@ -265,6 +262,16 @@ export default function OrderDetailsPage() {
                   }
                   placeholder="Days"
                 />
+
+                <p className="text-sm text-muted-foreground">Quantity</p>
+                <Input
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleItemChange(index, "quantity", e.target.value)
+                    }
+                    placeholder="Quantity"
+                  />
 
                 {/* ✅ Service Charge Toggle */}
                 <p className="text-sm text-muted-foreground">
@@ -309,6 +316,19 @@ export default function OrderDetailsPage() {
             type="number"
             value={transportationCharge}
             onChange={(e) => setTransportationCharge(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Labour Charge:</label>
+          <Input
+            type="number"
+            value={order.labourCharge || 0}
+            onChange={(e) =>
+              setOrder((prev) => ({
+                ...prev,
+                labourCharge: Number(e.target.value),
+              }))
+            }
           />
         </div>
         <div>
@@ -407,8 +427,11 @@ export default function OrderDetailsPage() {
                 <SelectItem
                   key={p._id}
                   value={p._id}
-                  disabled={items.some((item) => item.product._id === p._id)}
-                >
+                  disabled={
+                      p.pricingType === "quantity" &&
+                      items.some((item) => item.product._id === p._id)
+                    }
+                   >
                   <div className="flex items-center gap-2">
                     <img
                       src={p.images?.[0]?.url}

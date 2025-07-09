@@ -25,11 +25,10 @@ export default function ProductActionButtons({ product, formData }) {
         pricingType: product.pricingType,
         days: formData.days,
         withService: formData.withService,
+        quantity : formData.quantity,
       };
 
-      if (product.pricingType === 'quantity') {
-        payload.quantity = formData.quantity;
-      } else if (product.pricingType === 'length_width') {
+    if (product.pricingType === 'length_width') {
         payload.length = formData.length;
       } else if (product.pricingType === 'area') {
         payload.length = formData.length;

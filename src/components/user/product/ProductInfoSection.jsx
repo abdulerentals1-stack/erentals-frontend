@@ -23,29 +23,28 @@ export default function ProductInfoSection({ product }) {
   const [priceData, setPriceData] = useState(null);
 
   useEffect(() => {
-    const fetchPrice = async () => {
-      try {
-        const payload = {
-          productId: product._id,
-          days: inputs.days,
-          includeServiceCharge: inputs.withService,
-        };
-
-        if (product.pricingType === 'quantity') {
-          payload.quantity = inputs.quantity;
-        } else if (product.pricingType === 'length_width') {
-          payload.length = inputs.length;
-        } else if (product.pricingType === 'area') {
-          payload.length = inputs.length;
-          payload.width = inputs.width;
-        }
-
-        const { data } = await calculatePrice(payload);
-        setPriceData(data);
-      } catch (err) {
-        setPriceData(null);
-      }
+   const fetchPrice = async () => {
+  try {
+    const payload = {
+      productId: product._id,
+      days: inputs.days,
+      includeServiceCharge: inputs.withService,
+      quantity: inputs.quantity, // ✅ always include
     };
+
+    if (product.pricingType === 'length_width') {
+      payload.length = inputs.length;
+    } else if (product.pricingType === 'area') {
+      payload.length = inputs.length;
+      payload.width = inputs.width;
+    }
+
+    const { data } = await calculatePrice(payload);
+    setPriceData(data);
+  } catch (err) {
+    setPriceData(null);
+  }
+};
 
     fetchPrice();
   }, [inputs]);

@@ -29,11 +29,10 @@ export default function AddToCartButton({ product }) {
         pricingType: product.pricingType,
         withService: false,
         days: 1,
+        quantity:1,
       };
 
-      if (product.pricingType === 'quantity') {
-        payload.quantity = 1;
-      } else if (product.pricingType === 'length_width') {
+      if (product.pricingType === 'length_width') {
         payload.length = 1;
       } else if (product.pricingType === 'area') {
         payload.length = 1;

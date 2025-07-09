@@ -14,11 +14,10 @@ export const getCart = async () => {
 };
 
 // ❌ Remove Item from Cart
-export const removeCartItem = async (productId) => {
-  const { data } = await api.delete(`/cart/item/${productId}`);
+export const removeCartItem = async (itemId) => {
+  const { data } = await api.delete(`/cart/item/${itemId}`);
   return data;
 };
-
 // 🎟️ Apply Coupon
 export const applyCoupon = (code) => api.post('/cart/apply-coupon', { code });
 
