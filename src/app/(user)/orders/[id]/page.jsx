@@ -111,10 +111,10 @@ export default function OrderDetailsPage() {
           {new Date(order.deliveryDate).toLocaleDateString()} |{" "}
           <strong>Time Slot:</strong> {order.timeSlot}
         </p>
-        <p>
+        {/* <p>
           <strong>Rental Duration:</strong>{" "}
           {order.items?.[0]?.days || 1} day(s)
-        </p>
+        </p> */}
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -148,11 +148,18 @@ export default function OrderDetailsPage() {
           >
             <div>
               <p className="font-medium">{item.product?.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {item.pricingType === "length_width"
-                  ? `${item.length} x ${item.width}`
-                  : `${item.quantity} pcs`}{" "}
-                | {item.days} days | Type: {item.pricingType}
+             <p className="text-sm text-muted-foreground">
+                {item.days} day |{" "}
+                {item.pricingType === "quantity" && (
+                  <>{item.quantity} {item.unit || "pcs"}</>
+                )}
+                {item.pricingType === "length_width" && (
+                  <>{item.length} {item.unit || "ft"}</>
+                )}
+                {item.pricingType === "area" && (
+                  <>{item.length}x{item.width} {item.unit || "sqft"}</>
+                )}
+                {" | " + (item.withService ? "With Service" : "Without Service")}
               </p>
             </div>
             <p>₹{item.finalPrice}</p>
@@ -180,6 +187,7 @@ export default function OrderDetailsPage() {
 
       {/* ✅ Pay Remaining Button */}
       {order.paymentMethod === "razorpay" &&
+        order.status === "confirmed" && 
         order.paymentStatus !== "paid" &&
         order.finalAmount - order.paidAmount > 0 && (
           <Button
@@ -191,7 +199,7 @@ export default function OrderDetailsPage() {
         )}
 
       {/* ✅ Download Invoice */}
-      {order.invoiceUrl && (
+      {order.invoiceUrl && order.status === "confirmed" && (
         <div className="mt-6">
           <Button onClick={() => window.open(order.invoiceUrl, "_blank")}>
             <DownloadIcon className="w-4 h-4 mr-2" />
@@ -211,13 +219,13 @@ export default function OrderDetailsPage() {
                 className="flex justify-between border-b pb-2 last:border-none"
               >
                 <div>
-                  <p><strong>ID:</strong> {p.razorpay_payment_id}</p>
-                  <p><strong>Type:</strong> {p.type}</p>
+                  <p><strong>ID:</strong> {p._id}</p>
+                  {/* <p><strong>Type:</strong> {p.type}</p> */}
                   <p><strong>Method:</strong> {p.method}</p>
                 </div>
                 <div className="text-right">
                   <p>₹{p.amount}</p>
-                  <p>{new Date(p.createdAt).toLocaleString()}</p>
+                  <p>{new Date(p.paidAt).toLocaleString()}</p>
                 </div>
               </div>
             ))}
