@@ -40,7 +40,11 @@ export const fetchOrdersByStatus = async (status = "placed") => {
 };
 
 
-export const createRemainingPayment = async (orderId) => {
-  const res = await api.post(`/payments/create-remaining-payment/${orderId}`);
+export const createRemainingPayment = async ({ orderId }) => {
+  const res = await api.post("/payments/create-remaining-payment", { orderId }); // ✅ send in body
   return res.data;
 };
+
+export const verifyRemainingPayment = (payload) =>
+  api.post('/checkout/verify-remaining-payment', payload);
+

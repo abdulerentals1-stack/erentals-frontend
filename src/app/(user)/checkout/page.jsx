@@ -76,6 +76,20 @@ export default function CheckoutPage() {
   }
 };
 
+const loadRazorpay = () =>
+  new Promise((resolve, reject) => {
+    if (typeof window !== "undefined" && window.Razorpay) {
+      return resolve(window.Razorpay);
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(window.Razorpay);
+    script.onerror = () => reject("Razorpay SDK failed to load");
+    document.body.appendChild(script);
+  });
+
+
 
   useEffect(() => {
     fetchData();
@@ -106,12 +120,14 @@ export default function CheckoutPage() {
         order_id: razorData.orderId,
         handler: async function (response) {
           try {
-            await verifyRazorpayPayment({
-              ...data,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpaySignature: response.razorpay_signature,
-            });
+              await verifyRazorpayPayment({
+                addressId: data.addressId,
+                deliveryDate: data.deliveryDate,
+                timeSlot: data.timeSlot,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              });
 
             toast.success("Order placed with advance payment!");
             router.push("/orders");
@@ -127,7 +143,8 @@ export default function CheckoutPage() {
         theme: { color: "#0f172a" },
       };
 
-      const rzp = new window.Razorpay(options);
+      const RazorpayConstructor = await loadRazorpay();
+      const rzp = new RazorpayConstructor(options);
       rzp.open();
     }
   } catch (err) {
