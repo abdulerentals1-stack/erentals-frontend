@@ -10,7 +10,11 @@ import { useRouter } from 'next/navigation';
 
 import { getCart } from '@/services/cartService';
 import { getUserAddresses } from '@/services/addressService';
-import { placeOrder } from '@/services/checkoutService';
+import {
+  placeOrder,
+  createAdvancePayment,
+  verifyRazorpayPayment,
+} from '@/services/checkoutService'; 
 
 import CheckoutProductList from '@/components/user/CheckoutProductList';
 import AddressSelector from '@/components/user/AddressSelector';
@@ -20,6 +24,8 @@ import PaymentMethodSelector from '@/components/user/PaymentMethodSelector';
 import { Button } from '@/components/ui/button';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
+import Script from "next/script";
+
 
 const schema = z.object({
   addressId: z.string().min(1, "Please select an address"),
@@ -75,15 +81,60 @@ export default function CheckoutPage() {
     fetchData();
   }, []);
 
-  const onSubmit = async (data) => {
-    try {
+ const onSubmit = async (data) => {
+  try {
+    if (data.paymentMethod === "cod") {
+      // ✅ COD flow
       await placeOrder(data);
-      toast.success('Order placed!');
-      router.push('/orders');
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Order failed');
+      toast.success("Order placed!");
+      router.push("/orders");
+    } else {
+      // ✅ Razorpay advance payment flow
+      const res = await createAdvancePayment(data); // 🔁 Use your service
+      const razorData = res.data;
+
+      if (!razorData.success) {
+        throw new Error(razorData.message || "Payment initiation failed");
+      }
+
+      const options = {
+        key: razorData.razorpayKeyId,
+        amount: razorData.amount * 100, // in paise
+        currency: "INR",
+        name: "eRentals",
+        description: "Advance Payment",
+        order_id: razorData.orderId,
+        handler: async function (response) {
+          try {
+            await verifyRazorpayPayment({
+              ...data,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+
+            toast.success("Order placed with advance payment!");
+            router.push("/orders");
+          } catch (err) {
+            toast.error("Payment succeeded but order creation failed.");
+            console.error(err);
+          }
+        },
+        prefill: {
+          name: razorData.name,
+          email: razorData.email,
+        },
+        theme: { color: "#0f172a" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     }
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message || "Something went wrong during checkout");
+  }
+};
 
    useEffect(() => {
           if (!ready) return; // avoid flickering during hydration
@@ -106,6 +157,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="beforeInteractive"
+      />
       <h1 className="text-2xl font-bold mb-4">Checkout</h1>
 
       <CheckoutProductList cart={cart} onUpdated={fetchData} />

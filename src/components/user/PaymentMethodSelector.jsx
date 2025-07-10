@@ -26,8 +26,8 @@ export default function PaymentMethodSelector({ selected, onChange }) {
       </div>
 
       {selected === "razorpay" && (
-        <p className="text-yellow-600 text-sm pt-1">
-          🔔 Prepaid not enabled yet. Order will still be placed as COD.
+        <p className="text-green-600 text-sm pt-1">
+          💸 You’ll only pay <strong>20% in advance</strong>. The remaining amount will be requested after admin confirmation.
         </p>
       )}
     </div>

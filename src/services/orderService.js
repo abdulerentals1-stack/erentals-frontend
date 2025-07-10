@@ -38,3 +38,9 @@ export const fetchOrdersByStatus = async (status = "placed") => {
   const res = await api.get(`/orders?status=${status}`);
   return res.data.orders;
 };
+
+
+export const createRemainingPayment = async (orderId) => {
+  const res = await api.post(`/payments/create-remaining-payment/${orderId}`);
+  return res.data;
+};
