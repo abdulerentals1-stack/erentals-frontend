@@ -132,77 +132,104 @@ export default function OrderDetailsPage() {
         <CardHeader>
           <CardTitle>Order #{order._id.slice(-6)}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {/* 🧍 User Info */}
-          <p>
-            <strong>User Name:</strong> {order.user?.name}
-          </p>
-          <p>
-            <strong>User Email:</strong> {order.user?.email}
-          </p>
+        <CardContent className="space-y-4 text-sm text-gray-700">
 
-          {/* 📞 Address Info */}
-          <p>
-            <strong>Customer Name:</strong> {order.address?.name}
-          </p>
-          <p>
-            <strong>Customer Mobile:</strong> {order.address?.phone}
-          </p>
-          <p>
-            <strong>Address:</strong> {order.address?.addressLine},{" "}
-            {order.address?.city}, {order.address?.state} -{" "}
-            {order.address?.pincode}
-          </p>
-          <p>
-            <strong>Address Type:</strong> {order.address?.type}
-          </p>
+  {/* 👤 User Info */}
+  <div className="border p-4 rounded-md shadow-sm bg-white">
+    <h2 className="text-lg font-semibold text-indigo-600 mb-2">👤 User Information</h2>
+    <p><strong>Name:</strong> {order?.user?.name || "N/A"}</p>
+    <p><strong>Email:</strong> {order?.user?.email || "N/A"}</p>
+  </div>
 
-          {/* 📦 Delivery Info */}
-          <p>
-            <strong>Delivery Date:</strong>{" "}
-            {format(new Date(order.deliveryDate), "dd MMM yyyy")}
-          </p>
-          <p>
-            <strong>Time Slot:</strong> {order.timeSlot}
-          </p>
-          <p>
-            <strong>Total Items:</strong> {items.length}
-          </p>
+  {/* 🏠 Address Info */}
+  <div className="border p-4 rounded-md shadow-sm bg-white">
+    <h2 className="text-lg font-semibold text-blue-600 mb-2">📍 Delivery Address</h2>
+    <p><strong>Customer Name:</strong> {order?.address?.name || "N/A"}</p>
+    <p><strong>Mobile:</strong> {order?.address?.phone || "N/A"}</p>
+    <p>
+      <strong>Address:</strong>{" "}
+      {`${order?.address?.addressLine || ""}, ${order?.address?.city || ""}, ${order?.address?.state || ""} - ${order?.address?.pincode || ""}`}
+    </p>
+    <p><strong>Type:</strong> {order?.address?.type || "N/A"}</p>
+  </div>
 
-          {/* 💸 Payment Summary */}
-          <p>
-            <strong>Payment Method:</strong> {order.paymentMethod}
-          </p>
-          <p>
-            <strong>Payment Status:</strong> {order.paymentStatus}
-          </p>
-          <p>
-            <strong>Price Before Tax:</strong> ₹
-            {order.priceBeforeTax?.toFixed(2)}
-          </p>
-          <p>
-            <strong>Discount Price:</strong> ₹{order.discountAmount?.toFixed(2)}
-          </p>
-          <p>
-            <strong>Transportation Charges:</strong> ₹
-            {order.transportationCharge?.toFixed(2) || 0}
-          </p>
+  {/* 📦 Delivery Info */}
+  <div className="border p-4 rounded-md shadow-sm bg-white">
+    <h2 className="text-lg font-semibold text-purple-600 mb-2">📦 Delivery Info</h2>
+    <p>
+      <strong>Delivery Date:</strong>{" "}
+      {order?.deliveryDate ? format(new Date(order.deliveryDate), "dd MMM yyyy") : "N/A"}
+    </p>
+    <p><strong>Time Slot:</strong> {order?.timeSlot || "N/A"}</p>
+    <p><strong>Total Items:</strong> {order?.items?.length || 0}</p>
+  </div>
 
-          <p>
-            <strong>Labour Charges:</strong> ₹
-            {order.labourCharge?.toFixed(2) || 0}
-          </p>
+  {/* 💳 Payment Summary */}
+  <div className="border p-4 rounded-md shadow-sm bg-white">
+    <h2 className="text-lg font-semibold text-green-600 mb-2">💳 Payment Summary</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <p><strong>Method:</strong> {order?.paymentMethod || "N/A"}</p>
+      <p><strong>Status:</strong>
+        <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
+          order?.paymentStatus === "paid" ? "bg-green-100 text-green-800" :
+          order?.paymentStatus === "partial" ? "bg-yellow-100 text-yellow-800" :
+          "bg-red-100 text-red-800"
+        }`}>
+          {order?.paymentStatus || "pending"}
+        </span>
+      </p>
+      <p><strong>Price Before Tax:</strong> ₹{order?.priceBeforeTax?.toFixed(2) || "0.00"}</p>
+      <p><strong>Discount:</strong> ₹{order?.discountAmount?.toFixed(2) || "0.00"}</p>
+      <p><strong>Transportation:</strong> ₹{order?.transportationCharge?.toFixed(2) || "0.00"}</p>
+      <p><strong>Labour:</strong> ₹{order?.labourCharge?.toFixed(2) || "0.00"}</p>
+      <p><strong>SGST:</strong> ₹{order?.sgst?.toFixed(2) || "0.00"}</p>
+      <p><strong>CGST:</strong> ₹{order?.cgst?.toFixed(2) || "0.00"}</p>
+    </div>
+    <p className="mt-3 text-lg font-bold text-indigo-700">
+      Final Amount: ₹{order?.finalAmount?.toFixed(2) || "0.00"}
+    </p>
+  </div>
 
-          <p>
-            <strong>SGST:</strong> ₹{order.sgst?.toFixed(2)}
-          </p>
-          <p>
-            <strong>CGST:</strong> ₹{order.cgst?.toFixed(2)}
-          </p>
-          <p className="text-lg font-bold">
-            <strong>Final Amount:</strong> ₹{order.finalAmount?.toFixed(2)}
-          </p>
-        </CardContent>
+  {/* 🧾 Payment History */}
+  <div className="border p-4 rounded-md shadow-sm bg-white">
+    <h2 className="text-lg font-semibold text-pink-600 mb-2">🧾 Payment History</h2>
+    {order?.paymentHistory?.length > 0 ? (
+      <ul className="space-y-2">
+        {order.paymentHistory.map((payment) => (
+          <li key={payment?._id} className="flex justify-between items-start text-sm">
+            <div>
+              <p>
+                ₹<strong>{payment?.amount}</strong> via{" "}
+                <span className="capitalize">{payment?.method || "N/A"}</span>
+              </p>
+              <p className="text-gray-500 text-xs">
+                {payment?.paidAt ? new Date(payment.paidAt).toLocaleString() : "Unknown Date"}
+              </p>
+            </div>
+            <span className={`px-2 py-1 rounded text-xs font-medium ${
+              payment?.status === "success"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-700"
+            }`}>
+              {payment?.status || "failed"}
+            </span>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-gray-500 text-sm">No payments made yet.</p>
+    )}
+  </div>
+
+  {/* 💰 Remaining Amount */}
+  <div className="flex justify-between items-center mt-4 p-4 bg-yellow-50 border rounded-md shadow-inner">
+    <span className="font-medium text-gray-700 text-sm">🧮 Remaining Amount</span>
+    <span className="text-lg font-semibold text-red-600">
+      ₹{Math.max((order?.finalAmount || 0) - (order?.paidAmount || 0), 0).toFixed(2)}
+    </span>
+  </div>
+
+</CardContent>
       </Card>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -336,7 +363,7 @@ export default function OrderDetailsPage() {
           <Select
             value={couponCode || "__none__"}
             onValueChange={(val) =>
-              setCouponCode(val === "__none__" ? null : val)
+              setCouponCode(val === "__none__" ? '' : val)
             }
           >
             <SelectTrigger className="w-[300px]">

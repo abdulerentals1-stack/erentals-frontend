@@ -148,17 +148,17 @@ export default function OrderDetailsPage() {
           >
             <div>
               <p className="font-medium">{item.product?.name}</p>
-             <p className="text-sm text-muted-foreground">
-                {item.days} day |{" "}
-                {item.pricingType === "quantity" && (
-                  <>{item.quantity} {item.unit || "pcs"}</>
+             <p className="text-sm text-gray-600 mt-1">
+                {item.days} days | {item.quantity} pcs
+
+                {item.pricingType === "length_width" && item.length > 0 && (
+                  <> | {item.length} {item.unit || "ft"}</>
                 )}
-                {item.pricingType === "length_width" && (
-                  <>{item.length} {item.unit || "ft"}</>
+
+                {item.pricingType === "area" && item.length > 0 && item.width > 0 && (
+                  <> | {item.length}x{item.width} {item.unit || "sqft"}</>
                 )}
-                {item.pricingType === "area" && (
-                  <>{item.length}x{item.width} {item.unit || "sqft"}</>
-                )}
+
                 {" | " + (item.withService ? "With Service" : "Without Service")}
               </p>
             </div>
@@ -172,17 +172,22 @@ export default function OrderDetailsPage() {
         <p>Base Amount: ₹{order.totalAmount}</p>
         <p>Service Charge (10%): ₹{(order.totalAmount * 0.1).toFixed(2)}</p>
         <p>Transportation: ₹{order.transportationCharge || 0}</p>
+        <p>Labour Charge: ₹{order.labourCharge || 0}</p>
         <p>SGST (9%): ₹{order.sgst}</p>
         <p>CGST (9%): ₹{order.cgst}</p>
         <p>Discount: ₹{order.discountAmount}</p>
-        <p><strong>Advance Paid:</strong> ₹{order.advancePaid}</p>
         <p className="font-bold text-lg">Total: ₹{order.finalAmount}</p>
-        <p className="text-green-700">Paid: ₹{order.paidAmount}</p>
-        {order.finalAmount - order.paidAmount > 0 && (
-          <p className="text-yellow-700 font-semibold">
-            Remaining: ₹{order.finalAmount - order.paidAmount}
-          </p>
-        )}
+        {order.paymentMethod !== "cod" && (
+            <>
+              <p><strong>Advance Paid:</strong> ₹{order.advancePaid}</p>
+              <p className="text-green-700">Paid: ₹{order.paidAmount}</p>
+              {order.finalAmount - order.paidAmount > 0 && (
+                <p className="text-yellow-700 font-semibold">
+                  Remaining: ₹{order.finalAmount - order.paidAmount}
+                </p>
+              )}
+            </>
+          )}
       </div>
 
       {/* ✅ Pay Remaining Button */}
@@ -209,7 +214,7 @@ export default function OrderDetailsPage() {
       )}
 
       {/* ✅ Payment History */}
-      {order.paymentHistory?.length > 0 && (
+      {order.paymentMethod !== "cod" && order.paymentHistory?.length > 0 && (
         <div className="mt-10">
           <h2 className="font-semibold mb-2">Payment History</h2>
           <div className="border rounded-lg p-4 space-y-2 text-sm">
