@@ -55,9 +55,7 @@ export default function ResetPasswordPage() {
     
         if (isLoggedIn) {
           router.push('/');
-        } else if (isAdmin) {
-          router.push('/admin/dashboard');
-        }
+        } 
       }, [isLoggedIn, isAdmin, ready]);
     
       if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;

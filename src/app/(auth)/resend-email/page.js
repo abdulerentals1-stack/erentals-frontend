@@ -36,8 +36,6 @@ export default function ResendVerificationPage() {
     
         if (isLoggedIn) {
           router.push('/');
-        } else if (isAdmin) {
-          router.push('/admin/dashboard');
         }
       }, [isLoggedIn, isAdmin, ready]);
     

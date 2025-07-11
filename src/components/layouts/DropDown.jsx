@@ -36,13 +36,13 @@ const DropDown = () => {
           >
             Address
           </Link>
-          <Link
+          {/* <Link
             href="/address"
             className="block px-4 py-2 hover:bg-gray-100 text-sm"
             onClick={() => setOpen(false)}
           >
             Profile
-          </Link>
+          </Link> */}
           <button
             onClick={logout}
             className="w-full text-left cursor-pointer px-4 py-2 hover:bg-gray-100 text-sm text-red-500"

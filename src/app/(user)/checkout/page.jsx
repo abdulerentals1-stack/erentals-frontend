@@ -156,11 +156,9 @@ const loadRazorpay = () =>
    useEffect(() => {
           if (!ready) return; // avoid flickering during hydration
       
-          if (!isLoggedIn) {
+          if (!isLoggedIn && !isAdmin) {
             router.push('/login');
-          } else if (isAdmin) {
-            router.push('/admin/dashboard');
-          }
+          } 
         }, [isLoggedIn, isAdmin, ready]);
       
   if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
