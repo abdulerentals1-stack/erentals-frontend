@@ -24,14 +24,14 @@ const Navbar = () => {
   const router = useRouter();
 
   const handleSearchChange = (e) => {
-    const value = e.target.value.trim();
-    setSearchField(value);
+    setSearchField(e.target.value);  // ✅ Do NOT trim here
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchField) {
-      router.push(`/product-search?search=${encodeURIComponent(searchField)}`);
+    const query = searchField.trim();  // ✅ Trim here only
+    if (query) {
+      router.push(`/product-search?search=${encodeURIComponent(query)}`);
     }
   };
 

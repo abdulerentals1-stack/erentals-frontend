@@ -74,10 +74,18 @@ export default function OrderDetailsPage() {
   };
 
   const handleItemChange = (index, field, value) => {
-    const newItems = [...items];
-    newItems[index][field] = field === "withService" ? value : Number(value);
-    setItems(newItems);
-  };
+  const newItems = [...items];
+  if (field === "withService") {
+    newItems[index][field] = value;
+  } else if (field === "customPrice") {
+    newItems[index][field] = value === "" ? null : Number(value);
+  } else {
+    newItems[index][field] = Number(value);
+  }
+
+  setItems(newItems);
+};
+
 
   const removeItem = (index) => {
     const newItems = items.filter((_, i) => i !== index);
@@ -123,6 +131,39 @@ export default function OrderDetailsPage() {
       console.error("Cancel failed", err);
     }
   };
+
+
+const getActualUnitPrice = (item) => {
+  if (!item.product) return 0;
+
+  // 1️⃣ If custom price is set → show that
+  if (item.customPrice !== null && item.customPrice > 0) {
+    return item.customPrice;
+  }
+
+  // 2️⃣ Else calculate based on pricing type and threshold
+  const { pricingType, basePrice, discountPrice, thresholds = [] } = item.product;
+
+  let userValue = 0;
+  if (pricingType === "quantity") {
+    userValue = item.quantity;
+  } else if (pricingType === "length_width") {
+    userValue = item.length * item.quantity;
+  } else if (pricingType === "area") {
+    userValue = item.length * item.width * item.quantity;
+  }
+
+  // Threshold logic: find closest threshold that matches
+  const matchedThreshold = thresholds
+    .filter((t) => userValue <= t.value)
+    .sort((a, b) => a.value - b.value)[0];
+
+  const unitPrice = matchedThreshold?.price || discountPrice || basePrice;
+
+  return unitPrice;
+};
+
+
 
   if (loading || !order) return <div className="p-4">Loading...</div>;
 
@@ -238,17 +279,17 @@ export default function OrderDetailsPage() {
             <Card key={index}>
               <CardHeader>
                 <CardTitle>
-                  {item.product.name}-{item.product.productCode}
+                  {item.product?.name}-{item.product?.productCode}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  {item.product.pricingType}
+                  {item.product?.pricingType}
                 </p>
 
                 {/* Quantity / Length / Area Inputs */}
 
-                {item.product.pricingType === "length_width" && (
+                {item.product?.pricingType === "length_width" && (
                   <Input
                     type="number"
                     value={item.length}
@@ -258,7 +299,7 @@ export default function OrderDetailsPage() {
                     placeholder="Length"
                   />
                 )}
-                {item.product.pricingType === "area" && (
+                {item.product?.pricingType === "area" && (
                   <div className="flex gap-2">
                     <Input
                       type="number"
@@ -318,6 +359,21 @@ export default function OrderDetailsPage() {
                     <SelectItem value="false">No</SelectItem>
                   </SelectContent>
                 </Select>
+
+                {/* Unit Price Display */}
+                  <p className="text-sm">
+                    <strong>Unit Price:</strong> ₹{getActualUnitPrice(item)}
+                  </p>
+
+                  {/* Custom Price Input */}
+                  <p className="text-sm text-muted-foreground">Custom Price (per unit):</p>
+                  <Input
+                    type="number"
+                    value={item.customPrice ?? ""}
+                    onChange={(e) => handleItemChange(index, "customPrice", e.target.value || null)}
+                    placeholder="Custom Price (optional)"
+                  />
+
 
                 {/* Final Price + Remove */}
                 <div className="flex justify-between items-center">
@@ -429,7 +485,7 @@ export default function OrderDetailsPage() {
         />
         <Select
           onValueChange={(productId) => {
-            const selected = products.find((p) => p._id === productId);
+            const selected = products.find((p) => p?._id === productId);
             if (selected) {
               const newItem = {
                 product: selected,
@@ -456,7 +512,7 @@ export default function OrderDetailsPage() {
                   value={p._id}
                   disabled={
                       p.pricingType === "quantity" &&
-                      items.some((item) => item.product._id === p._id)
+                      items.some((item) => item.product?._id === p._id)
                     }
                    >
                   <div className="flex items-center gap-2">
@@ -493,7 +549,7 @@ export default function OrderDetailsPage() {
       onClick={() => {
         const link = document.createElement("a");
         link.href = order.invoiceUrl;
-        link.download = `invoice-${order._id}.pdf`;
+        link.download = `invoice-${order?._id}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

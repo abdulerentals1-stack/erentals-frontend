@@ -14,7 +14,28 @@ export const getAllProducts = () => api.get("/products");
 export const getProductBySlug = (slug) => api.get(`/products/${slug}`);
 
 // ✅ Get Flagged Products (like hotdeal / featured)
-export const getFlaggedProducts = (type) => api.get(`/products/flagged?type=${type}`);
+export const getFlaggedProducts = async (type) => {
+  try {
+    const res = await fetch(`/products/flagged?type=${type}`, {
+      method: "GET",
+      cache: "no-store", // Prevents caching
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data; // Or data.products based on your API structure
+  } catch (err) {
+    console.error("Error fetching flagged products:", err);
+    throw err;
+  }
+};
+
 
 // ✅ ✅ ✅ Search + Filtered Products (Pagination, Filters, etc.)
 export const getFilteredProducts = async (params) => {
