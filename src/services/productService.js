@@ -11,12 +11,22 @@ export const calculatePrice = (data) => api.post("/products/calculate-price", da
 
 // ✅ Basic Gets
 export const getAllProducts = () => api.get("/products");
-export const getProductBySlug = (slug) => api.get(`/products/${slug}`);
+
+export const getProductBySlug = async (slug) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`, {
+    cache: "no-store",  // ✅ Fresh every time
+  });
+
+  if (!res.ok) throw new Error(`Failed to fetch product with slug: ${slug}`);
+  const data = await res.json();
+  return data;
+};
+
 
 // ✅ Get Flagged Products (like hotdeal / featured)
 export const getFlaggedProducts = async (type) => {
   try {
-    const res = await fetch(`/products/flagged?type=${type}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/flagged?type=${type}`, {
       method: "GET",
       cache: "no-store", // Prevents caching
       headers: {

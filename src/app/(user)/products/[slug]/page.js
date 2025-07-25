@@ -7,7 +7,7 @@ import ProductDetailsTabs from '@/components/user/product/ProductDetailsTabs';
 export default async function ProductPage({ params }) {
   const { slug } = await params;
 
-  const { data } = await getProductBySlug(slug);
+  const data = await getProductBySlug(slug);
   const product = data?.product;
 
   if (!product) {

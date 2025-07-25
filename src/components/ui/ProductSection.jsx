@@ -5,7 +5,7 @@ import { Store } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function ProductSection({ title, type }) {
-  const { data } = await getFlaggedProducts(type);
+  const data = await getFlaggedProducts(type);
   const products = data?.products?.slice(0, 10) || [];
 
   if (!products.length) return null;
