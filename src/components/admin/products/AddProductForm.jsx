@@ -160,7 +160,7 @@ export default function AddProductForm() {
       if (slug) {
         try {
           const productRes = await getProductBySlug(slug);
-          const product = productRes.data.product;
+          const product = productRes?.product;
           setProductId(product._id);
           setImages(product.images);
 
