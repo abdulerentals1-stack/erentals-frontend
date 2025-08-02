@@ -79,6 +79,13 @@ export default function Sidebar() {
                 </AccordionContent>
               </AccordionItem>
 
+              <AccordionItem value="quotations" className="border-none">
+                <AccordionTrigger className="px-4 py-2 hover:bg-gray-800 rounded text-left">🧾 Quotation</AccordionTrigger>
+                <AccordionContent className="ml-2 space-y-1">
+                  <Link href="/admin/quotation" className={navItemClass}>All Quotations</Link>
+                </AccordionContent>
+              </AccordionItem>
+
               <AccordionItem value="coupons" className="border-none">
                 <AccordionTrigger className="px-4 py-2 hover:bg-gray-800 rounded text-left">🏷 Coupons</AccordionTrigger>
                 <AccordionContent className="ml-2 space-y-1">

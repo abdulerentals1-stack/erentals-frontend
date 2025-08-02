@@ -96,10 +96,10 @@ const Navbar = () => {
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <p onClick={(e) =>handleQuoteClick(e)} className="flex cursor-pointer items-center gap-1 text-sm text-gray-700 hover:text-black">
+            <Link href="/quotation-checkout" className="flex cursor-pointer items-center gap-1 text-sm text-gray-700 hover:text-black">
               <FileText className="w-5 h-5" />
               Quote
-            </p>
+            </Link>
 
             <span className="border-l h-6 mx-2" />
 

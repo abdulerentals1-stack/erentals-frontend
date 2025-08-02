@@ -29,6 +29,13 @@ const DropDown = () => {
           >
             Orders
           </Link>
+           <Link
+            href="/qoutation"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            Qoutation
+          </Link>
           <Link
             href="/address"
             className="block px-4 py-2 hover:bg-gray-100 text-sm"
