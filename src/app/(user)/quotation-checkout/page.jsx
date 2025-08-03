@@ -129,7 +129,7 @@ export default function QuotationCheckoutPage() {
           ⚠️ Transportation charges will be calculated and shared in your quotation.
         </p>
 
-        <div className="text-sm space-y-1 text-gray-700">
+        {/* <div className="text-sm space-y-1 text-gray-700">
           <div className="flex justify-between">
             <span>Total Amount:</span>
             <span>₹{cart?.quotationCart?.totalAmount}</span>
@@ -146,7 +146,7 @@ export default function QuotationCheckoutPage() {
             <span>Final Amount:</span>
             <span>₹{cart?.quotationCart?.finalAmount}</span>
           </div>
-        </div>
+        </div> */}
 
         <Button onClick={handleSubmit(onSubmit)} className="w-full">
           Request Quotation

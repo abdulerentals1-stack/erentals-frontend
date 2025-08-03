@@ -51,7 +51,7 @@ export default function AddToQuoteButton({ product }) {
     <Button 
       onClick={handleAddToQuote} 
       variant="ghost" 
-      className="rounded-none border-r gap-2"
+      className="rounded-none border-r gap-2 cursor-pointer"
       disabled={isDisabled}
     >
       <FileText className="w-4 h-4" style={{ color: '#003459' }} />

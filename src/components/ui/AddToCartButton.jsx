@@ -52,7 +52,7 @@ export default function AddToCartButton({ product }) {
     <Button
       onClick={handleAdd}
       variant="ghost"
-      className="rounded-none border-r gap-2"
+      className="rounded-none border-r gap-2 cursor-pointer"
       disabled={isDisabled}
     >
       <ShoppingCart className="w-4 h-4" style={{ color: '#003459' }} />

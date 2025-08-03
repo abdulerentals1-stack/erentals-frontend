@@ -40,7 +40,7 @@ export default function AddToRentalButton({ product }) {
   };
 
   return (
-    <Button onClick={handleAdd} variant="default" className="w-full rounded-none bg-[#003459]">
+    <Button onClick={handleAdd} variant="default" className="w-full cursor-pointer rounded-none bg-[#003459] hover:bg-[#003459]">
       Add To Rental
     </Button>
   );
