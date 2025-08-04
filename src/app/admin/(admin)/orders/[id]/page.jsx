@@ -21,6 +21,7 @@ import {
   updateOrderStatus,
 } from "@/services/orderService";
 import { getAllCoupons } from "@/services/couponService";
+import InvoicePreviewAndDownload from "@/components/admin/InvoicePreviewAndDownload";
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
@@ -557,6 +558,8 @@ const getActualUnitPrice = (item) => {
     >
       ⬇️ Download Invoice
     </button>
+
+    <InvoicePreviewAndDownload order={order} getActualUnitPrice={getActualUnitPrice}/>
   </div>
 )}
 

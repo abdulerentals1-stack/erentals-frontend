@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { getAllProducts } from "@/services/productService";
 import { getQuotationById, adminUpdateQuotation, updateQuotationStatus } from "@/services/quotationOrderService";
 import { getAllCoupons } from "@/services/couponService";
+import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
@@ -502,6 +503,8 @@ const getActualUnitPrice = (item) => {
     >
       ⬇️ Download Invoice
     </button>
+
+    <QuotationPreviewAndPrint quotation={order} />
   </div>
 )}
 
