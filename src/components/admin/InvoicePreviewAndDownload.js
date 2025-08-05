@@ -36,7 +36,7 @@ export default function InvoicePreviewAndPrint({ order }) {
           <div ref={invoiceRef}>
             <div style={{ textAlign: "center", marginBottom: "10px" }}>
               <img
-                src="https://erental.blob.core.windows.net/image/280c624f-9468-4299-a487-a86c8d848893.png"
+                src="https://res.cloudinary.com/dsc5aznps/image/upload/v1754374958/erentals/products/irhbobxqzi3gydzy8izg.png"
                 alt="banner"
                 style={{ width: "100%", maxWidth: "1200px" }}
               />
@@ -149,7 +149,7 @@ export default function InvoicePreviewAndPrint({ order }) {
 
               {/* Footer Banner */}
               <img
-                src="https://erental.blob.core.windows.net/image/adc21c2e-1b89-4a9f-bca9-5e7f55e22aa8.png"
+                src="https://res.cloudinary.com/dsc5aznps/image/upload/v1754374924/erentals/products/rznbkrrvd6f4yuwnj1tl.png"
                 alt="footer"
                 style={{ width: "100%", maxWidth: "1200px", marginTop: "20px" }}
               />

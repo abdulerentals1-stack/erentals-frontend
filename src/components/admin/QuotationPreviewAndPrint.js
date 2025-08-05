@@ -34,33 +34,30 @@ export default function QuotationPreviewAndPrint({ quotation }) {
 
           <div ref={quoteRef} style={{ fontFamily: "Arial, sans-serif", fontSize: "12px" }}>
             <div className="Quotation-body" style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" }}>
-              <img src="https://erental.blob.core.windows.net/image/280c624f-9468-4299-a487-a86c8d848893.png" alt="banner" style={{ width: "100%", maxWidth: "1200px" }} />
+              <img src='https://res.cloudinary.com/dsc5aznps/image/upload/v1754374986/erentals/products/kppc40odan4gzngnfxsn.png' alt="banner" style={{ width: "100%", maxWidth: "1200px" }} />
 
               <div className="invoice-body" style={{ width: "100%", maxWidth: "1200px", marginTop: "20px" }}>
                 <main>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                       <p><strong>To,</strong><br />
-                        {quotation?.customer?.name}<br />
-                        {quotation?.customer?.company}<br />
-                        GST: {quotation?.customer?.gst}<br />
-                        Phone: {quotation?.customer?.phone}<br />
-                        Email: {quotation?.customer?.email}
+                        {quotation?.address?.name}<br />
+                        Phone: {quotation?.address?.phone}<br />
+                        Email: {quotation?.user?.email}
                       </p>
                     </div>
-                    <p style={{ fontWeight: "bold", fontSize: "20px" }}>{new Date(quotation.date).toLocaleDateString()}</p>
+                    <p style={{ fontWeight: "bold", fontSize: "20px" }}>{new Date(quotation.createdAt).toLocaleDateString()}</p>
                   </div>
 
                   <p style={{ marginTop: "10px" }}>
                     As per your request to eRentals, we have generated the quotation for the required items.
-                    Delivery date is {new Date(quotation.deliveryDate).toLocaleDateString()} at {quotation.deliveryLocation}.
+                    Delivery date is {new Date(quotation.deliveryDate).toLocaleDateString()}.
                   </p>
 
                   <table style={{ margin: "20px 0", width: "100%", borderCollapse: "collapse" }}>
                     <thead style={{ backgroundColor: "#002060", color: "white", fontWeight: "bold" }}>
                       <tr>
                         <th style={cellStyle}>S.No</th>
-                        <th style={cellStyle}>Code</th>
                         <th style={cellStyle}>Particulars</th>
                         <th style={cellStyle}>Unit Rate</th>
                         <th style={cellStyle}>Qty</th>
@@ -72,37 +69,36 @@ export default function QuotationPreviewAndPrint({ quotation }) {
                       {quotation.items.map((item, i) => (
                         <tr key={i}>
                           <td style={cellStyle}>{i + 1}</td>
-                          <td style={cellStyle}>{item.code}</td>
-                          <td style={cellStyle}>{item.name}</td>
-                          <td style={cellStyle}>₹{item.unitPrice}</td>
+                          <td style={cellStyle}>{item.product?.name || "N/A"}</td>
+                          <td style={cellStyle}>₹{item.finalPrice}</td>
                           <td style={cellStyle}>{item.quantity}</td>
                           <td style={cellStyle}>{item.days}</td>
-                          <td style={cellStyle}>₹{item.total}</td>
+                          <td style={cellStyle}>₹{item.finalPrice}</td>
                         </tr>
                       ))}
                       <tr>
-                        <td colSpan="6" style={cellStyle}>Sub Total</td>
-                        <td style={cellStyle}>₹{quotation.subTotal}</td>
+                        <td colSpan="5" style={cellStyle}>Sub Total</td>
+                        <td style={cellStyle}>₹{quotation.priceBeforeTax}</td>
                       </tr>
                       <tr>
-                        <td colSpan="6" style={cellStyle}>Transportation</td>
-                        <td style={cellStyle}>₹{quotation.transportation}</td>
+                        <td colSpan="5" style={cellStyle}>Transportation</td>
+                        <td style={cellStyle}>₹{quotation.transportationCharge}</td>
                       </tr>
                       <tr>
-                        <td colSpan="6" style={cellStyle}>Total Before Tax</td>
-                        <td style={cellStyle}>₹{quotation.totalBeforeTax}</td>
+                        <td colSpan="5" style={cellStyle}>Total Before Tax</td>
+                        <td style={cellStyle}>₹{quotation.totalAmount}</td>
                       </tr>
                       <tr>
-                        <td colSpan="6" style={cellStyle}>GST @18%</td>
-                        <td style={cellStyle}>₹{quotation.gst}</td>
+                        <td colSpan="5" style={cellStyle}>GST @18%</td>
+                        <td style={cellStyle}>₹{quotation.cgst + quotation.sgst}</td>
                       </tr>
                       <tr style={{ backgroundColor: "#002060", color: "white", fontWeight: "bold" }}>
-                        <td colSpan="6" style={cellStyle}>Total Payable</td>
+                        <td colSpan="5" style={cellStyle}>Total Payable</td>
                         <td style={cellStyle}>₹{quotation.finalAmount}</td>
                       </tr>
                       <tr>
-                        <td colSpan="6" style={cellStyle}>Advance @50%</td>
-                        <td style={cellStyle}>₹{quotation.advanceAmount}</td>
+                        <td colSpan="5" style={cellStyle}>Advance @50%</td>
+                        <td style={cellStyle}>₹{Math.round(quotation.finalAmount / 2)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -135,7 +131,7 @@ export default function QuotationPreviewAndPrint({ quotation }) {
                 </main>
               </div>
 
-              <img src="https://erental.blob.core.windows.net/image/adc21c2e-1b89-4a9f-bca9-5e7f55e22aa8.png" alt="footer" style={{ width: "100%", maxWidth: "1200px", marginTop: "20px" }} />
+              <img src="https://res.cloudinary.com/dsc5aznps/image/upload/v1754374924/erentals/products/rznbkrrvd6f4yuwnj1tl.png" alt="footer" style={{ width: "100%", maxWidth: "1200px", marginTop: "20px" }} />
             </div>
           </div>
 
