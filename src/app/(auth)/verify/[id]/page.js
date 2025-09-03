@@ -7,6 +7,9 @@ import { toast } from 'sonner';
 import { Loader, CheckCircle2, XCircle } from 'lucide-react';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Lock } from "lucide-react";
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function VerifyPage() {
   const { id } = useParams();
@@ -43,15 +46,27 @@ export default function VerifyPage() {
     if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 text-center space-y-4">
-      <h2 className="text-xl font-semibold">Email Verification</h2>
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 text-center space-y-4 bg-gray-50">
+      {/* <h2 className="text-xl font-semibold">Email Verification</h2> */}
+       <Link href="/" className='flex justify-center'>
+              <Image
+                  src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+                  alt="Logo"
+                  width={80}
+                  height={40}
+                  priority // 👈 forces SSR load
+                  unoptimized   // 👈 disables optimization
+                  className="h-18 w-36 object-contain mix-blend-multiply"
+                />
+              {/* e-Renalts */}
+            </Link>
 
       {status === 'idle' && (
         <>
           <p className="text-muted-foreground">Click the button below to verify your email.</p>
           <button
             onClick={handleVerify}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 cursor-pointer rounded-full font-medium"
           >
             Verify Email
           </button>

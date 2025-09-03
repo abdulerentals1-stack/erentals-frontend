@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
+import { Mail } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -42,9 +44,22 @@ export default function ForgotPasswordPage() {
     if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6 border border-gray-200 rounded-xl p-6 shadow-md bg-white">
-        <h2 className="text-2xl font-semibold text-center">Forgot Password</h2>
+    <main className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+      <div className="w-full max-w-sm space-y-4 border border-gray-200 rounded-xl p-6 shadow-md bg-white">
+        {/* <h2 className="text-2xl font-semibold text-center">Forgot Password</h2> */}
+
+        <Link href="/" className='flex justify-center'>
+              <Image
+                  src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+                  alt="Logo"
+                  width={80}
+                  height={40}
+                  priority // 👈 forces SSR load
+                  unoptimized   // 👈 disables optimization
+                  className="h-18 w-36 object-contain mix-blend-multiply"
+                />
+              {/* e-Renalts */}
+            </Link>
 
         {sent ? (
           <p className="text-green-600 text-center">
@@ -54,14 +69,20 @@ export default function ForgotPasswordPage() {
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+             <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+        
             <Input
               type="email"
               placeholder="Enter your registered email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className='pl-10 h-10'
             />
-            <Button type="submit" className="w-full" disabled={loading}>
+            </div>
+            <Button type="submit"  className="w-full bg-blue-400 hover:bg-blue-600 cursor-pointer rounded-full h-10"
+            disabled={loading}>
               {loading ? 'Sending link...' : 'Send Reset Link'}
             </Button>
           </form>
@@ -69,7 +90,7 @@ export default function ForgotPasswordPage() {
 
         <div className="text-center text-sm text-gray-600">
           Remembered password?{' '}
-          <Link href="/auth/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline">
             Login
           </Link>
         </div>
