@@ -90,7 +90,7 @@ export default function BannerManagerPage() {
     <div className="p-6 max-w-6xl mx-auto mt-12 md:mt-0">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">Manage Banners</h2>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen} >
           <DialogTrigger asChild>
             <Button onClick={() => {
               setEditMode(false);
@@ -101,7 +101,7 @@ export default function BannerManagerPage() {
               + Add Banner
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg scrollbar-none">
             <DialogHeader>
               <DialogTitle>{editMode ? 'Edit Banner' : 'Add Banner'}</DialogTitle>
             </DialogHeader>
@@ -139,6 +139,8 @@ export default function BannerManagerPage() {
               <div>
                 <Label>Type</Label>
                 <select name="type" value={form.type} onChange={handleChange} className="w-full p-2 border rounded-md">
+                  <option value="mobile">Mobile</option>
+                  <option value="desktop">Desktop</option>
                   <option value="homepage">Homepage</option>
                   <option value="category">Category</option>
                   <option value="promotion">Promotion</option>
