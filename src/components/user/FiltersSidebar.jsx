@@ -116,9 +116,9 @@ export default function FiltersSidebar({ searchParams, path = "/product-search" 
             <div key={tag._id} className="flex items-center space-x-2">
               <Checkbox
                 id={`tag-${tag.name}`}
-                checked={tags.includes(tag.name)}
+                checked={tags.includes(tag._id)}
                 onCheckedChange={() =>
-                  toggleSelection(tag.name, setTags, tags)
+                  toggleSelection(tag._id, setTags, tags)
                 }
               />
               <Label htmlFor={`tag-${tag.name}`}>{tag.name}</Label>

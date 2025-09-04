@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -26,11 +24,11 @@ export default function Footer() {
           <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
           <ul className="space-y-2 text-[15px] text-gray-300">
             <li><Link href="/" className="hover:underline">Home</Link></li>
-            <li><Link href="/categories" className="hover:underline">Categories</Link></li>
+            <li><Link href="/checkout" className="hover:underline">Checkout</Link></li>
             <li><Link href="/products" className="hover:underline">All Products</Link></li>
-            <li><Link href="/tags" className="hover:underline">Tags</Link></li>
-            <li><Link href="/contact" className="hover:underline">Contact</Link></li>
-            <li><Link href="/terms-and-conditions" className="hover:underline">Terms & Conditions</Link></li>
+            <li><Link href="/quotation-checkout" className="hover:underline">Quotation</Link></li>
+            {/* <li><Link href="/contact" className="hover:underline">Contact</Link></li>
+            <li><Link href="/terms-and-conditions" className="hover:underline">Terms & Conditions</Link></li> */}
             <li><Link href="/faq" className="hover:underline">FAQs</Link></li>
           </ul>
         </div>
@@ -40,9 +38,11 @@ export default function Footer() {
           <h4 className="text-lg font-semibold mb-4">Support</h4>
           <ul className="space-y-2 text-[15px] text-gray-300">
             <li><Link href="/privacy-policy" className="hover:underline">Privacy Policy</Link></li>
-            <li><Link href="/return-policy" className="hover:underline">Return & Refund</Link></li>
-            <li><Link href="/shipping" className="hover:underline">Shipping Info</Link></li>
-            <li><Link href="/feedback" className="hover:underline">Feedback</Link></li>
+            <li><Link href="/shipping-and-delivery" className="hover:underline">Shipping & Delivery</Link></li>
+            <li><Link href="/payment-policy" className="hover:underline">Payment Policy</Link></li>
+            <li><Link href="/terms-and-conditions" className="hover:underline">Term & Conditions</Link></li>
+            <li><Link href="/about-us" className="hover:underline">About Us</Link></li>
+            <li><Link href="/contact-us" className="hover:underline">Contact Us</Link></li>
           </ul>
         </div>
 

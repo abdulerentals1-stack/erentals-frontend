@@ -14,4 +14,4 @@ export const deleteTag = (id) => api.delete(`/tags/${id}`);
 export const getAllTags = () => api.get("/tags");
 
 // 🔍 Get Single Tag (optional - if needed later)
-export const getTagById = (id) => api.get(`/tags/${id}`);
+export const getTagById = (slug) => api.get(`/tags/${slug}`);

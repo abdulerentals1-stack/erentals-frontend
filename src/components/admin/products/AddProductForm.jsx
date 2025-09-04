@@ -446,7 +446,7 @@ export default function AddProductForm() {
       <div>
         <Label>Tags</Label>
         <MultiSelect
-          options={allTags.map((t) => ({ label: t.name, value: t.name }))}
+          options={allTags.map((t) => ({ label: t.name, value: t._id }))}
           value={watch("tags")}
           onChange={(val) => setValue("tags", val)}
         />

@@ -13,6 +13,7 @@ import MobileSidebar from './MobileSidebar';
 import SearchBar from './SearchBar';
 import LocationSelect from './LocationSelect';
 import SearchMobile from '../user/SearchMobile';
+import { Input } from '../ui/input';
 
 const Navbar = () => {
   const [iconShow, setIconShow] = useState(true);
@@ -54,8 +55,8 @@ const Navbar = () => {
               <Image
                   src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
                   alt="Logo"
-                  width={80}
-                  height={40}
+                  width={100}
+                  height={50}
                   priority // 👈 forces SSR load
                   className="h-full w-full object-contain mix-blend-multiply"
                 />
@@ -63,14 +64,30 @@ const Navbar = () => {
             </Link>
           </div>
 
+          <div className="relative grow md:hidden">
+               <form onSubmit={handleSearchSubmit} >
+                <Search  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    name="search"
+                    type="search"
+                    placeholder="Search for Rental Item..."
+                    value={searchField}
+                    onChange={handleSearchChange}
+                    className='pl-10 h-10 bg-[#F3F9FB]'
+                  />
+                </form>
+             </div>
+
+
           {/* Mobile menu icons */}
           <div className="md:hidden flex items-center gap-4">
-            <button onClick={() => setSearchUI(true)}>
+            {/* <button onClick={() => setSearchUI(true)}>
               <Search className="w-5 h-5" />
             </button>
             <Link href="/checkout">
               <ShoppingCart className="w-5 h-5" />
-            </Link>
+            </Link> */}
+            
             <button onClick={() => setSidebarOpen(true)}>
               <Menu className="w-6 h-6" />
             </button>
