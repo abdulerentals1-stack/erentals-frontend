@@ -479,9 +479,8 @@ const getActualUnitPrice = (item) => {
           </SelectContent>
         </Select>
       </div>
-      {order.invoiceUrl && (
+      {/* {order.invoiceUrl && (
   <div className="flex gap-4 mt-4 mb-8">
-    {/* View Invoice Button */}
     <button
       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       onClick={() => window.open(order.invoiceUrl, "_blank")}
@@ -489,7 +488,6 @@ const getActualUnitPrice = (item) => {
       🧾 View Invoice
     </button>
 
-    {/* Download Invoice Button */}
     <button
       className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
       onClick={() => {
@@ -504,10 +502,10 @@ const getActualUnitPrice = (item) => {
       ⬇️ Download Invoice
     </button>
 
-    <QuotationPreviewAndPrint quotation={order} />
+    
   </div>
-)}
-
+      )} */}
+      <QuotationPreviewAndPrint quotation={order} />
     </div>
   );
 }

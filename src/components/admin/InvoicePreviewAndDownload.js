@@ -107,7 +107,7 @@ export default function InvoicePreviewAndPrint({ order }) {
                   {order.items.map((item, i) => (
                     <tr key={i}>
                       <td style={cellStyle}>{i + 1}</td>
-                      <td style={cellStyle}>{item.product?.sku || "-"}</td>
+                      <td style={cellStyle}>{item.product?.productCode || "-"}</td>
                       <td style={cellStyle}>{item.product?.name}</td>
                       <td style={cellStyle}>₹{item.unitPrice}</td>
                       <td style={cellStyle}>{item.quantity}</td>

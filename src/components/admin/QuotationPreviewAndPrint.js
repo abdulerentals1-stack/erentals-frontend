@@ -58,6 +58,7 @@ export default function QuotationPreviewAndPrint({ quotation }) {
                     <thead style={{ backgroundColor: "#002060", color: "white", fontWeight: "bold" }}>
                       <tr>
                         <th style={cellStyle}>S.No</th>
+                        <th style={cellStyle}>Code</th>
                         <th style={cellStyle}>Particulars</th>
                         <th style={cellStyle}>Unit Rate</th>
                         <th style={cellStyle}>Qty</th>
@@ -69,6 +70,7 @@ export default function QuotationPreviewAndPrint({ quotation }) {
                       {quotation.items.map((item, i) => (
                         <tr key={i}>
                           <td style={cellStyle}>{i + 1}</td>
+                          <td style={cellStyle}>{item.product?.productCode || "N/A"}</td>
                           <td style={cellStyle}>{item.product?.name || "N/A"}</td>
                           <td style={cellStyle}>₹{item.finalPrice}</td>
                           <td style={cellStyle}>{item.quantity}</td>
@@ -77,27 +79,27 @@ export default function QuotationPreviewAndPrint({ quotation }) {
                         </tr>
                       ))}
                       <tr>
-                        <td colSpan="5" style={cellStyle}>Sub Total</td>
+                        <td colSpan="6" style={cellStyle}>Sub Total</td>
                         <td style={cellStyle}>₹{quotation.priceBeforeTax}</td>
                       </tr>
                       <tr>
-                        <td colSpan="5" style={cellStyle}>Transportation</td>
+                        <td colSpan="6" style={cellStyle}>Transportation</td>
                         <td style={cellStyle}>₹{quotation.transportationCharge}</td>
                       </tr>
                       <tr>
-                        <td colSpan="5" style={cellStyle}>Total Before Tax</td>
+                        <td colSpan="6" style={cellStyle}>Total Before Tax</td>
                         <td style={cellStyle}>₹{quotation.totalAmount}</td>
                       </tr>
                       <tr>
-                        <td colSpan="5" style={cellStyle}>GST @18%</td>
+                        <td colSpan="6" style={cellStyle}>GST @18%</td>
                         <td style={cellStyle}>₹{quotation.cgst + quotation.sgst}</td>
                       </tr>
                       <tr style={{ backgroundColor: "#002060", color: "white", fontWeight: "bold" }}>
-                        <td colSpan="5" style={cellStyle}>Total Payable</td>
+                        <td colSpan="6" style={cellStyle}>Total Payable</td>
                         <td style={cellStyle}>₹{quotation.finalAmount}</td>
                       </tr>
                       <tr>
-                        <td colSpan="5" style={cellStyle}>Advance @50%</td>
+                        <td colSpan="6" style={cellStyle}>Advance @50%</td>
                         <td style={cellStyle}>₹{Math.round(quotation.finalAmount / 2)}</td>
                       </tr>
                     </tbody>

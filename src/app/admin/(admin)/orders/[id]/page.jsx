@@ -559,9 +559,11 @@ const getActualUnitPrice = (item) => {
       ⬇️ Download Invoice
     </button>
 
-    <InvoicePreviewAndDownload order={order} getActualUnitPrice={getActualUnitPrice}/>
+    
   </div>
 )}
+
+<InvoicePreviewAndDownload order={order} getActualUnitPrice={getActualUnitPrice}/>
 
     </div>
   );
