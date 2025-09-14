@@ -284,9 +284,9 @@ const getActualUnitPrice = (item) => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">
+                {/* <p className="text-sm text-muted-foreground">
                   {item.product?.pricingType}
-                </p>
+                </p> */}
 
                 {/* Quantity / Length / Area Inputs */}
 
