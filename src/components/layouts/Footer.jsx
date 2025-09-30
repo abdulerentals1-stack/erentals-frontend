@@ -50,8 +50,8 @@ export default function Footer() {
         <div className="text-center md:text-left">
           <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
           <ul className="space-y-2 text-[15px] text-gray-300">
-            <li>Email: support@erentals.in</li>
-            <li>Phone: +91 9876543210</li>
+            <li>Email: admin@e-rentals.in</li>
+            <li>Phone: +91 9867348165</li>
             <li>Location: Mumbai, India</li>
           </ul>
         </div>
@@ -63,3 +63,4 @@ export default function Footer() {
     </footer>
   );
 }
+
