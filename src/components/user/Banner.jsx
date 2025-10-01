@@ -14,6 +14,7 @@ export default function BannerCarousel() {
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const timerRef = useRef(null);
 
   const [sliderRef, instanceRef] = useKeenSlider({
@@ -29,13 +30,23 @@ export default function BannerCarousel() {
     },
   });
 
+  // Detect mobile/desktop once (no SSR mismatch)
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // < 768px = mobile
+    };
+    handleResize(); // initial
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchBanners = async () => {
       try {
         const { data } = await getAllBanners();
         setBanners(data.banners || []);
       } catch (err) {
-        console.error("Banner fetch error:", err);
+        console.error('Banner fetch error:', err);
       } finally {
         setLoading(false);
       }
@@ -48,7 +59,12 @@ export default function BannerCarousel() {
     return <Skeleton className="w-full h-64 rounded-xl" />;
   }
 
-  if (!banners.length) return null;
+  // Filter banners based on type
+  const filteredBanners = banners.filter((b) =>
+    isMobile ? b.type === 'mobile' : b.type === 'desktop'
+  );
+
+  if (!filteredBanners.length) return null;
 
   return (
     <div
@@ -56,20 +72,36 @@ export default function BannerCarousel() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div ref={sliderRef} className="keen-slider overflow-hidden h-60 sm:h-72 md:h-[65vh] lg:h-[70vh] rounded md:rounded-xl">
-        {banners.map((banner, idx) => (
-          <div key={idx} className="keen-slider__slide relative">
-            <Link href={banner.link || '#'} className="block w-full h-full relative">
-              <Image
-                src={banner.image.url}
-                alt={banner.image.alt || `Banner ${idx + 1}`}
-                fill
-                className="object-cover"
-                priority={idx === 0}
-              />
-            </Link>
-          </div>
-        ))}
+      <div
+        ref={sliderRef}
+        className="keen-slider overflow-hidden h-48 sm:h-72 md:h-[65vh] lg:h-[70vh] rounded md:rounded-xl"
+      >
+        {filteredBanners.map((banner, idx) => {
+          const image = (
+            <Image
+              src={banner.image.url}
+              alt={banner.image.alt || `Banner ${idx + 1}`}
+              fill
+              className="object-cover"
+              priority={idx === 0}
+            />
+          );
+
+          return (
+            <div key={banner._id || idx} className="keen-slider__slide relative">
+              {banner.link ? (
+                <Link
+                  href={banner.link}
+                  className="block w-full h-full relative"
+                >
+                  {image}
+                </Link>
+              ) : (
+                <div className="w-full h-full relative">{image}</div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Arrows */}
@@ -88,7 +120,7 @@ export default function BannerCarousel() {
 
       {/* Dot indicators */}
       <div className="flex justify-center items-center gap-2 mt-4">
-        {banners.map((_, idx) => (
+        {filteredBanners.map((_, idx) => (
           <button
             key={idx}
             onClick={() => instanceRef.current?.moveToIdx(idx)}
