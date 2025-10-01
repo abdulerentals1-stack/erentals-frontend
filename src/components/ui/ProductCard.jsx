@@ -28,21 +28,26 @@ export default function ProductCard({ product }) {
       )}
 
       {/* ✅ Wrap image with Link */}
-      <Link href={`/products/${slug}`} className="block w-full h-48 relative">
+      <Link href={`/products/${slug}`} className="block w-full aspect-square relative group">
         <Image
           src={imageUrl}
           alt={name}
           fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-contain bg-white transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw,
+                (max-width: 1200px) 50vw,
+                33vw"
+          placeholder="blur"
+          blurDataURL="/placeholder.jpg"
         />
       </Link>
+
 
       <div className="p-3 space-y-1">
         {/* ✅ Wrap name with Link */}
         <Link href={`/products/${slug}`}>
           <p className="font-semibold text-sm line-clamp-2 hover:underline">
-              {name?.split(" ").slice(0, 4).join(" ")} 
+              {name?.split(" ").slice(0, 3).join(" ")} 
               {name?.split(" ").length > 5 && " ..."}
           </p>
         </Link>

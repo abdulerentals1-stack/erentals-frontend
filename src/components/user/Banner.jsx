@@ -74,8 +74,10 @@ export default function BannerCarousel() {
     >
       <div
         ref={sliderRef}
-        className="keen-slider overflow-hidden h-48 sm:h-72 md:h-[65vh] lg:h-[70vh] rounded md:rounded-xl"
-      >
+        className={`keen-slider overflow-hidden 
+          ${isMobile ? "aspect-[16/9]" : "md:aspect-[42/12]"} 
+          rounded md:rounded-xl`}
+        >
         {filteredBanners.map((banner, idx) => {
           const image = (
             <Image
@@ -83,7 +85,10 @@ export default function BannerCarousel() {
               alt={banner.image.alt || `Banner ${idx + 1}`}
               fill
               className="object-cover"
+              sizes="100vw"
               priority={idx === 0}
+              placeholder="blur"
+              blurDataURL="/placeholder.jpg"
             />
           );
 
