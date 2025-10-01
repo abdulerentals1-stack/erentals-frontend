@@ -13,14 +13,13 @@ import {
   createProduct,
   updateProduct,
   getProductBySlug,
+  getAllProducts,
 } from "@/services/productService";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { getAllCategories } from "@/services/category";
 import { getAllTags } from "@/services/tag";
-import { getAllProducts } from "@/services/productService";
 import { useParams, useRouter } from "next/navigation";
-
 import { toast } from "sonner";
 import RichTextEditor from "@/lib/RichTextEditor";
 import AIPromptModal from "@/utils/AIPromptModal";
@@ -84,8 +83,8 @@ export default function AddProductForm() {
     control,
     setValue,
     reset,
-    formState: { errors },
     watch,
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -123,7 +122,7 @@ export default function AddProductForm() {
       if (slug) {
         await updateProduct(productId, payload);
         toast.success("Product updated successfully");
-      } else if (!slug) {
+      } else {
         await createProduct(payload);
         toast.success("Product created successfully");
       }
@@ -135,10 +134,9 @@ export default function AddProductForm() {
         Array.isArray(err.response.data.errors)
       ) {
         err.response.data.errors.forEach((message) => {
-          toast.error(message); // Show each backend error
+          toast.error(message);
         });
       } else if (err.response?.data?.message) {
-        // Fallback for single message
         toast.error(err.response.data.message);
       } else {
         toast.error("Something went wrong. Please try again.");
@@ -195,6 +193,7 @@ export default function AddProductForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-8 bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-xl max-w-5xl mx-auto"
     >
+      {/* Basic Inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         <div>
           <Label>Product Name</Label>
@@ -217,38 +216,23 @@ export default function AddProductForm() {
         </div>
         <div>
           <Label>Base Price</Label>
-          <Input
-            type="number"
-            {...register("basePrice", { valueAsNumber: true })}
-          />
+          <Input type="number" {...register("basePrice", { valueAsNumber: true })} />
         </div>
         <div>
           <Label>Discount Price</Label>
-          <Input
-            type="number"
-            {...register("discountPrice", { valueAsNumber: true })}
-          />
+          <Input type="number" {...register("discountPrice", { valueAsNumber: true })} />
         </div>
         <div>
           <Label>Stock</Label>
-          <Input
-            type="number"
-            {...register("stock", { valueAsNumber: true })}
-          />
+          <Input type="number" {...register("stock", { valueAsNumber: true })} />
         </div>
         <div>
           <Label>Service Charge (%)</Label>
-          <Input
-            type="number"
-            {...register("serviceChargePercent", { valueAsNumber: true })}
-          />
+          <Input type="number" {...register("serviceChargePercent", { valueAsNumber: true })} />
         </div>
         <div>
           <Label>Day-wise Variation (%)</Label>
-          <Input
-            type="number"
-            {...register("dayWiseVariationPercent", { valueAsNumber: true })}
-          />
+          <Input type="number" {...register("dayWiseVariationPercent", { valueAsNumber: true })} />
         </div>
         <div>
           <Label>City</Label>
@@ -264,89 +248,82 @@ export default function AddProductForm() {
         </div>
         <div>
           <Label>Average Rating</Label>
-          <Input
-            type="number"
-            step="0.1"
-            min="1"
-            max="5"
-            {...register("averageRating", { valueAsNumber: true })}
-          />
+          <Input type="number" step="0.1" min="1" max="5" {...register("averageRating", { valueAsNumber: true })} />
         </div>
       </div>
 
-      <div>
-        <Label>Description <AIPromptModal /></Label>
-        <RichTextEditor
-          value={watch('description')}
-          onChange={(value) => setValue('description', value)}
-        />
-      </div>
-      <div>
-  <Label>Terms and Conditions <AIPromptModal /></Label>
-  <RichTextEditor
-    value={watch('termsAndConditions')}
-    onChange={(val) => setValue('termsAndConditions', val)}
-  />
-</div>
+      {/* Rich Text Editors */}
+      <Controller
+        name="description"
+        control={control}
+        render={({ field }) => (
+          <div>
+            <Label>Description <AIPromptModal /></Label>
+            <RichTextEditor {...field} onChange={(val) => field.onChange(val)} />
+          </div>
+        )}
+      />
 
-<div>
-  <Label>Delivery and Pickup <AIPromptModal /></Label>
-  <RichTextEditor
-    value={watch('deliveryAndPickup')}
-    onChange={(val) => setValue('deliveryAndPickup', val)}
-  />
-</div>
+      <Controller
+        name="termsAndConditions"
+        control={control}
+        render={({ field }) => (
+          <div>
+            <Label>Terms and Conditions <AIPromptModal /></Label>
+            <RichTextEditor {...field} onChange={(val) => field.onChange(val)} />
+          </div>
+        )}
+      />
 
-<div>
-  <Label>FAQs <AIPromptModal /></Label>
-  <RichTextEditor
-    value={watch('faq')}
-    onChange={(val) => setValue('faq', val)}
-  />
-</div>
+      <Controller
+        name="deliveryAndPickup"
+        control={control}
+        render={({ field }) => (
+          <div>
+            <Label>Delivery and Pickup <AIPromptModal /></Label>
+            <RichTextEditor {...field} onChange={(val) => field.onChange(val)} />
+          </div>
+        )}
+      />
 
+      <Controller
+        name="faq"
+        control={control}
+        render={({ field }) => (
+          <div>
+            <Label>FAQs <AIPromptModal /></Label>
+            <RichTextEditor {...field} onChange={(val) => field.onChange(val)} />
+          </div>
+        )}
+      />
+
+      {/* Thresholds */}
       <div>
         <Label>Thresholds</Label>
         {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3"
-          >
+          <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
             <Input
               type="number"
               placeholder="Value"
-              {...register(`thresholds.${index}.value`, {
-                valueAsNumber: true,
-              })}
+              {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
             />
-            <Input
-              placeholder="Unit (pcs/sqft)"
-              {...register(`thresholds.${index}.unit`)}
-            />
+            <Input placeholder="Unit (pcs/sqft)" {...register(`thresholds.${index}.unit`)} />
             <Input
               type="number"
               placeholder="Price"
-              {...register(`thresholds.${index}.price`, {
-                valueAsNumber: true,
-              })}
+              {...register(`thresholds.${index}.price`, { valueAsNumber: true })}
             />
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => remove(index)}
-            >
+            <Button type="button" variant="destructive" onClick={() => remove(index)}>
               Remove
             </Button>
           </div>
         ))}
-        <Button
-          type="button"
-          onClick={() => append({ value: 1, unit: "", price: 0 })}
-        >
+        <Button type="button" onClick={() => append({ value: 1, unit: "", price: 0 })}>
           + Add Threshold
         </Button>
       </div>
 
+      {/* Meta */}
       <div>
         <Label>Meta Title <AIPromptModal /></Label>
         <Input {...register("metaTitle")} />
@@ -360,80 +337,24 @@ export default function AddProductForm() {
         <Input {...register("metaKeywords")} />
       </div>
 
+      {/* Flags */}
       <div className="flex flex-wrap gap-6">
-        <Controller
-          name="isHotDeal"
-          control={control}
-          render={({ field }) => (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isHotDeal"
-                checked={field.value || false}
-                onCheckedChange={field.onChange}
-              />
-              <Label htmlFor="isHotDeal">Hot Deal</Label>
-            </div>
-          )}
-        />
-        <Controller
-          name="isFeatured"
-          control={control}
-          render={({ field }) => (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isFeatured"
-                checked={field.value || false}
-                onCheckedChange={field.onChange}
-              />
-              <Label htmlFor="isFeatured">Featured</Label>
-            </div>
-          )}
-        />
-        <Controller
-          name="isTopRental"
-          control={control}
-          render={({ field }) => (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isTopRental"
-                checked={field.value || false}
-                onCheckedChange={field.onChange}
-              />
-              <Label htmlFor="isTopRental">Top Rental</Label>
-            </div>
-          )}
-        />
-
-        <Controller
-          name="isNewRental"
-          control={control}
-          render={({ field }) => (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isNewRental"
-                checked={field.value || false}
-                onCheckedChange={field.onChange}
-              />
-              <Label htmlFor="isNewRental">New Rental</Label>
-            </div>
-          )}
-        />
-        <Controller
-          name="isCanonical"
-          control={control}
-          render={({ field }) => (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isCanonical"
-                checked={field.value || false}
-                onCheckedChange={field.onChange}
-              />
-              <Label htmlFor="isCanonical">Canonical Product</Label>
-            </div>
-          )}
-        />
+        {["isHotDeal", "isFeatured", "isTopRental", "isNewRental", "isCanonical"].map((flag) => (
+          <Controller
+            key={flag}
+            name={flag}
+            control={control}
+            render={({ field }) => (
+              <div className="flex items-center space-x-2">
+                <Checkbox checked={field.value || false} onCheckedChange={field.onChange} id={flag} />
+                <Label htmlFor={flag}>{flag.replace(/([A-Z])/g, ' $1').trim()}</Label>
+              </div>
+            )}
+          />
+        ))}
       </div>
 
+      {/* MultiSelects */}
       <div>
         <Label>Categories</Label>
         <MultiSelect
@@ -442,7 +363,6 @@ export default function AddProductForm() {
           onChange={(val) => setValue("categories", val)}
         />
       </div>
-
       <div>
         <Label>Tags</Label>
         <MultiSelect
@@ -451,7 +371,6 @@ export default function AddProductForm() {
           onChange={(val) => setValue("tags", val)}
         />
       </div>
-
       <div>
         <Label>Suggested Products</Label>
         <MultiSelect
@@ -463,9 +382,7 @@ export default function AddProductForm() {
 
       <ImageUploader images={images} setImages={setImages} />
 
-      <pre className="text-red-500 text-xs">
-        {JSON.stringify(errors, null, 2)}
-      </pre>
+      <pre className="text-red-500 text-xs">{JSON.stringify(errors, null, 2)}</pre>
 
       <Button type="submit" className="w-full md:w-auto">
         {slug ? "Update Product" : "Create Product"}
