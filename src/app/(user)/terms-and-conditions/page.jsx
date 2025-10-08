@@ -1,8 +1,99 @@
 import { Card, CardContent } from "@/components/ui/card";
+import Script from "next/script";
+
+const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+
+export const metadata = {
+  metadataBase: new URL(siteDomain),
+  title: "Terms & Conditions – eRentals Mumbai | Event Rental Services",
+  description:
+    "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
+  keywords: [
+    "terms and conditions",
+    "event rentals Mumbai terms",
+    "party rentals Mumbai policy",
+    "furniture rental terms Mumbai",
+    "lighting rental policy Mumbai",
+    "sound system rental terms",
+    "tent rental terms Mumbai",
+    "stage rental policy Mumbai",
+    "decor rental terms",
+    "appliance rental terms",
+    "rental services Mumbai policies",
+    "booking and cancellation policy",
+    "delivery and pickup policy",
+    "damage and deposit policy",
+    "refund policy Mumbai rentals",
+    "eRentals terms",
+    "e-rentals terms",
+  ],
+  alternates: {
+    canonical: `${siteDomain}/terms`,
+  },
+  openGraph: {
+    title: "Terms & Conditions – eRentals Mumbai | Event Rental Services",
+    description:
+      "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
+    url: `${siteDomain}/terms`,
+    siteName: "e-Rentals",
+    images: [
+      {
+        url: logoUrl,
+        width: 1200,
+        height: 630,
+        alt: "e-Rentals Logo - Terms & Conditions",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms & Conditions – eRentals Mumbai | Event Rental Services",
+    description:
+      "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
+    images: [logoUrl],
+    creator: "@erentals",
+  },
+  icons: {
+    icon: logoUrl,
+    shortcut: logoUrl,
+    apple: logoUrl,
+  },
+  other: {
+    "theme-color": "#ffffff",
+  },
+};
+
 
 export default function TermsAndConditions() {
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Terms & Conditions – eRentals Mumbai",
+    description:
+      "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
+    url: `${siteDomain}/terms`,
+    publisher: {
+      "@type": "Organization",
+      name: "e-Rentals",
+      logo: {
+        "@type": "ImageObject",
+        url: logoUrl,
+      },
+    },
+  };
+
+
   return (
     <section className="py-12 bg-gray-50">
+      <Script
+        id="terms-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <div className="max-w-5xl mx-auto px-4">
         <Card className="shadow-md border border-gray-200 rounded-2xl">
           <CardContent className="p-6 space-y-8">

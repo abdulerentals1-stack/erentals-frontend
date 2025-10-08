@@ -35,6 +35,7 @@ export default function PaginationControls({ page, limit, total, path, searchPar
             size="sm"
             variant={Number(page) === pageNum ? "default" : "outline"}
             onClick={() => handlePageChange(pageNum)}
+            className='cursor-pointer'
           >
             {pageNum}
           </Button>

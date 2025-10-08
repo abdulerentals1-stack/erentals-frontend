@@ -25,8 +25,9 @@ export default async function ProductSearchPage({ searchParams }) {
 
   // ✅ Step 3: Call backend API
   const res = await getAllFilteredProducts({ ...queryObj, page, limit });
-  const products = res?.data?.products || [];
-  const total = res?.data?.total || 0;
+  const products = res?.products || [];
+  const total = res?.total || 0;
+
 
   return (
     <div className="relative z-0 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-2 md:py-12 py-4">

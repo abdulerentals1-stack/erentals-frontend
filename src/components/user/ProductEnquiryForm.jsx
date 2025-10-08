@@ -48,7 +48,7 @@ export default function ProductEnquiryForm({ product }) {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-4 p-4 bg-white rounded shadow max-w-xl mx-auto"
     >
-      <h2 className="text-xl font-semibold">📦 Product Enquiry</h2>
+      <h2 className="text-xl font-semibold">Product Enquiry</h2>
 
       <div>
         <Input placeholder="Your Name" {...register("name")} />

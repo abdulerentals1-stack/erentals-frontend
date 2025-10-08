@@ -204,7 +204,7 @@ export default function AddProductForm() {
           <Input {...register("productCode")} />
         </div>
         <div>
-          <Label>Pricing Type</Label>
+          <Label>Product Type</Label>
           <select
             {...register("pricingType")}
             className="w-full border rounded-md p-2"

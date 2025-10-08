@@ -82,11 +82,11 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
           Support
         </div>
         <a
-          href="tel:+919876543210"
+          href="tel:+919867348165"
           className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
         >
           <Phone size={18} />
-          +91-9876543210
+          +91 9867348165
         </a>
       </div>
       </div>

@@ -1,8 +1,85 @@
 import { Card, CardContent } from "@/components/ui/card";
+import Script from "next/script";
+
+const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+
+export const metadata = {
+  metadataBase: new URL(siteDomain),
+  title: "About Us – eRentals | Event Rentals & Equipment Hire Mumbai",
+  description:
+    "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
+  keywords: [
+    "affordable party rental services Mumbai",
+    "tent and stage setup on rent Mumbai",
+    "exhibition & expo rentals Mumbai",
+    "one-stop rental platform Mumbai",
+    "corporate event rentals Mumbai",
+  ],
+  alternates: {
+    canonical: `${siteDomain}/about`,
+  },
+  openGraph: {
+    title: "About Us – eRentals | Event Rentals & Equipment Hire Mumbai",
+    description:
+      "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
+    url: `${siteDomain}/about`,
+    siteName: "e-Rentals",
+    images: [
+      {
+        url: logoUrl,
+        width: 1200,
+        height: 630,
+        alt: "e-Rentals Logo - About Us",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us – eRentals | Event Rentals & Equipment Hire Mumbai",
+    description:
+      "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
+    images: [logoUrl],
+    creator: "@erentals",
+  },
+  icons: {
+    icon: logoUrl,
+    shortcut: logoUrl,
+    apple: logoUrl,
+  },
+  other: {
+    "theme-color": "#ffffff",
+  },
+};
+
+  
 
 export default function AboutUs() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About Us – eRentals",
+    description:
+      "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
+    url: `${siteDomain}/about`,
+    publisher: {
+      "@type": "Organization",
+      name: "e-Rentals",
+      logo: {
+        "@type": "ImageObject",
+        url: logoUrl,
+      },
+    },
+  };
   return (
     <section className="py-12 bg-gray-50">
+      <Script
+        id="about-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <div className="max-w-5xl mx-auto px-4">
         <Card className="shadow-md border border-gray-200 rounded-2xl">
           <CardContent className="p-6 space-y-8">
