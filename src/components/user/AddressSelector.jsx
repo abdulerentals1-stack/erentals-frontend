@@ -45,6 +45,10 @@ export default function AddressSelector({ addresses = [], selected, onSelect, on
               <p className="font-medium">{addr.name}</p>
               <p className="text-muted-foreground">{addr.addressLine || addr.line1}, {addr.city}, {addr.state} - {addr.pincode}</p>
               <p className="text-muted-foreground">📞 {addr.phone}</p>
+              <p className="text-muted-foreground">✉️ {addr.email}</p>
+              {addr.gstin && (
+                <p className="text-muted-foreground">🧾 GSTIN: {addr.gstin}</p>
+              )}
             </div>
 
             <div className="flex items-center gap-2 ml-4">

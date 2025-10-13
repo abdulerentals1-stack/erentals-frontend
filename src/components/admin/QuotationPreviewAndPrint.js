@@ -30,8 +30,8 @@ export default function QuotationPreviewAndPrint({ quotation }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="bg-indigo-600 text-white">
-        🧾 Preview & Download Quotation
+      <Button onClick={() => setOpen(true)} className="bg-[#144169] text-white">
+        🧾 Download Quotation
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -100,8 +100,10 @@ const QuotationPDF = ({ quotation }) => {
               <View>
                 <Text style={styles.textBold}>To,</Text>
                 <Text>{address.name || "N/A"}</Text>
+                <Text>{address?.addressLine}, {address?.city}, {address?.state}, {address?.pincode}</Text>
                 <Text>Phone: {address.phone || "N/A"}</Text>
-                <Text>Email: {user.email || "N/A"}</Text>
+                <Text>Email: {address.email || "N/A"}</Text>
+                 {address?.gstin && <Text>GSTN: {address.gstin}</Text>}
               </View>
               <Text style={styles.dateText}>{createdAt}</Text>
             </View>
@@ -129,37 +131,47 @@ const QuotationPDF = ({ quotation }) => {
                 <Text style={styles.tableCell}>{i + 1}</Text>
                 <Text style={styles.tableCell}>{item.product?.productCode || "N/A"}</Text>
                 <Text style={styles.tableCell}>{item.product?.name || "N/A"}</Text>
-                <Text style={styles.tableCell}>₹{item.finalPrice || 0}</Text>
+                <Text style={styles.tableCell}>{item.unitPrice || 0}</Text>
                 <Text style={styles.tableCell}>{item.quantity || 0}</Text>
                 <Text style={styles.tableCell}>{item.days || 0}</Text>
-                <Text style={styles.tableCell}>₹{item.finalPrice || 0}</Text>
+                <Text style={styles.tableCell}>{item.finalPrice || 0}</Text>
               </View>
             ))}
 
             {/* Totals */}
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 6 }]}>Sub Total</Text>
-              <Text style={styles.tableCell}>₹{q.priceBeforeTax || 0}</Text>
+              <Text style={styles.tableCell}>{q.totalAmount || 0}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 6 }]}>Transportation</Text>
-              <Text style={styles.tableCell}>₹{q.transportationCharge || 0}</Text>
+              <Text style={styles.tableCell}>{q.transportationCharge || 0}</Text>
             </View>
             <View style={styles.tableRow}>
+              <Text style={[styles.tableCell, { flex: 6 }]}>Labour Charges</Text>
+              <Text style={styles.tableCell}>{q.labourCharge || 0}</Text>
+            </View>
+            {q.discountAmount > 0 && (
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, { flex: 6 }]}>Discount</Text>
+                  <Text style={styles.tableCell}>-{q.discountAmount}</Text>
+                </View>
+              )}
+            <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 6 }]}>Total Before Tax</Text>
-              <Text style={styles.tableCell}>₹{q.totalAmount || 0}</Text>
+              <Text style={styles.tableCell}>{q.priceBeforeTax || 0}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 6 }]}>GST @18%</Text>
-              <Text style={styles.tableCell}>₹{(q.cgst || 0) + (q.sgst || 0)}</Text>
+              <Text style={styles.tableCell}>{(q.cgst || 0) + (q.sgst || 0)}</Text>
             </View>
             <View style={[styles.tableRow, styles.tableFooter]}>
               <Text style={[styles.tableCell, { flex: 6 }]}>Total Payable</Text>
-              <Text style={styles.tableCell}>₹{q.finalAmount || 0}</Text>
+              <Text style={styles.tableCell}>{q.finalAmount || 0}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 6 }]}>Advance @50%</Text>
-              <Text style={styles.tableCell}>₹{Math.round((q.finalAmount || 0) / 2)}</Text>
+              <Text style={styles.tableCell}>{Math.round((q.finalAmount || 0) / 2)}</Text>
             </View>
           </View>
 
@@ -296,7 +308,7 @@ const styles = StyleSheet.create({
   termText: {
     marginLeft: 10,
     marginBottom: 3,
-    fontSize: 11,
+    fontSize: 10,
     lineHeight: 1.4,
   },
   subTermText: {
@@ -313,7 +325,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   noteText: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#000000",
     marginBottom: 2,
     lineHeight: 1.4,

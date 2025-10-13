@@ -20,7 +20,7 @@ export default function AddressList() {
   };
 
   useEffect(() => {
-    reload(); // ✅ safe async usage
+    reload();
   }, []);
 
   const handleDelete = async (id) => {
@@ -38,7 +38,7 @@ export default function AddressList() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4">
       <div className="flex justify-end mb-2">
         <AddressFormModal onSaved={reload} />
       </div>
@@ -54,11 +54,15 @@ export default function AddressList() {
             <div className="text-sm">
               <p className="font-medium text-base">{addr.name}</p>
               <p className="text-muted-foreground">
-                {addr.addressLine || addr.line1}, {addr.city}, {addr.state} - {addr.pincode}
+                {addr.addressLine}, {addr.city}, {addr.state} - {addr.pincode}
               </p>
               <p className="text-muted-foreground">📞 {addr.phone}</p>
+              <p className="text-muted-foreground">✉️ {addr.email}</p>
+              {addr.gstin && (
+                <p className="text-muted-foreground">🧾 GSTIN: {addr.gstin}</p>
+              )}
             </div>
-            <div className="space-x-2">
+            <div className="space-x-2 space-y-2">
               <AddressFormModal existing={addr} onSaved={reload} />
               <Button
                 variant="destructive"

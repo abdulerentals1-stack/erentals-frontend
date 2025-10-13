@@ -5,6 +5,7 @@ import Navbar from "@/components/layouts/Navbar";
 import { Toaster } from "sonner";
 import Footer from "@/components/layouts/Footer";
 import Script from "next/script";
+import { GoogleTagManager } from '@next/third-parties/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -115,6 +116,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <GoogleTagManager gtmId="GTM-N5GLP4RZ" />
         <AuthProvider>
           <Toaster position="top-center" richColors />
           <div className="flex flex-col min-h-screen">

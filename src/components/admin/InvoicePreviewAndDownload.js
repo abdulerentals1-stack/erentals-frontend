@@ -37,8 +37,8 @@ export default function InvoicePreviewAndPrint({ order }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="bg-indigo-600 text-white">
-        🧾 Preview & Download Invoice
+      <Button onClick={() => setOpen(true)} className="bg-[#144169] text-white">
+        🧾 Download Invoice
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -106,7 +106,7 @@ const InvoicePDF = ({ order, terms, persons }) => {
               <Text>{order.address?.name}</Text>
               <Text>{order.address?.addressLine}, {order.address?.city}, {order.address?.state}, {order.address?.pincode}</Text>
               <Text>{order.address?.phone}</Text>
-              <Text>GSTN: {order.user?.gstId || "-"}</Text>
+              {order.address?.gstin && <Text>GSTN: {order.address.gstin}</Text>}
               <Text>Billing Date: {createdAt}</Text>
             </View>
 
@@ -148,23 +148,44 @@ const InvoicePDF = ({ order, terms, persons }) => {
           {/* Totals */}
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>Sub Total</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{order.priceBeforeTax}</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order.totalAmount}</Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{order.transportationCharge}</Text>
           </View>
           <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order.labourCharge}</Text>
+          </View>
+
+          {order?.discountAmount > 0 && (
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { flex: 6 }]}>Discount</Text>
+            <Text style={styles.tableCell}>-{order?.discountAmount}</Text>
+          </View>
+           )}
+
+          <View style={[styles.tableRow, styles.tableHeader]}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Total payable before taxes</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.priceBeforeTax}</Text>
+          </View>
+          
+          <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>CGST @9%</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{order.cgst}</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.cgst}</Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>SGST @9%</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{order.sgst}</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.sgst}</Text>
           </View>
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableCell, { width: "88%" }]}>Total Payable</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{order.finalAmount}</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.finalAmount}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Advance paid</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.paidAmount}</Text>
           </View>
         </View>
         {/* Terms & Conditions */}

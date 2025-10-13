@@ -8,6 +8,7 @@ import { DownloadIcon, EyeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthStatus } from "@/utils/authUtils";
+import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
 
 export default function MyQuotations() {
   const [quotations, setQuotations] = useState([]);
@@ -95,18 +96,12 @@ export default function MyQuotations() {
               <EyeIcon className="w-4 h-4 mr-1" />
               View Details
             </Button>
-
-            {quote.status === "approved" && quote.invoiceUrl && (
-              <Button
-                size="sm"
-                variant="secondary"
-                className="cursor-pointer"
-                onClick={() => window.open(quote.invoiceUrl, "_blank")}
-              >
-                <DownloadIcon className="w-4 h-4 mr-1" />
-                Invoice
-              </Button>
+              {/* Show Preview & Download only when status is "responded" */}
+            {quote.status === "responded" && (
+              <QuotationPreviewAndPrint quotation={quote} />
             )}
+
+            {/* {quote.status === "approved" && } */}
           </div>
         </div>
       ))}

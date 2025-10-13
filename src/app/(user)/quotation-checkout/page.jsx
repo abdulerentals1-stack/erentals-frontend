@@ -73,7 +73,7 @@ export default function QuotationCheckoutPage() {
     try {
       await submitQuotationRequest(data); // ✅ call backend
       toast.success("Quotation request sent successfully!");
-      router.push("/myaccount/quotes"); // redirect to quotes page
+      router.push("/qoutation"); // redirect to quotes page
     } catch (err) {
       toast.error("Failed to send quotation request.");
       console.error(err);

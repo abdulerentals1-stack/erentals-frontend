@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuthStatus } from "@/utils/authUtils";
 import { Skeleton } from "@/components/ui/skeleton";
+import InvoicePreviewAndDownload from '../../../components/admin/InvoicePreviewAndDownload'
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -121,29 +122,10 @@ export default function MyOrders() {
               View Details
             </Button>
 
-            {["pending", "placed"].includes(order.status) && (
-              <Button
-                size="sm"
-                variant="destructive"
-                className='cursor-pointer'
-                onClick={() => handleCancelOrder(order._id)}
-              >
-                <XIcon className="w-4 h-4 mr-1" />
-                Cancel
-              </Button>
-            )}
 
-            {order.status === "confirmed" && order.invoiceUrl && (
-              <Button
-                size="sm"
-                variant="secondary"
-                className='cursor-pointer'
-                onClick={() => window.open(order.invoiceUrl, "_blank")}
-              >
-                <DownloadIcon className="w-4 h-4 mr-1" />
-                Invoice
-              </Button>
-            )}
+              {order.invoiceUrl && ["delivered", "picked_up"].includes(order.status) && (
+                  <InvoicePreviewAndDownload order={order} />
+              )}
           </div>
         </div>
       ))}

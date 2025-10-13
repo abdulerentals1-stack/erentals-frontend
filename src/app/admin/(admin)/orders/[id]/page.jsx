@@ -188,6 +188,10 @@ const getActualUnitPrice = (item) => {
     <h2 className="text-lg font-semibold text-blue-600 mb-2">📍 Delivery Address</h2>
     <p><strong>Customer Name:</strong> {order?.address?.name || "N/A"}</p>
     <p><strong>Mobile:</strong> {order?.address?.phone || "N/A"}</p>
+    <p><strong>Email:</strong> {order?.address?.email || "N/A"}</p>
+    {order?.address?.gstin && (
+      <p><strong>GSTIN:</strong> {order.address.gstin}</p>
+    )}
     <p>
       <strong>Address:</strong>{" "}
       {`${order?.address?.addressLine || ""}, ${order?.address?.city || ""}, ${order?.address?.state || ""} - ${order?.address?.pincode || ""}`}
@@ -563,7 +567,7 @@ const getActualUnitPrice = (item) => {
   </div>
 )}
 
-<InvoicePreviewAndDownload order={order} getActualUnitPrice={getActualUnitPrice}/>
+<InvoicePreviewAndDownload order={order} />
 
     </div>
   );
