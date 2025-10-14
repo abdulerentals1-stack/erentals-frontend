@@ -62,7 +62,7 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
 
           {user ? (
             <>
-              <Link href="/myaccount/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
+              <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
                 <User size={18} /> Profile
               </Link>
               <button onClick={logout} className="flex items-center gap-2 text-red-600">

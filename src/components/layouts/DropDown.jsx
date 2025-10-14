@@ -23,6 +23,13 @@ const DropDown = () => {
       {open && (
         <div className="absolute right-0 mt-2 w-40 bg-white shadow rounded z-50">
           <Link
+            href="/profile"
+            className="block px-4 py-2 hover:bg-gray-100 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            Profile
+          </Link>
+          <Link
             href="/orders"
             className="block px-4 py-2 hover:bg-gray-100 text-sm"
             onClick={() => setOpen(false)}

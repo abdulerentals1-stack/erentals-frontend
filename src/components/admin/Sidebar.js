@@ -49,8 +49,8 @@ export default function Sidebar() {
               <AccordionItem value="user" className="border-none">
                 <AccordionTrigger className="px-4 py-2 hover:bg-gray-800 rounded text-left">👤 Users</AccordionTrigger>
                 <AccordionContent className="ml-2 space-y-1">
-                  <Link href="/admin/products" className={navItemClass}>All Products</Link>
-                  <Link href="/admin/products/add" className={navItemClass}>Add Product</Link>
+                  <Link href="/admin/all-user" className={navItemClass}>All User</Link>
+                  
                 </AccordionContent>
               </AccordionItem>
 

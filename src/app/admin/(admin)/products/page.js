@@ -10,12 +10,15 @@ import { Button } from '@/components/ui/button';
 export default function AllProductsPage() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchProducts = async () => {
     try {
       const res = await getAllProducts();
       setProducts(res.data.products);
+      setFilteredProducts(res.data.products);
     } catch (err) {
       toast.error('Failed to load products');
     } finally {
@@ -38,6 +41,16 @@ export default function AllProductsPage() {
     fetchProducts();
   }, []);
 
+  // Filter products whenever searchTerm changes
+  useEffect(() => {
+    const filtered = products.filter(
+      (product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.productCode.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchTerm, products]);
+
   const columns = [
     { label: 'Name', accessor: 'name' },
     { label: 'Price', accessor: 'basePrice' },
@@ -52,12 +65,24 @@ export default function AllProductsPage() {
         <h1 className="text-xl font-semibold">All Products</h1>
         <Button onClick={() => router.push('/admin/products/add')}>+ Add New</Button>
       </div>
+
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by name or product code..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full border rounded p-2"
+        />
+      </div>
+
       {loading ? (
         <p>Loading...</p>
       ) : (
         <ProductTable
           columns={columns}
-          data={products}
+          data={filteredProducts} // use filtered data
           onView={(item) => router.push(`/admin/products/view/${item.slug}`)}
           onEdit={(item) => router.push(`/admin/products/add/${item.slug}`)}
           onDelete={(item) => handleDelete(item._id)}
