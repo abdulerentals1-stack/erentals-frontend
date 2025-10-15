@@ -4,6 +4,7 @@ export async function GET() {
   const robotsTxt = `
 User-agent: *
 Disallow: /admin/
+Disallow: /api/
 Allow: /
 
 Sitemap: https://e-rentals.in/sitemap.xml
