@@ -120,10 +120,10 @@ export default function AddProductForm() {
       };
 
       if (slug) {
-        await updateProduct(productId, payload);
+        await updateProduct(productId, {});
         toast.success("Product updated successfully");
       } else {
-        await createProduct(payload);
+        await createProduct({});
         toast.success("Product created successfully");
       }
 
