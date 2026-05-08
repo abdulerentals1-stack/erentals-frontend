@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 💻 e-Rentals Frontend Client Engine
 
-## Getting Started
+Welcome to the premium frontend application for **e-Rentals.in**. Built using **Next.js 15 (App Router)** and styled with custom **TailwindCSS**, this application provides a highly performant, responsive, glassmorphic UX combined with search engine optimization (SEO) capabilities.
 
-First, run the development server:
+---
 
+## 🛠️ Technology Stack
+*   **Framework:** Next.js 15 (React 19) — App Router
+*   **Styling System:** TailwindCSS v3 & Lucide Icons
+*   **State Management:** Standard React Context & Hooks
+*   **HTTP Client:** Axios (With built-in interceptors and token refreshing in `@/lib/axios`)
+*   **SEO Schema Scripts:** JSON-LD structured structured metadata injections
+*   **Alert & Toast System:** Sonner Toasts
+
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Installation
+Clone the repository, enter the directory, and install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd erentals-frontend
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set Up Environment Variables
+Duplicate the environment template file:
+```bash
+cp .env.example .env.local
+```
+Open `.env.local` and configure your API routes:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 3. Run Development Server
+Start the frontend with hot module reloading:
+```bash
+npm run dev
+```
+Open **`http://localhost:3000`** in your browser to inspect and run the application!
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🚀 Technical SEO Framework (Premium Design)
 
-To learn more about Next.js, take a look at the following resources:
+We have customized the architecture to maximize search engine discoverability:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1. Hybrid Server-Client Routing
+To let crawlers read meta tags from initial payloads while keeping interactivity:
+*   `services/[slug]/page.jsx` acts as a pure **Server Component** fetching data first, then exporting standard Next.js `async function generateMetadata()` to output titles, meta descriptions, og:images, and alternates.
+*   `ServiceDetailClient.jsx` handles stateful sliders, navigation, and custom quote enquiry submissions.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Google Rich Schema Injections
+*   **FAQ Page Schema:** Mapped dynamically across 100% of standard questions.
+*   **Article Page Schema:** Structured schema injected inside service case studies.
+*   **Dynamic Sitemap:** Located inside `src/app/sitemap.xml/route.js`, auto-indexing primary, product, and dynamic local pages.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Directory Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+erentals-frontend/
+├── src/
+│   ├── app/                    # Next.js 15 App Router routing trees
+│   │   ├── (user)/             # Customer layout pages (faq, services, products)
+│   │   ├── admin/              # Management admin dashboard routing
+│   │   ├── sitemap.xml/        # Dynamically compiled XML sitemaps
+│   │   └── page.jsx            # Platform home page
+│   ├── components/
+│   │   ├── layouts/            # Persistent header, footer, and navbar designs
+│   │   ├── ui/                 # Reusable skeletons, breadcrumbs, inputs
+│   │   └── user/               # Specific customer-focused views & forms
+│   ├── lib/                    # Axios instances, cookie/token managers
+│   └── services/               # API connection layers (blog, product APIs)
+├── .env.example                # Local environment template
+└── tailwind.config.js          # Tailored layout tokens and design system
+```
+
+---
+
+## 📧 Support & Maintenance
+For help, bug reports, or updating production environment structures, contact the tech team at **`support@e-rentals.in`**.

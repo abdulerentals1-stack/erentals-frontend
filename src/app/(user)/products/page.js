@@ -1,9 +1,23 @@
-// ✅ Server Component (No `"use client"`)
 import FiltersSidebar from "@/components/user/FiltersSidebar";
 import PaginationControls from "@/components/user/PaginationControls";
 import ProductCard from "@/components/ui/ProductCard";
 import { getAllFilteredProducts } from "@/services/productService";
 
+const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+
+export const metadata = {
+  title: "All Event & Party Rental Products in Mumbai | e-Rentals",
+  description: "Browse our comprehensive event and party equipment rental catalog in Mumbai. Rent luxury furniture, sound systems, stage setup, lights and appliances at affordable daily rates.",
+  alternates: {
+    canonical: `${siteDomain}/products`,
+  },
+  openGraph: {
+    title: "All Event & Party Rental Products in Mumbai | e-Rentals",
+    description: "Browse our comprehensive event and party equipment rental catalog in Mumbai. Rent luxury furniture, sound systems, stage setup, lights and appliances at affordable daily rates.",
+    url: `${siteDomain}/products`,
+    siteName: "e-Rentals",
+  }
+};
 
 export const dynamic = "force-dynamic"; // SSR always fresh
 
@@ -43,6 +57,13 @@ export default async function ProductSearchPage({ searchParams }) {
 
         {/* Product Grid */}
         <section>
+          <div className="mb-8 px-2">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-[#003459] tracking-tight">Event & Party Equipment Rentals in Mumbai</h1>
+            <p className="mt-2 text-gray-600 text-sm md:text-base max-w-4xl leading-relaxed">
+              Explore Mumbai's premium event equipment catalog. Rent clean, high-quality event furniture, professional sound systems, stage lighting setup, and catering appliances. Enjoy on-time delivery and hassle-free logistics for weddings, corporate events, and private celebrations across Mumbai.
+            </p>
+          </div>
+
           {res?.products.length === 0 ? (
             <div className="text-center text-gray-500 mt-20 text-lg">
               No products found.

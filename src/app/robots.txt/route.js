@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const robotsTxt = `
-User-agent: *
+  const robotsTxt = `User-agent: *
 Disallow: /admin/
 Disallow: /api/
+Disallow: /checkout
+Disallow: /profile
+Disallow: /orders
+Disallow: /myaccount
+Disallow: /qoutation-checkout
+Disallow: /quotation-checkout
 Allow: /
 
 Sitemap: https://e-rentals.in/sitemap.xml

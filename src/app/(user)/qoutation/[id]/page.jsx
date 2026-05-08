@@ -71,12 +71,11 @@ export default function QuotationDetailsPage() {
           <p>Phone: {quotation.address?.phone}</p>
         </div>
         <div>
-          <h2 className="font-semibold mb-1">Erentals</h2>
-          <p>Erentals</p>
-          <p>123 Rental Lane</p>
-          <p>Delhi, India</p>
-          <p>support@erentals.in</p>
-          <p>+91-9876543210</p>
+          <h2 className="font-semibold mb-1">e-Rentals</h2>
+          <p>e-Rentals India</p>
+          <p>Mumbai, Maharashtra</p>
+          <p>support@e-rentals.in</p>
+          <p>+91 98673 48165</p>
         </div>
       </div>
 

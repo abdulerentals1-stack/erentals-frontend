@@ -91,7 +91,7 @@ export default function MyQuotations() {
               size="sm"
               variant="outline"
               className="cursor-pointer"
-              onClick={() => route.push(`/qoutation/${quote._id}`)}
+              onClick={() => route.push(`/quotation/${quote._id}`)}
             >
               <EyeIcon className="w-4 h-4 mr-1" />
               View Details

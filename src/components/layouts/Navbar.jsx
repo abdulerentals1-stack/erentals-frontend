@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useCallback } from 'react';
-import { ShoppingCart, Search, Menu, FileText, Camera, UserRound } from 'lucide-react';
+import { ShoppingCart, Search, Menu, FileText, Camera, UserRound, Sparkles, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
@@ -42,7 +42,7 @@ const Navbar = () => {
 
   const handleQuoteClick = (e) => {
     e.preventDefault(); // prevent redirect if used inside a <Link>
-    toast.info('📞 This service is not available online. Please contact our team at +91-9876543210 for a quote.');
+    toast.info('📞 This service is not available online. Please contact our team at +91 98673 48165 for a quote.');
   };
 
   return (
@@ -54,7 +54,7 @@ const Navbar = () => {
             <Link href="/" className='space-x-2'>
               <Image
                   src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
-                  alt="Logo"
+                  alt="e-Rentals Mumbai – Event Equipment Rental"
                   width={100}
                   height={50}
                   priority // 👈 forces SSR load
@@ -113,6 +113,13 @@ const Navbar = () => {
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-4">
+            <Link href="/services" className="flex cursor-pointer items-center gap-1 text-sm text-gray-700 hover:text-black">
+              <Sparkles className="w-5 h-5" />
+              Services
+            </Link>
+
+            <span className="border-l h-6 mx-2" />
+
             <Link href="/quotation-checkout" className="flex cursor-pointer items-center gap-1 text-sm text-gray-700 hover:text-black">
               <FileText className="w-5 h-5" />
               Quote
@@ -135,6 +142,8 @@ const Navbar = () => {
                 Login / Signup
               </Link>
             )}
+
+            {/* Call button removed per user request */}
           </div>
         </div>
 

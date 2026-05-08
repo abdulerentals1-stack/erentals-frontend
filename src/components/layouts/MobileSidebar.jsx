@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {
   X, User, LogOut, Home, ShoppingCart, FileText, Box,
-  Facebook, Instagram, Twitter, Linkedin, Phone, LifeBuoy,
+  Facebook, Instagram, Twitter, Linkedin, Phone, LifeBuoy, Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -28,6 +28,10 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
         <nav className="p-4 space-y-4">
           <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
             <Home size={18} /> Home
+          </Link>
+
+          <Link href="/services" onClick={() => setIsOpen(false)} className="flex items-center gap-2 text-[#003459] font-semibold">
+            <Sparkles size={18} /> Our Services
           </Link>
 
           <Link href="/products" onClick={() => setIsOpen(false)} className="flex items-center gap-2">

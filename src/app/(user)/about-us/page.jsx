@@ -17,7 +17,7 @@ export const metadata = {
     "corporate event rentals Mumbai",
   ],
   alternates: {
-    canonical: `${siteDomain}/about`,
+    canonical: `${siteDomain}/about-us`,
   },
   openGraph: {
     title: "About Us – eRentals | Event Rentals & Equipment Hire Mumbai",
@@ -86,7 +86,7 @@ export default function AboutUs() {
             {/* Title */}
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-bold text-[#144169]">
-                About Erentals Hnd Private Limited
+                About e-Rentals – Mumbai's Event Rental Marketplace
               </h1>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Erentals Hnd Private Limited is a cutting-edge online rental
@@ -101,7 +101,7 @@ export default function AboutUs() {
             {/* Revolutionizing Section */}
             <div className="space-y-3 border-t pt-6">
               <h2 className="text-xl font-semibold text-[#144169]">
-                🌍 Revolutionizing the Global Rental Ecosystem
+                Revolutionizing the Global Rental Ecosystem
               </h2>
               <p>
                 Our platform empowers rental vendors to list their products, set
@@ -117,7 +117,7 @@ export default function AboutUs() {
             {/* Why Choose Erentals */}
             <div className="space-y-3 border-t pt-6">
               <h2 className="text-xl font-semibold text-[#144169]">
-                🚀 Why Choose Erentals?
+                Why Choose e-Rentals?
               </h2>
               <ul className="list-disc pl-6 space-y-2">
                 <li>
@@ -146,7 +146,7 @@ export default function AboutUs() {
             {/* How Erentals Empowers Vendors */}
             <div className="space-y-3 border-t pt-6">
               <h2 className="text-xl font-semibold text-[#144169]">
-                📈 How Erentals Empowers Vendors
+                How e-Rentals Empowers Vendors
               </h2>
               <p>
                 Running a rental business has never been easier. Our
@@ -176,7 +176,7 @@ export default function AboutUs() {
             {/* Vision & Mission */}
             <div className="space-y-3 border-t pt-6">
               <h2 className="text-xl font-semibold text-[#144169]">
-                ✨ Our Vision & Mission
+                Our Vision & Mission
               </h2>
               <p>
                 At Erentals Hnd Private Limited, we believe in creating a world
@@ -191,7 +191,7 @@ export default function AboutUs() {
             {/* Future of Renting */}
             <div className="space-y-3 border-t pt-6">
               <h2 className="text-xl font-semibold text-[#144169]">
-                💡 The Future of Renting Starts Here
+                The Future of Renting Starts Here
               </h2>
               <p>
                 Renting should be easy, flexible, and accessible to everyone.

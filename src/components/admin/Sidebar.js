@@ -72,10 +72,10 @@ export default function Sidebar() {
                 </AccordionContent>
               </AccordionItem>
 
-             <AccordionItem value="blogs" className="border-none">
-                <AccordionTrigger className="px-4 py-2 hover:bg-gray-800 rounded text-left whitespace-nowrap">📦 Blogs</AccordionTrigger>
+              <AccordionItem value="blogs" className="border-none">
+                <AccordionTrigger className="px-4 py-2 hover:bg-gray-800 rounded text-left whitespace-nowrap">🛠️ Services</AccordionTrigger>
                 <AccordionContent className="ml-2 space-y-1">
-                  <Link href="/admin/blogs" className={navItemClass}>All Blogs</Link>
+                  <Link href="/admin/blogs" className={navItemClass}>All Services</Link>
                 </AccordionContent>
               </AccordionItem>
 

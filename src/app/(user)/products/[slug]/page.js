@@ -1,6 +1,8 @@
-import { getProductBySlug } from "@/services/productService";
+import { getProductBySlug, getFilteredProducts } from "@/services/productService";
 import ProductInfoSection from "@/components/user/product/ProductInfoSection";
 import ProductDetailsTabs from "@/components/user/product/ProductDetailsTabs";
+import ProductCard from "@/components/ui/ProductCard";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
@@ -15,27 +17,29 @@ export async function generateMetadata({ params }) {
     return {
       title: "Product not found - e-Rentals",
       description: "The product you are looking for does not exist.",
-      alternates: { canonical: `${siteDomain}/product/${slug}` },
+      alternates: { canonical: `${siteDomain}/products/${slug}` },
     };
   }
 
-  const productUrl = `${siteDomain}/product/${product.slug}`;
+  const productUrl = `${siteDomain}/products/${product.slug}`;
 
   // ✅ Handle canonical URL correctly
   // If product.isCanonical true => self URL
   // If product.isCanonical false => point to main/original product URL
   const canonicalUrl = product.isCanonical
     ? productUrl
-    : `${siteDomain}/product/${product.slug}`; // replace with main product URL if you have one
+    : `${siteDomain}/products/${product.slug}`; // replace with main product URL if you have one
+
+  const fallbackDescription = product.metaDescription || (product.description ? `${product.description.slice(0, 150)}...` : "Premium event and equipment rentals in Mumbai on e-Rentals.");
 
   return {
-    title: product.metaTitle || product.name,
-    description: product.metaDescription || product.description,
+    title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
+    description: fallbackDescription,
     keywords: product.metaKeywords || [],
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: product.metaTitle || product.name,
-      description: product.metaDescription,
+      title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
+      description: fallbackDescription,
       url: productUrl,
       type: "website",
       images: [
@@ -50,8 +54,8 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: product.metaTitle || product.name,
-      description: product.metaDescription,
+      title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
+      description: fallbackDescription,
       images: [product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg"],
       creator: "@erentals",
     },
@@ -65,6 +69,17 @@ export default async function ProductPage({ params }) {
 
   if (!product) {
     return <div className="text-center py-20 text-xl">Product not found</div>;
+  }
+
+  const categoryId = typeof product.category === 'object' ? product.category._id : product.category;
+  let relatedProducts = [];
+  if (categoryId) {
+    try {
+      const relatedRes = await getFilteredProducts({ categories: categoryId, limit: 5 });
+      relatedProducts = (relatedRes?.products || []).filter(p => p._id !== product._id).slice(0, 4);
+    } catch (err) {
+      console.error("Failed to fetch related products:", err);
+    }
   }
 
   // ✅ JSON-LD structured data for Google Rich Snippets
@@ -81,11 +96,11 @@ export default async function ProductPage({ params }) {
     },
     offers: {
       "@type": "Offer",
-      url: `${siteDomain}/product/${product.slug}`,
+      url: `${siteDomain}/products/${product.slug}`,
       priceCurrency: "INR",
       price: product.discountPrice || product.basePrice,
       availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
+      itemCondition: "https://schema.org/UsedCondition",
       seller: {
         "@type": "Organization",
         name: "e-Rentals",
@@ -110,8 +125,29 @@ export default async function ProductPage({ params }) {
       />
 
       <div className="max-w-6xl mx-auto px-4 py-6">
+        <Breadcrumbs items={[
+          { label: "Products", href: "/products" },
+          ...(product.category ? [{
+            label: typeof product.category === 'object' ? (product.category.name || "Category") : "Category",
+            href: typeof product.category === 'object' ? `/categories/${product.category.slug}` : `/categories/${product.category}`
+          }] : []),
+          { label: product.name }
+        ]} />
         <ProductInfoSection product={product} />
         <ProductDetailsTabs product={product} />
+        
+        {relatedProducts.length > 0 && (
+          <div className="mt-16 pt-10 border-t border-gray-100 dark:border-zinc-800">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#003459] dark:text-white mb-6">
+              You May Also Like – Related Products
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {relatedProducts.map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
