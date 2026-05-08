@@ -51,7 +51,7 @@ export default function ProductInfoSection({ product }) {
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      <ProductCarousel images={product.images} />
+      <ProductCarousel images={product.images} productName={product.name} />
 
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold">{product.name}</h1>

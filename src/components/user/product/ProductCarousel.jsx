@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-export default function ProductCarousel({ images = [] }) {
+export default function ProductCarousel({ images = [], productName = "Product" }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedImage = images?.[selectedIndex]?.url || '/placeholder.jpg';
 
@@ -12,7 +12,7 @@ export default function ProductCarousel({ images = [] }) {
       <div className="relative w-full aspect-square md:aspect-[4/3] border rounded-md overflow-hidden bg-white">
         <Image
           src={selectedImage}
-          alt="Product Image"
+          alt={`${productName} - Rental Product Image`}
           fill
           className="object-contain"
           sizes="100vw"

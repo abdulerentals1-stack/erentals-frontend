@@ -50,46 +50,6 @@ export const metadata = {
 };
 
 export default function FAQPage() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "Which documents do I need to place a rental order?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "You must provide valid ID and address proof (e.g., office ID, Aadhaar card, PAN card, driving license, or passport). This KYC verification must be completed before an order can be confirmed.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Do I need to pay a security deposit?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. Security deposits are mandatory and vary depending on the item and quantity. Deposits are refundable when items are returned in good condition.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "When is payment due?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "At least 50 % of the rental cost must be paid in advance (typically 72 hours before delivery). The remaining balance is due upon delivery.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Can I rerent the items to someone else?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "No. eRentals prohibits subleasing. You cannot rent the items to another person without notifying eRentals and receiving their approval.",
-        },
-      },
-      // Add more FAQ entries similarly if needed
-    ],
-  };
-
   const faqs = [
     {
       category: "General Rental Process",
@@ -221,6 +181,21 @@ export default function FAQPage() {
       ],
     },
   ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.flatMap((section) =>
+      section.items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      }))
+    ),
+  };
 
   return (
     <section className="py-12 bg-gray-50">

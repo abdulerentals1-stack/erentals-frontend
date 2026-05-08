@@ -2,6 +2,7 @@
 
 import ProductCard from "@/components/ui/ProductCard";
 import PaginationControls from "@/components/user/PaginationControls";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Script from "next/script";
 
 export const dynamic = "force-dynamic"; // Always fresh SSR
@@ -29,14 +30,16 @@ export async function generateMetadata({ params }) {
   const tagUrl = `${siteDomain}/tags/${tag.slug}`;
   const imageUrl = tag.image?.url || "/placeholder.jpg";
 
+  const fallbackDesc = tag.metaDescription || `Get dynamic event services with premium ${tag.name} in Mumbai. e-Rentals simplifies on-demand staging, fabrication, props, and design for corporate and private events.`;
+
   return {
-    title: tag.metaTitle || tag.name,
-    description: tag.metaDescription || "",
+    title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
+    description: fallbackDesc,
     keywords: tag.metaKeywords || [],
     alternates: { canonical: tagUrl },
     openGraph: {
-      title: tag.metaTitle || tag.name,
-      description: tag.metaDescription || "",
+      title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
+      description: fallbackDesc,
       url: tagUrl,
       type: "website",
       images: [
@@ -51,8 +54,8 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: tag.metaTitle || tag.name,
-      description: tag.metaDescription || "",
+      title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
+      description: fallbackDesc,
       images: [imageUrl],
       creator: "@erentals",
     },
@@ -117,12 +120,16 @@ export default async function TagPage({ params, searchParams }) {
       {/* Page Header */}
       <div className="py-4 md:py-12 bg-[#003459] px-4 md:px-16 lg:px-16 flex items-center">
         <h1 className="font-semibold md:text-2xl text-md text-white">
-          <span className="text-white">{tag.name}</span>
+          <span className="text-white">{tag.name} - e-Rentals Event Hire</span>
         </h1>
       </div>
 
       {/* Products Grid */}
       <div className="px-4 md:px-16 lg:px-16 py-6 md:py-12">
+        <Breadcrumbs items={[
+          { label: "Tags", href: "/products" },
+          { label: tag.name }
+        ]} />
         {products.length === 0 ? (
           <div className="text-center text-gray-500 mt-20 text-lg">No products found.</div>
         ) : (

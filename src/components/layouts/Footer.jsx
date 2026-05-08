@@ -21,15 +21,14 @@ export default function Footer() {
 
         {/* Quick Links */}
         <div className="text-center md:text-left">
-          <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+          <h4 className="text-lg font-semibold mb-4">Rental Categories</h4>
           <ul className="space-y-2 text-[15px] text-gray-300">
-            <li><Link href="/" className="hover:underline">Home</Link></li>
-            <li><Link href="/checkout" className="hover:underline">Checkout</Link></li>
-            <li><Link href="/products" className="hover:underline">All Products</Link></li>
-            <li><Link href="/quotation-checkout" className="hover:underline">Quotation</Link></li>
-            {/* <li><Link href="/contact" className="hover:underline">Contact</Link></li>
-            <li><Link href="/terms-and-conditions" className="hover:underline">Terms & Conditions</Link></li> */}
-            <li><Link href="/faq" className="hover:underline">FAQs</Link></li>
+            <li><Link href="/products" className="hover:underline">All Products Catalog</Link></li>
+            <li><Link href="/services" className="hover:underline">Services & Events Portfolio</Link></li>
+            <li><Link href="/categories/furniture" className="hover:underline">Furniture Rentals</Link></li>
+            <li><Link href="/categories/lights-sound" className="hover:underline">Sound & Lighting Hire</Link></li>
+            <li><Link href="/categories/exhibition-fabrication" className="hover:underline">Staging & AC Tents</Link></li>
+            <li><Link href="/faq" className="hover:underline">Frequently Asked Questions</Link></li>
           </ul>
         </div>
 

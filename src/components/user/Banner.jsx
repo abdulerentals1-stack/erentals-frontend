@@ -22,13 +22,22 @@ export default function BannerCarousel() {
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel);
     },
-    created(slider) {
-      clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        if (!paused) slider.next();
-      }, 4000);
-    },
   });
+
+  // Safe and synchronized autoplay with manual slide resetting
+  useEffect(() => {
+    if (loading || !instanceRef.current) return;
+
+    clearInterval(timerRef.current);
+
+    if (!paused) {
+      timerRef.current = setInterval(() => {
+        instanceRef.current?.next();
+      }, 4000);
+    }
+
+    return () => clearInterval(timerRef.current);
+  }, [paused, loading, currentSlide, banners.length]);
 
   // Detect mobile/desktop once (no SSR mismatch)
   useEffect(() => {

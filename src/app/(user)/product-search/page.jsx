@@ -3,6 +3,13 @@ import PaginationControls from "@/components/user/PaginationControls";
 import ProductCard from "@/components/ui/ProductCard";
 import { getFilteredProducts } from "@/services/productService";
 
+export const metadata = {
+  title: "Search Event Rental Products – e-Rentals Mumbai",
+  description: "Search our catalog of event rental equipment in Mumbai.",
+  alternates: {
+    canonical: "https://e-rentals.in/product-search",
+  },
+};
 
 export const dynamic = "force-dynamic"; // SSR always fresh
 

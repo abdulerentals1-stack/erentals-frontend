@@ -19,7 +19,7 @@ export const metadata = {
     "tent decor rental Mumbai",
   ],
   alternates: {
-    canonical: `${siteDomain}/contact`,
+    canonical: `${siteDomain}/contact-us`,
   },
   openGraph: {
     title: "Contact Us – eRentals Mumbai | Event & Party Equipment Rental",
@@ -63,7 +63,7 @@ export default function ContactPage() {
     name: "Contact Us – eRentals Mumbai",
     description:
       "Get in touch with eRentals Mumbai for event rentals, party gear hire, furniture, lighting, sound, tent and decor on rent. Reach us via call, email or our contact form.",
-    url: `${siteDomain}/contact`,
+    url: `${siteDomain}/contact-us`,
     publisher: {
       "@type": "Organization",
       name: "e-Rentals",
@@ -71,9 +71,9 @@ export default function ContactPage() {
     },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+91-9867348165", // replace with your contact number
+      telephone: "+91-9867348165",
       contactType: "customer service",
-      email: "support@erentals.in",
+      email: "support@e-rentals.in",
     },
   };
 

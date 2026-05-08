@@ -58,8 +58,8 @@ export default function AdminBlogTable() {
   return (
     <div className="p-6 max-w-6xl mx-auto mt-8 bg-white dark:bg-zinc-900 rounded-xl shadow">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Manage Blogs</h2>
-        <Button onClick={handleAddBlog}>Add Blog</Button>
+        <h2 className="text-xl font-bold">Manage Services</h2>
+        <Button onClick={handleAddBlog}>Add Service</Button>
       </div>
       
       <div className="overflow-x-auto">
@@ -98,7 +98,7 @@ export default function AdminBlogTable() {
             {blogs.length === 0 && (
               <tr>
                 <td colSpan={5} className="text-center p-4 text-gray-500">
-                  No blogs found
+                  No services found
                 </td>
               </tr>
             )}

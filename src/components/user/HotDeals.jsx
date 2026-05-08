@@ -1,25 +1,20 @@
-// app/hot-deals/page.jsx
 import ProductSection from '@/components/ui/ProductSection';
-import CategoriesPage from './Categories';
 import BlogServices from './BlogServices';
 
 export default function HotDealsPage() {
   return (
-    <main className="space-y-8 bg-gray-50">
-      {/* 🏷️ Featured Products */}
-      <ProductSection title="Top Hot Deals Products" type="featured" />
+    <div className="space-y-12 bg-transparent">
+      {/* 🏷️ Hot Deals Products */}
+      <ProductSection title="🔥 Special Hot Deals" type="hotdeal" />
 
-       {/* 🏷️ categories list Products */}
-      <CategoriesPage />
+      {/* 🌟 Featured Products */}
+      <ProductSection title="⭐ Featured Rental Items" type="featured" />
 
-      {/* 🛒 Top Rental Products */}
-      <ProductSection title="Top Featured Products" type="featured" />
-
-      {/* 🛒 Top Rental Products */}
-      <ProductSection title="Top Rental Products" type="toprental" />
-       
-       {/* Blogs Products */}
+      {/* 🏆 Top Rental Products */}
+      <ProductSection title="🏆 Top Rental Products" type="toprental" />
+        
+      {/* 📝 Portfolio & Setup Services Slider */}
       <BlogServices />
-    </main>
-  )
+    </div>
+  );
 }

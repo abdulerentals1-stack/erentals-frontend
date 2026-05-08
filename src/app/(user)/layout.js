@@ -23,7 +23,7 @@ const logoUrl =
 
 export const metadata = {
   metadataBase: new URL(siteDomain),
-  title: "A platform for rental products",
+  title: "Event & Party Equipment Rental in Mumbai | e-Rentals",
   description:
     "e-Rentals.in offers comprehensive event and party rentals in Mumbai, with furniture, sound systems, lighting, appliances, tents, stages and decor on rent for hassle-free events at affordable rates.",
   keywords: [
@@ -40,11 +40,8 @@ export const metadata = {
     "rental services Mumbai",
     "eRentals",
   ],
-  alternates: {
-    canonical: siteDomain + "/",
-  },
   openGraph: {
-    title: "e-Rentals: a platform for rental products",
+    title: "Event & Party Equipment Rental in Mumbai | e-Rentals",
     description:
       "e-Rentals.in offers comprehensive event and party rentals in Mumbai, with furniture, sound systems, lighting, appliances, tents, stages and decor on rent for hassle-free events at affordable rates.",
     url: siteDomain + "/",
@@ -62,7 +59,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "e-Rentals: a platform for rental products",
+    title: "Event & Party Equipment Rental in Mumbai | e-Rentals",
     description:
       "Event and party rentals in Mumbai — furniture, sound, lighting, tents, decor and more at affordable rates.",
     images: [logoUrl],
@@ -96,10 +93,47 @@ export default function RootLayout({ children }) {
         url: siteDomain,
         potentialAction: {
           "@type": "SearchAction",
-          target: `${siteDomain}/?s={search_term_string}`,
+          target: `${siteDomain}/product-search?search={search_term_string}`,
           "query-input": "required name=search_term_string",
         },
       },
+      {
+        "@type": "LocalBusiness",
+        "@id": `${siteDomain}/#localbusiness`,
+        "name": "e-Rentals",
+        "image": logoUrl,
+        "telephone": "+91 98673 48165",
+        "email": "support@e-rentals.in",
+        "url": siteDomain,
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Mumbai",
+          "addressLocality": "Mumbai",
+          "addressRegion": "Maharashtra",
+          "postalCode": "400001",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "19.0760",
+          "longitude": "72.8777"
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+          ],
+          "opens": "00:00",
+          "closes": "23:59"
+        }
+      }
     ],
   };
 

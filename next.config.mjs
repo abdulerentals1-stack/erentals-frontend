@@ -19,6 +19,32 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/qoutation',
+        destination: '/quotation',
+        permanent: true,
+      },
+      {
+        source: '/qoutation/:id',
+        destination: '/quotation/:id',
+        permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/quotation',
+        destination: '/qoutation',
+      },
+      {
+        source: '/quotation/:id',
+        destination: '/qoutation/:id',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
