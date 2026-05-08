@@ -42,7 +42,8 @@ export const fetchPublicBlogsISR = async (page = 1, limit = 10) => {
       next: { revalidate: 3600 }
     });
     if (!res.ok) return { data: { blogs: [] } };
-    return await res.json();
+    const data = await res.json();
+    return { data };
   } catch (err) {
     return { data: { blogs: [] } };
   }
