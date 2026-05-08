@@ -80,15 +80,8 @@ const Navbar = () => {
 
 
           {/* Mobile menu icons */}
-          <div className="md:hidden flex items-center gap-4">
-            {/* <button onClick={() => setSearchUI(true)}>
-              <Search className="w-5 h-5" />
-            </button>
-            <Link href="/checkout">
-              <ShoppingCart className="w-5 h-5" />
-            </Link> */}
-            
-            <button onClick={() => setSidebarOpen(true)}>
+          <div className="md:hidden flex items-center gap-2">
+            <button onClick={() => setSidebarOpen(true)} aria-label="Open menu" className="p-2">
               <Menu className="w-6 h-6" />
             </button>
           </div>

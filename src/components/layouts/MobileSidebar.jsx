@@ -22,7 +22,9 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
       <div className="flex-1 overflow-auto">
         <div className="flex items-center justify-between p-4 border-b">
           <p className="font-semibold">Menu</p>
-          <X onClick={() => setIsOpen(false)} className="cursor-pointer" />
+          <button onClick={() => setIsOpen(false)} aria-label="Close menu" className="p-2 -mr-2">
+            <X className="cursor-pointer" />
+          </button>
         </div>
 
         <nav className="p-4 space-y-4">
@@ -100,17 +102,17 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
       {/* Bottom Social Links */}
       <div className="p-4 border-t">
         <p className="text-sm mb-2 text-gray-500">Follow us</p>
-        <div className="flex gap-4">
-          <Link href="https://facebook.com" target="_blank" className="text-gray-600 hover:text-blue-600">
+        <div className="flex gap-2">
+          <Link href="https://facebook.com" target="_blank" aria-label="Facebook" className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
             <Facebook size={20} />
           </Link>
-          <Link href="https://instagram.com" target="_blank" className="text-gray-600 hover:text-pink-500">
+          <Link href="https://instagram.com" target="_blank" aria-label="Instagram" className="p-2 text-gray-600 hover:text-pink-500 transition-colors">
             <Instagram size={20} />
           </Link>
-          <Link href="https://twitter.com" target="_blank" className="text-gray-600 hover:text-sky-500">
+          <Link href="https://twitter.com" target="_blank" aria-label="Twitter" className="p-2 text-gray-600 hover:text-sky-500 transition-colors">
             <Twitter size={20} />
           </Link>
-          <Link href="https://linkedin.com" target="_blank" className="text-gray-600 hover:text-blue-700">
+          <Link href="https://linkedin.com" target="_blank" aria-label="LinkedIn" className="p-2 text-gray-600 hover:text-blue-700 transition-colors">
             <Linkedin size={20} />
           </Link>
         </div>

@@ -28,7 +28,7 @@ export const getFlaggedProducts = async (type) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/flagged?type=${type}`, {
       method: "GET",
-      cache: "no-store", // Prevents caching
+      next: { revalidate: 3600 }, // Cache for 1 hour instead of no-store
       headers: {
         "Content-Type": "application/json",
       },

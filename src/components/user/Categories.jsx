@@ -1,10 +1,10 @@
 // ✅ Server Component (no 'use client')
 import Link from "next/link";
 import Image from "next/image";
-import { getAllCategories } from "@/services/category";
+import { fetchCategoriesISR } from "@/services/category";
 
 export default async function CategoriesPage() {
-  const res = await getAllCategories();
+  const res = await fetchCategoriesISR();
   const categories = res?.data?.categories || [];
 
   if (!categories.length) return null;

@@ -21,7 +21,9 @@ const SearchBar = ({ searchUI, setSearchUI }) => {
       <div className="fixed top-0 left-0 w-full h-full bg-white z-[70] p-4">
         <div className="flex justify-between items-center mb-4">
           <p className="text-lg font-semibold">Search</p>
-          <X className="cursor-pointer" onClick={() => setSearchUI(false)} />
+          <button onClick={() => setSearchUI(false)} aria-label="Close search" className="p-2 -mr-2">
+            <X className="cursor-pointer" />
+          </button>
         </div>
 
         <form onSubmit={handleSearch} className="flex items-center gap-2 border px-3 py-2 rounded bg-gray-100">
