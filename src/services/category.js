@@ -24,7 +24,8 @@ export const fetchCategoriesISR = async () => {
       next: { revalidate: 3600 }
     });
     if (!res.ok) return { data: { categories: [] } };
-    return await res.json();
+    const data = await res.json();
+    return { data };
   } catch (err) {
     return { data: { categories: [] } };
   }

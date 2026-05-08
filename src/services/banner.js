@@ -22,7 +22,8 @@ export const fetchBannersISR = async () => {
       next: { revalidate: 3600 }
     });
     if (!res.ok) return { data: { banners: [] } };
-    return await res.json();
+    const data = await res.json();
+    return { data };
   } catch (err) {
     return { data: { banners: [] } };
   }
