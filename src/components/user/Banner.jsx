@@ -81,7 +81,7 @@ export default function BannerCarousel({ initialBanners = [] }) {
             return (
               <div key={banner._id || idx} className="keen-slider__slide relative">
                 {banner.link ? (
-                  <Link href={banner.link} className="block w-full h-full relative">
+                  <Link href={banner.link} className="block w-full h-full relative" aria-label={banner.image.alt || `Banner ${idx + 1} link`}>
                     {image}
                   </Link>
                 ) : (
@@ -95,27 +95,32 @@ export default function BannerCarousel({ initialBanners = [] }) {
         {/* Arrows */}
         <button
           onClick={() => instanceRef.current?.prev()}
+          aria-label="Previous slide"
           className="absolute top-1/2 -translate-y-1/2 left-3 z-10 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition hidden group-hover:block"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
         <button
           onClick={() => instanceRef.current?.next()}
+          aria-label="Next slide"
           className="absolute top-1/2 -translate-y-1/2 right-3 z-10 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition hidden group-hover:block"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
 
         {/* Dot indicators */}
-        <div className="flex justify-center items-center gap-2 mt-4">
+        <div className="flex justify-center items-center gap-1 mt-4">
           {banners.map((_, idx) => (
             <button
               key={idx}
               onClick={() => instanceRef.current?.moveToIdx(idx)}
-              className={`h-2 w-2 rounded-full transition-all ${
+              aria-label={`Go to slide ${idx + 1}`}
+              className="p-2 flex items-center justify-center touch-manipulation"
+            >
+              <span className={`h-2 w-2 rounded-full transition-all ${
                 currentSlide === idx ? 'bg-black' : 'bg-gray-400'
-              }`}
-            />
+              }`} />
+            </button>
           ))}
         </div>
       </div>
