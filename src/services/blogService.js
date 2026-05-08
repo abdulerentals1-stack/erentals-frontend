@@ -34,3 +34,16 @@ export const getPublicBlogs = (page = 1, limit = 10) =>
 // 👉 Get single active blog by slug
 export const getPublicBlogBySlug = (slug) =>
   api.get(`/blogs/${slug}`);
+
+// 🚀 ISR Fetch for Server Components
+export const fetchPublicBlogsISR = async (page = 1, limit = 10) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs?page=${page}&limit=${limit}`, {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return { data: { blogs: [] } };
+    return await res.json();
+  } catch (err) {
+    return { data: { blogs: [] } };
+  }
+};

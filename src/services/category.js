@@ -16,3 +16,16 @@ export const updateCategory = (id, data) => api.put(`/categories/${id}`, data);
 
 // ❌ Delete category
 export const deleteCategory = (id) => api.delete(`/categories/${id}`);
+
+// 🚀 ISR Fetch for Server Components
+export const fetchCategoriesISR = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return { data: { categories: [] } };
+    return await res.json();
+  } catch (err) {
+    return { data: { categories: [] } };
+  }
+};

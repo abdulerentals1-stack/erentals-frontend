@@ -14,3 +14,16 @@ export const getAllBanners = () => api.get("/banners");
 
 // 🔍 Get single
 export const getBannerById = (id) => api.get(`/banners/${id}`);
+
+// 🚀 ISR Fetch for Server Components (Cached for Performance)
+export const fetchBannersISR = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/banners`, {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return { data: { banners: [] } };
+    return await res.json();
+  } catch (err) {
+    return { data: { banners: [] } };
+  }
+};

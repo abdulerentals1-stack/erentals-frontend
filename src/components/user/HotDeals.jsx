@@ -1,7 +1,16 @@
 import ProductSection from '@/components/ui/ProductSection';
 import BlogServices from './BlogServices';
+import { fetchPublicBlogsISR } from '@/services/blogService';
 
-export default function HotDealsPage() {
+export default async function HotDealsPage() {
+  let initialBlogs = [];
+  try {
+    const res = await fetchPublicBlogsISR(1, 12);
+    initialBlogs = res?.data?.blogs || [];
+  } catch (err) {
+    console.error('Failed to fetch blogs on server:', err);
+  }
+
   return (
     <div className="space-y-12 bg-transparent">
       {/* 🏷️ Hot Deals Products */}
@@ -14,7 +23,7 @@ export default function HotDealsPage() {
       <ProductSection title="🏆 Top Rental Products" type="toprental" />
         
       {/* 📝 Portfolio & Setup Services Slider */}
-      <BlogServices />
+      <BlogServices initialBlogs={initialBlogs} />
     </div>
   );
 }

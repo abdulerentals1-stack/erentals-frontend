@@ -9,9 +9,7 @@ import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import { getPublicBlogs } from '@/services/blogService';
 
-const BlogServices = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+const BlogServices = ({ initialBlogs = [] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [paused, setPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -27,7 +25,7 @@ const BlogServices = () => {
 
   // Synchronize autoplay and reset interval on user-manual drag/dots action
   useEffect(() => {
-    if (loading || !instanceRef.current) return;
+    if (!initialBlogs.length || !instanceRef.current) return;
 
     clearInterval(timerRef.current);
 
@@ -38,7 +36,7 @@ const BlogServices = () => {
     }
 
     return () => clearInterval(timerRef.current);
-  }, [paused, loading, currentSlide, blogs.length]);
+  }, [paused, currentSlide, initialBlogs.length]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -47,23 +45,7 @@ const BlogServices = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const { data } = await getPublicBlogs(1, 12);
-        setBlogs(data.blogs || []);
-      } catch (err) {
-        console.error('Failed to fetch blogs for services', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
-
-  if (loading) return <Skeleton className="w-full h-[400px] rounded-2xl" />;
-  if (!blogs.length) return null;
+  if (!initialBlogs.length) return null;
 
   return (
     <section className="py-12 bg-gradient-to-b from-white to-[#F3F9FB] dark:from-zinc-900 dark:to-zinc-950">
@@ -99,7 +81,7 @@ const BlogServices = () => {
           onMouseLeave={() => setPaused(false)}
         >
           <div ref={sliderRef} className="keen-slider overflow-hidden py-4">
-            {blogs.map((blog) => (
+            {initialBlogs.map((blog) => (
               <div 
                 key={blog._id} 
                 className="keen-slider__slide bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 shadow-sm transition-all duration-300 hover:shadow-md flex flex-col justify-between cursor-pointer"
@@ -161,7 +143,7 @@ const BlogServices = () => {
 
           {/* Dots Indicators */}
           <div className="flex justify-center gap-2 mt-4">
-            {blogs.map((_, idx) => (
+            {initialBlogs.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => instanceRef.current?.moveToIdx(idx)}
