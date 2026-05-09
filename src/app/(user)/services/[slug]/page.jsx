@@ -3,6 +3,20 @@ import ServiceDetailClient from './ServiceDetailClient';
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
+export async function generateStaticParams() {
+  try {
+    const { fetchPublicBlogsISR } = await import('@/services/blogService');
+    const res = await fetchPublicBlogsISR(1, 100);
+    const blogs = res.data?.blogs || [];
+    return blogs.map((blog) => ({
+      slug: blog.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for services:", err);
+    return [];
+  }
+}
+
 // 🚀 Dynamic Meta Generation for Search Ranking
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

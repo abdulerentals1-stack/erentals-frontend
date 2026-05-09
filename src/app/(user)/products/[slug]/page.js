@@ -7,6 +7,20 @@ import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
+export async function generateStaticParams() {
+  try {
+    const { getFilteredProducts } = await import('@/services/productService');
+    const res = await getFilteredProducts({ limit: 500 });
+    const products = res?.products || [];
+    return products.map((p) => ({
+      slug: p.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for products:", err);
+    return [];
+  }
+}
+
 // ✅ Dynamic metadata for each product
 export async function generateMetadata({ params }) {
   const { slug } = params;

@@ -9,6 +9,20 @@ export const dynamic = "force-dynamic"; // Always fresh SSR
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
+export async function generateStaticParams() {
+  try {
+    const { fetchCategoriesISR } = await import('@/services/category');
+    const res = await fetchCategoriesISR();
+    const categories = res.data?.categories || [];
+    return categories.map((c) => ({
+      slug: c.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for categories:", err);
+    return [];
+  }
+}
+
 // ✅ Dynamic Metadata for Category Page
 export async function generateMetadata({ params }) {
   const { slug } = params;
