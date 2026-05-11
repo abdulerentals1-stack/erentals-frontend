@@ -25,47 +25,60 @@ export async function generateStaticParams() {
 
 // ✅ Dynamic Metadata for Category Page
 export async function generateMetadata({ params }) {
-  const { slug } = params;
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
 
-  const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`, {
-    cache: "no-store",
-  });
-  const catData = await catRes.json();
-  const category = catData?.category;
-
-  if (!category) {
+  if (!slug) {
     return {
-      title: "Category not found - e-Rentals",
-      description: "The category you are looking for does not exist.",
-      alternates: { canonical: `${siteDomain}/categories/${slug}` },
+      title: "Categories - e-Rentals",
+      description: "Explore party and corporate event equipment categories on rent in Mumbai.",
+      alternates: { canonical: `${siteDomain}/categories` },
     };
   }
 
-  const categoryUrl = `${siteDomain}/categories/${category.slug}`;
-  const imageUrl = category.image?.url || "/placeholder.jpg";
+  try {
+    const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`, {
+      cache: "no-store",
+    });
+    const catData = await catRes.json();
+    const category = catData?.category;
 
-  const fallbackDesc = category.metaDescription || `Rent premium ${category.name} for party and event hire in Mumbai. Explore high-quality catalog items, transparent rates and instant quotation estimates at e-Rentals.`;
+    if (!category) {
+      return {
+        title: "Category not found - e-Rentals",
+        description: "The category you are looking for does not exist.",
+        alternates: { canonical: `${siteDomain}/categories/${slug}` },
+        openGraph: {
+          url: `${siteDomain}/categories/${slug}`,
+        },
+      };
+    }
 
-  return {
-    title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
-    description: fallbackDesc,
-    keywords: category.metaKeywords || [],
-    alternates: { canonical: categoryUrl },
-    openGraph: {
+    const categoryUrl = `${siteDomain}/categories/${category.slug}`;
+    const imageUrl = category.image?.url || "/placeholder.jpg";
+
+    const fallbackDesc = category.metaDescription || `Rent premium ${category.name} for party and event hire in Mumbai. Explore high-quality catalog items, transparent rates and instant quotation estimates at e-Rentals.`;
+
+    return {
       title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
       description: fallbackDesc,
-      url: categoryUrl,
-      type: "website",
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: category.name,
-        },
-      ],
-      siteName: "e-Rentals",
-    },
+      keywords: category.metaKeywords || [],
+      alternates: { canonical: categoryUrl },
+      openGraph: {
+        title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
+        description: fallbackDesc,
+        url: categoryUrl,
+        type: "website",
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: category.name,
+          },
+        ],
+        siteName: "e-Rentals",
+      },
     twitter: {
       card: "summary_large_image",
       title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
@@ -74,11 +87,24 @@ export async function generateMetadata({ params }) {
       creator: "@erentals",
     },
   };
+  } catch (err) {
+    console.error("Error generating metadata for category slug:", slug, err);
+    return {
+      title: "Event Category Hire - e-Rentals",
+      description: "Explore and rent premium event equipment and party items in Mumbai.",
+      alternates: { canonical: `${siteDomain}/categories/${slug}` },
+      openGraph: {
+        url: `${siteDomain}/categories/${slug}`,
+      },
+    };
+  }
 }
 
 export default async function CategoryPage({ params, searchParams }) {
-  const { slug } = params;
-  const page = parseInt(searchParams?.page || "1");
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const slug = resolvedParams?.slug;
+  const page = parseInt(resolvedSearchParams?.page || "1");
   const limit = 20;
 
   // ✅ 1. Fetch category data by slug

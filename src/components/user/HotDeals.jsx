@@ -1,20 +1,20 @@
 import ProductSection from '@/components/ui/ProductSection';
 import BlogServices from './BlogServices';
-import { fetchPublicBlogsISR } from '@/services/blogService';
+import { fetchPublicServicesISR } from '@/services/serviceService';
 
 export default async function HotDealsPage() {
-  let initialBlogs = [];
+  let initialServices = [];
   try {
-    const res = await fetchPublicBlogsISR(1, 12);
-    initialBlogs = res?.data?.blogs || [];
+    const res = await fetchPublicServicesISR(1, 12);
+    initialServices = res?.data?.services || [];
   } catch (err) {
-    console.error('Failed to fetch blogs on server:', err);
+    console.error('Failed to fetch services on server:', err);
   }
 
   return (
     <div className="space-y-12 bg-transparent">
       {/* 🏷️ Hot Deals Products */}
-      <ProductSection title="🔥 Special Hot Deals" type="hotdeal" />
+      {/* <ProductSection title="🔥 Special Hot Deals" type="hotdeal" /> */}
 
       {/* 🌟 Featured Products */}
       <ProductSection title="⭐ Featured Rental Items" type="featured" />
@@ -23,7 +23,7 @@ export default async function HotDealsPage() {
       <ProductSection title="🏆 Top Rental Products" type="toprental" />
         
       {/* 📝 Portfolio & Setup Services Slider */}
-      <BlogServices initialBlogs={initialBlogs} />
+      <BlogServices initialBlogs={initialServices} />
     </div>
   );
 }

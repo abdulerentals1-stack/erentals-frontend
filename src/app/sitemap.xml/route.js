@@ -79,26 +79,25 @@ export async function GET() {
     console.error("Sitemap product fetch error:", err);
   }
 
-  // --- 5. Fetch dynamic services/blogs ---
-  let blogUrls = [];
+  let serviceUrls = [];
   try {
-    const blogsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs?limit=100`, {
+    const servicesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services?limit=100`, {
       next: { revalidate: 3600 },
     });
-    if (blogsRes.ok) {
-      const blogsData = await blogsRes.json();
-      const blogs = blogsData?.blogs || [];
-      blogUrls = blogs.map(
-        (blogItem) =>
-          `<url><loc>${BASE_URL}/services/${blogItem.slug}</loc><lastmod>${blogItem.updatedAt ? blogItem.updatedAt.split('T')[0] : lastmodDate}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>`
+    if (servicesRes.ok) {
+      const servicesData = await servicesRes.json();
+      const services = servicesData?.services || [];
+      serviceUrls = services.map(
+        (serviceItem) =>
+          `<url><loc>${BASE_URL}/services/${serviceItem.slug}</loc><lastmod>${serviceItem.updatedAt ? serviceItem.updatedAt.split('T')[0] : lastmodDate}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>`
       );
     }
   } catch (err) {
-    console.error("Sitemap blog fetch error:", err);
+    console.error("Sitemap services fetch error:", err);
   }
 
   // --- 6. Combine all URLs ---
-  const allUrls = [...staticUrls, ...categoryUrls, ...tagUrls, ...productUrls, ...blogUrls].join("");
+  const allUrls = [...staticUrls, ...categoryUrls, ...tagUrls, ...productUrls, ...serviceUrls].join("");
 
   // --- 7. Return XML ---
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

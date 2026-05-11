@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { getPublicBlogs, getPublicBlogBySlug } from '@/services/blogService';
+import { getPublicServices, getPublicServiceBySlug } from '@/services/serviceService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sparkles, Send, Phone, Mail, ShieldCheck, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
@@ -12,13 +13,13 @@ import Script from 'next/script';
 
 import api from '@/lib/axios';
 
-export default function ServiceDetailClient({ initialBlog, slug }) {
+export default function ServiceDetailClient({ initialService, slug }) {
   const router = useRouter();
 
-  const [blogs, setBlogs] = useState([]);
-  const [blog, setBlog] = useState(initialBlog);
+  const [services, setServices] = useState([]);
+  const [service, setService] = useState(initialService);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
-  const [loading, setLoading] = useState(!initialBlog);
+  const [loading, setLoading] = useState(!initialService);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -27,9 +28,9 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch active service blog details
+  // Fetch active service details
   useEffect(() => {
-    if (blog) {
+    if (service) {
       setLoading(false);
       return;
     }
@@ -38,8 +39,8 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
     const fetchServiceDetail = async () => {
       try {
         setLoading(true);
-        const res = await getPublicBlogBySlug(slug);
-        setBlog(res.data.blog);
+        const res = await getPublicServiceBySlug(slug);
+        setService(res.data.service);
       } catch (err) {
         console.error('Failed to fetch service detail by slug', err);
       } finally {
@@ -48,14 +49,14 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
     };
 
     fetchServiceDetail();
-  }, [slug, blog]);
+  }, [slug, service]);
 
   // Fetch sidebar items
   useEffect(() => {
     const fetchServicesList = async () => {
       try {
-        const { data } = await getPublicBlogs(1, 20);
-        setBlogs(data.blogs || []);
+        const { data } = await getPublicServices(1, 20);
+        setServices(data.services || []);
       } catch (err) {
         console.error('Failed to fetch services sidebar', err);
       }
@@ -63,10 +64,6 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
 
     fetchServicesList();
   }, []);
-
-  const handleSelectService = (selectedBlog) => {
-    router.push(`/services/${selectedBlog.slug}`);
-  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -92,7 +89,7 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
         name: formData.name,
         email: formData.email,
         mobile: cleanedPhone,
-        message: formData.requirements || `Custom Event setup inquiry for: "${blog.title}"`
+        message: formData.requirements || `Custom Event setup inquiry for: "${service.title}"`
       });
 
       toast.success('🎉 Custom quote request submitted! Our event manager will call you within 2 hours.');
@@ -105,7 +102,7 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
     }
   };
 
-  if (loading || !blog) {
+  if (loading || !service) {
     return (
       <div className="max-w-7xl mx-auto mt-8 px-4 flex flex-col md:flex-row gap-6">
         <div className="md:w-3/4 p-6 bg-white rounded-xl shadow-sm space-y-4">
@@ -124,17 +121,25 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: blog?.title,
+    headline: service?.title,
     image: [
-      blog?.images?.[0]?.url || blog?.coverImage?.url || "https://e-rentals.in/logo.png"
+      service?.images?.[0]?.url || service?.coverImage?.url || "https://e-rentals.in/logo.png"
     ],
-    datePublished: blog?.createdAt || new Date().toISOString(),
-    dateModified: blog?.updatedAt || new Date().toISOString(),
+    datePublished: service?.createdAt || new Date().toISOString(),
+    dateModified: service?.updatedAt || new Date().toISOString(),
     author: [{
       "@type": "Person",
-      name: blog?.authorName || "e-Rentals Team",
+      name: service?.authorName || "e-Rentals Team",
       url: "https://e-rentals.in/about-us"
-    }]
+    }],
+    publisher: {
+      "@type": "Organization",
+      name: "e-Rentals",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+      }
+    }
   };
 
   return (
@@ -149,31 +154,31 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
         {/* Breadcrumb Navigation */}
         <Breadcrumbs items={[
           { label: "Services", href: "/services" },
-          { label: blog.title }
+          { label: service.title }
         ]} />
 
         {/* Main Columns Container */}
         <div className="flex flex-col lg:flex-row gap-8">
           
-          {/* LEFT: Main Active Service Blog Content */}
+          {/* LEFT: Main Active Service Content */}
           <div className="lg:w-3/4 flex flex-col gap-6">
             
             {/* The Main Content Card */}
             <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-zinc-800">
               <h1 className="text-2xl md:text-3xl font-extrabold text-[#003459] dark:text-white leading-tight mb-2">
-                {blog.title}
+                {service.title}
               </h1>
               
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6">
-                Supervisor - {blog.authorName || 'E-Rentals Technical Team'}
+                Supervisor - {service.authorName || 'E-Rentals Technical Team'}
               </p>
 
               {/* Dynamic Slideshow or Cover Image Fallback */}
-              {blog.images && blog.images.length > 0 ? (
+              {service.images && service.images.length > 0 ? (
                 <div className="relative w-full h-[250px] md:h-[450px] mb-8 rounded-xl overflow-hidden shadow-sm group/slider">
                   <Image
-                    src={blog.images[activeImgIndex]?.url || blog.coverImage?.url}
-                    alt={blog.images[activeImgIndex]?.alt || blog.coverImage?.alt || blog.title || "Event Service"}
+                    src={service.images[activeImgIndex]?.url || service.coverImage?.url}
+                    alt={service.images[activeImgIndex]?.alt || service.coverImage?.alt || service.title || "Event Service"}
                     fill
                     className="object-cover transition-all duration-500"
                     sizes="(max-w-1024px) 100vw, 80vw"
@@ -181,9 +186,9 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                   />
                   
                   {/* Left Navigation Arrow */}
-                  {blog.images.length > 1 && (
+                  {service.images.length > 1 && (
                     <button
-                      onClick={() => setActiveImgIndex((prev) => (prev === 0 ? blog.images.length - 1 : prev - 1))}
+                      onClick={() => setActiveImgIndex((prev) => (prev === 0 ? service.images.length - 1 : prev - 1))}
                       className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 p-2.5 rounded-full shadow-md transition-all duration-200 hover:scale-105 z-10"
                       title="Previous Image"
                     >
@@ -192,9 +197,9 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                   )}
 
                   {/* Right Navigation Arrow */}
-                  {blog.images.length > 1 && (
+                  {service.images.length > 1 && (
                     <button
-                      onClick={() => setActiveImgIndex((prev) => (prev === blog.images.length - 1 ? 0 : prev + 1))}
+                      onClick={() => setActiveImgIndex((prev) => (prev === service.images.length - 1 ? 0 : prev + 1))}
                       className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 p-2.5 rounded-full shadow-md transition-all duration-200 hover:scale-105 z-10"
                       title="Next Image"
                     >
@@ -203,9 +208,9 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                   )}
 
                   {/* Slider Progress Indicator Dots */}
-                  {blog.images.length > 1 && (
+                  {service.images.length > 1 && (
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-black/35 px-3 py-1.5 rounded-full backdrop-blur-sm">
-                      {blog.images.map((_, idx) => (
+                      {service.images.map((_, idx) => (
                         <button
                           key={idx}
                           onClick={() => setActiveImgIndex(idx)}
@@ -217,11 +222,11 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                     </div>
                   )}
                 </div>
-              ) : blog.coverImage?.url ? (
+              ) : service.coverImage?.url ? (
                 <div className="relative w-full h-[250px] md:h-[450px] mb-8 rounded-xl overflow-hidden shadow-sm">
                   <Image
-                    src={blog.coverImage.url}
-                    alt={blog.coverImage?.alt || blog.title || "Event Service"}
+                    src={service.coverImage.url}
+                    alt={service.coverImage?.alt || service.title || "Event Service"}
                     fill
                     className="object-cover"
                     sizes="(max-w-1024px) 100vw, 80vw"
@@ -230,10 +235,10 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                 </div>
               ) : null}
 
-              {/* Dynamic Blog HTML Content */}
+              {/* Dynamic HTML Content */}
               <div 
                 className="prose prose-blue max-w-none text-gray-700 dark:text-gray-300 leading-relaxed space-y-4 text-sm md:text-base"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
+                dangerouslySetInnerHTML={{ __html: service.content }}
               />
             </div>
 
@@ -303,7 +308,7 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                     name="requirements"
                     value={formData.requirements}
                     onChange={handleInputChange}
-                    placeholder={`Describe what you need (e.g. setup similar to "${blog.title}", approximate budget, size of the venue...)`}
+                    placeholder={`Describe what you need (e.g. setup similar to "${service.title}", approximate budget, size of the venue...)`}
                     rows="3"
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500 resize-none"
                   />
@@ -332,7 +337,7 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
 
           </div>
 
-          {/* RIGHT: Sidebar Listing of All Other Services/Blogs */}
+          {/* RIGHT: Sidebar Listing of All Other Services */}
           <div className="lg:w-1/4">
             <div className="bg-white dark:bg-zinc-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-zinc-800 sticky top-6">
               <h2 className="text-sm font-extrabold uppercase tracking-widest text-[#003459] dark:text-blue-400 mb-4 border-b pb-2">
@@ -340,12 +345,12 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
               </h2>
               
               <div className="flex flex-col gap-4">
-                {blogs.map((b) => (
-                  <button
+                {services.map((b) => (
+                  <Link
                     key={b._id}
-                    onClick={() => handleSelectService(b)}
-                    className={`relative w-full h-36 md:h-40 rounded-xl overflow-hidden transition-all duration-300 group/card border-2 ${
-                      b._id === blog._id 
+                    href={`/services/${b.slug}`}
+                    className={`block relative w-full h-36 md:h-40 rounded-xl overflow-hidden transition-all duration-300 group/card border-2 ${
+                      b._id === service._id 
                         ? 'border-blue-500 scale-[1.02] shadow-md ring-2 ring-blue-500/20' 
                         : 'border-transparent hover:scale-[1.01] hover:shadow-sm'
                     }`}
@@ -372,7 +377,7 @@ export default function ServiceDetailClient({ initialBlog, slug }) {
                         {b.title}
                       </p>
                     </div>
-                  </button>
+                  </Link>
                 ))}
               </div>
 

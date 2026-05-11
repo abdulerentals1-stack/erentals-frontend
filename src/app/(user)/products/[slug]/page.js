@@ -23,61 +23,87 @@ export async function generateStaticParams() {
 
 // ✅ Dynamic metadata for each product
 export async function generateMetadata({ params }) {
-  const { slug } = params;
-  const data = await getProductBySlug(slug);
-  const product = data?.product;
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
 
-  if (!product) {
+  if (!slug) {
     return {
-      title: "Product not found - e-Rentals",
-      description: "The product you are looking for does not exist.",
-      alternates: { canonical: `${siteDomain}/products/${slug}` },
+      title: "Products - e-Rentals",
+      description: "Premium event and equipment rentals in Mumbai.",
+      alternates: { canonical: `${siteDomain}/products` },
     };
   }
 
-  const productUrl = `${siteDomain}/products/${product.slug}`;
+  try {
+    const data = await getProductBySlug(slug);
+    const product = data?.product;
 
-  // ✅ Handle canonical URL correctly
-  // If product.isCanonical true => self URL
-  // If product.isCanonical false => point to main/original product URL
-  const canonicalUrl = product.isCanonical
-    ? productUrl
-    : `${siteDomain}/products/${product.slug}`; // replace with main product URL if you have one
-
-  const fallbackDescription = product.metaDescription || (product.description ? `${product.description.slice(0, 150)}...` : "Premium event and equipment rentals in Mumbai on e-Rentals.");
-
-  return {
-    title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
-    description: fallbackDescription,
-    keywords: product.metaKeywords || [],
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
-      title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
-      description: fallbackDescription,
-      url: productUrl,
-      type: "website",
-      images: [
-        {
-          url: product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg",
-          width: 1200,
-          height: 630,
-          alt: product.name,
+    if (!product) {
+      return {
+        title: "Product not found - e-Rentals",
+        description: "The product you are looking for does not exist.",
+        alternates: { canonical: `${siteDomain}/products/${slug}` },
+        openGraph: {
+          url: `${siteDomain}/products/${slug}`,
         },
-      ],
-      siteName: "e-Rentals",
-    },
-    twitter: {
-      card: "summary_large_image",
+      };
+    }
+
+    const productUrl = `${siteDomain}/products/${product.slug}`;
+
+    // ✅ Handle canonical URL correctly
+    // If product.isCanonical true => self URL
+    // If product.isCanonical false => point to main/original product URL
+    const canonicalUrl = product.isCanonical
+      ? productUrl
+      : `${siteDomain}/products/${product.slug}`; // replace with main product URL if you have one
+
+    const fallbackDescription = product.metaDescription || (product.description ? `${product.description.slice(0, 150)}...` : "Premium event and equipment rentals in Mumbai on e-Rentals.");
+
+    return {
       title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
       description: fallbackDescription,
-      images: [product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg"],
-      creator: "@erentals",
-    },
-  };
+      keywords: product.metaKeywords || [],
+      alternates: { canonical: canonicalUrl },
+      openGraph: {
+        title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
+        description: fallbackDescription,
+        url: productUrl,
+        type: "website",
+        images: [
+          {
+            url: product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: product.name,
+          },
+        ],
+        siteName: "e-Rentals",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
+        description: fallbackDescription,
+        images: [product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg"],
+        creator: "@erentals",
+      },
+    };
+  } catch (err) {
+    console.error("Error generating metadata for product slug:", slug, err);
+    return {
+      title: "Event Equipment Rental - e-Rentals",
+      description: "Rent premium party and corporate event equipment in Mumbai at best prices.",
+      alternates: { canonical: `${siteDomain}/products/${slug}` },
+      openGraph: {
+        url: `${siteDomain}/products/${slug}`,
+      },
+    };
+  }
 }
 
 export default async function ProductPage({ params }) {
-  const { slug } = params;
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
   const data = await getProductBySlug(slug);
   const product = data?.product;
 
