@@ -3,381 +3,194 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { getPublicBlogs } from '@/services/blogService';
+import { getPublicServices } from '@/services/serviceService';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Sparkles, Send, Phone, Mail, ShieldCheck, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Sparkles,
+  MapPin,
+  Phone,
+  ArrowUpRight,
+  Calendar,
+  User,
+  Zap
+} from 'lucide-react';
 import { toast } from 'sonner';
 
-import api from '@/lib/axios';
-
 export default function ServicesPage() {
-  const router = useRouter();
-  const [blogs, setBlogs] = useState([]);
-  const [activeBlog, setActiveBlog] = useState(null);
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    requirements: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchServicesAndBlogs = async () => {
+    const fetchAllServices = async () => {
       try {
         setLoading(true);
-        const { data } = await getPublicBlogs(1, 20);
-        const fetchedBlogs = data.blogs || [];
-        setBlogs(fetchedBlogs);
-        if (fetchedBlogs.length > 0) {
-          setActiveBlog(fetchedBlogs[0]);
-        }
+        const { data } = await getPublicServices(1, 100);
+        setServices(data.services || []);
       } catch (err) {
-        console.error('Failed to fetch services blogs', err);
+        console.error('Failed to fetch services catalog', err);
+        toast.error('Failed to load event setups catalog.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchServicesAndBlogs();
+    fetchAllServices();
   }, []);
-
-  const handleSelectService = (blog) => {
-    setActiveBlog(blog);
-    setActiveImgIndex(0);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.email) {
-      toast.error('Please fill in your Name, Phone Number, and Email!');
-      return;
-    }
-
-    const cleanedPhone = formData.phone.replace(/[^0-9]/g, '');
-    if (cleanedPhone.length !== 10) {
-      toast.error('Please enter a valid 10-digit mobile number!');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await api.post('/enquiry', {
-        name: formData.name,
-        email: formData.email,
-        mobile: cleanedPhone,
-        message: formData.requirements || `Custom Event setup inquiry (Main portfolio list) for: "${blog.title}"`
-      });
-
-      toast.success('🎉 Custom quote request submitted! Our event manager will call you within 2 hours.');
-      setFormData({ name: '', phone: '', email: '', requirements: '' });
-    } catch (err) {
-      console.error('Enquiry submission failed:', err);
-      toast.error(err.response?.data?.message || 'Failed to submit enquiry. Please try again!');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto mt-8 px-4 flex flex-col md:flex-row gap-6">
-        <div className="md:w-3/4 p-6 bg-white rounded-xl shadow-sm space-y-4">
-          <Skeleton className="h-8 w-3/4 rounded" />
-          <Skeleton className="h-4 w-1/4 rounded" />
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-4 w-full rounded" />
-          <Skeleton className="h-4 w-full rounded" />
-        </div>
-        <div className="md:w-1/4 p-4 bg-white rounded-xl shadow-sm space-y-3">
-          <Skeleton className="h-6 w-1/2 rounded" />
-          <Skeleton className="h-10 w-full rounded" />
-          <Skeleton className="h-10 w-full rounded" />
+      <div className="bg-gray-50 dark:bg-zinc-950 min-h-screen py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="space-y-4 mb-10">
+            <Skeleton className="h-4 w-32 rounded bg-gray-200 dark:bg-zinc-800" />
+            <Skeleton className="h-10 w-2/3 rounded-xl bg-gray-200 dark:bg-zinc-800" />
+            <Skeleton className="h-6 w-1/2 rounded bg-gray-200 dark:bg-zinc-800" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-3xl p-5 space-y-4">
+                <Skeleton className="h-52 w-full rounded-2xl bg-gray-200 dark:bg-zinc-800" />
+                <Skeleton className="h-6 w-3/4 rounded bg-gray-200 dark:bg-zinc-800" />
+                <Skeleton className="h-4 w-1/2 rounded bg-gray-200 dark:bg-zinc-800" />
+                <Skeleton className="h-4 w-full rounded bg-gray-200 dark:bg-zinc-800" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
-
-  if (blogs.length === 0) {
-    return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center bg-gray-50 dark:bg-zinc-950 px-4">
-        <h2 className="text-xl font-bold text-gray-700 dark:text-gray-300">No Services or Case Studies Found</h2>
-        <p className="text-gray-500 mt-2 text-center max-w-md">Our event setups are currently being documented. Please check back soon or call us directly to inquire about your custom setup.</p>
-        <a href="tel:+919867348165" className="mt-4 inline-flex items-center gap-2 bg-[#003459] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-opacity-90 transition">
-          <Phone className="w-4 h-4" /> Call +91 98673 48165
-        </a>
-      </div>
-    );
-  }
-
-  const blog = activeBlog || blogs[0];
 
   return (
-    <div className="bg-gray-50 dark:bg-zinc-950 min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        
-        {/* Main Columns Container */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* LEFT: Main Active Service Blog Content */}
-          <div className="lg:w-3/4 flex flex-col gap-6">
-            
-            {/* The Main Content Card */}
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-zinc-800">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-[#003459] dark:text-white leading-tight mb-2">
-                {blog.title}
+    <div className="bg-gradient-to-b from-gray-50 to-white dark:from-zinc-950 dark:to-zinc-900 min-h-screen pb-20">
+
+      {/* 🚀 Gorgeous Hero Jumbotron Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#003459] to-[#001f35] text-white py-16 md:py-20 mb-12">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="absolute -left-20 -top-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl" />
+        <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-3xl space-y-4">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/10 backdrop-blur-md text-blue-200 tracking-wide uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Event Showcases
+              </span>
+              <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-none text-white">
+                Premium Event Services <br />
+                <span className="text-[#00E8C6]">& Corporate Production</span>
               </h1>
-              
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6">
-                Supervisor - {blog.authorName || 'E-Rentals Technical Team'}
+              <p className="text-sm md:text-base text-gray-300 leading-relaxed max-w-2xl">
+                Discover how we bring visions to life! Browse our stunning custom stages, professional ambient lighting, and elegant venue setup showcases crafted across top locations in Mumbai.
               </p>
-
-              {/* Dynamic Slideshow or Cover Image Fallback */}
-              {blog.images && blog.images.length > 0 ? (
-                <div className="relative w-full h-[250px] md:h-[450px] mb-8 rounded-xl overflow-hidden shadow-sm group/slider">
-                  <Image
-                    src={blog.images[activeImgIndex]?.url || blog.coverImage?.url}
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-all duration-500"
-                    sizes="(max-w-1024px) 100vw, 80vw"
-                    priority
-                  />
-                  
-                  {/* Left Navigation Arrow */}
-                  {blog.images.length > 1 && (
-                    <button
-                      onClick={() => setActiveImgIndex((prev) => (prev === 0 ? blog.images.length - 1 : prev - 1))}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 p-2.5 rounded-full shadow-md transition-all duration-200 hover:scale-105 z-10"
-                      title="Previous Image"
-                    >
-                      <ChevronLeft className="w-5 h-5 text-[#003459] dark:text-white" />
-                    </button>
-                  )}
-
-                  {/* Right Navigation Arrow */}
-                  {blog.images.length > 1 && (
-                    <button
-                      onClick={() => setActiveImgIndex((prev) => (prev === blog.images.length - 1 ? 0 : prev + 1))}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 p-2.5 rounded-full shadow-md transition-all duration-200 hover:scale-105 z-10"
-                      title="Next Image"
-                    >
-                      <ChevronRight className="w-5 h-5 text-[#003459] dark:text-white" />
-                    </button>
-                  )}
-
-                  {/* Slider Progress Indicator Dots */}
-                  {blog.images.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-black/35 px-3 py-1.5 rounded-full backdrop-blur-sm">
-                      {blog.images.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveImgIndex(idx)}
-                          className={`h-2 transition-all rounded-full ${
-                            activeImgIndex === idx ? 'w-5 bg-white' : 'w-2 bg-white/50 hover:bg-white'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : blog.coverImage?.url ? (
-                <div className="relative w-full h-[250px] md:h-[450px] mb-8 rounded-xl overflow-hidden shadow-sm">
-                  <Image
-                    src={blog.coverImage.url}
-                    alt={blog.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-w-1024px) 100vw, 80vw"
-                    priority
-                  />
-                </div>
-              ) : null}
-
-              {/* Dynamic Blog HTML Content */}
-              <div 
-                className="prose prose-blue max-w-none text-gray-700 dark:text-gray-300 leading-relaxed space-y-4 text-sm md:text-base"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
-              />
             </div>
 
-            {/* Custom Quote Request Form Section */}
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-zinc-800">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="text-xl font-bold text-[#003459] dark:text-white">
-                  Get a Custom Setup Quote for Your Event
-                </h2>
+            {/* Quick Contact Widget */}
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 md:w-80 shrink-0 self-start md:self-center shadow-lg space-y-4">
+              <div className="flex items-center gap-2.5">
+                <Zap className="w-5 h-5 text-[#00E8C6]" />
+                <h3 className="font-bold text-sm tracking-wide uppercase text-[#00E8C6]">Plan Your Setup</h3>
               </div>
-              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-2xl">
-                Wowed by this setup? Let our specialized engineers design and deliver the perfect customized layout for your upcoming corporate meet, wedding, or private party.
+              <p className="text-xs text-gray-300 leading-normal">
+                Looking to craft a majestic main stage, a premium welcome gate, or immersive audio-visual layout for your upcoming special occasion?
               </p>
-
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
-                      Your Name *
-                    </label>
-                    <input 
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Vikas Sharma"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
-                      Phone Number *
-                    </label>
-                    <input 
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="e.g. +91 98673 48165"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
-                      Email Address *
-                    </label>
-                    <input 
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="e.g. vikas@gmail.com"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
-                    Your Specific Event Setup Requirements
-                  </label>
-                  <textarea 
-                    name="requirements"
-                    value={formData.requirements}
-                    onChange={handleInputChange}
-                    placeholder={`Describe what you need (e.g. setup similar to "${blog.title}", approximate budget, size of the venue...)`}
-                    rows="3"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500 resize-none"
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-                  <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Free on-site layout design mapping in Mumbai</span>
-                  </div>
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-xs md:text-sm font-bold bg-[#003459] hover:bg-[#00243d] text-white transition duration-200 disabled:opacity-60"
-                  >
-                    {isSubmitting ? 'Submitting Quote...' : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        Request Setup Pricing Proposal
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+              <a
+                href="tel:+919867348165"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-[#00E8C6] text-[#003459] font-bold text-xs md:text-sm hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200"
+              >
+                <Phone className="w-4 h-4" /> Call Our Event Experts
+              </a>
             </div>
-
           </div>
+        </div>
+      </div>
 
-          {/* RIGHT: Sidebar Listing of All Other Services/Blogs */}
-          <div className="lg:w-1/4">
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-zinc-800 sticky top-6">
-              <h2 className="text-sm font-extrabold uppercase tracking-widest text-[#003459] dark:text-blue-400 mb-4 border-b pb-2">
-                Related Services
-              </h2>
-              
-              <div className="flex flex-col gap-4">
-                {blogs.map((b) => (
-                  <button
-                    key={b._id}
-                    onClick={() => handleSelectService(b)}
-                    className={`relative w-full h-36 md:h-40 rounded-xl overflow-hidden transition-all duration-300 group/card border-2 ${
-                      b._id === blog._id 
-                        ? 'border-blue-500 scale-[1.02] shadow-md ring-2 ring-blue-500/20' 
-                        : 'border-transparent hover:scale-[1.01] hover:shadow-sm'
-                    }`}
-                  >
-                    {/* Background Full Image */}
-                    {b.coverImage?.url ? (
+      {/* 📚 Grid Cards Listing */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {services.length === 0 ? (
+          <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-3xl border border-dashed border-gray-200 dark:border-zinc-800 max-w-xl mx-auto px-4">
+            <h3 className="font-extrabold text-lg text-gray-800 dark:text-white">No Setups Available</h3>
+            <p className="text-gray-500 mt-2 text-sm max-w-sm mx-auto font-medium">
+              We are currently compiling our premium layout setups. Check back in a few minutes!
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => (
+              <Link
+                key={service._id}
+                href={`/services/${service.slug}`}
+                className="group bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800/80 shadow-sm hover:shadow-xl hover:border-blue-500/20 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
+              >
+                <div>
+                  {/* Aspect-Ratio Rich Image container */}
+                  <div className="relative h-56 w-full overflow-hidden bg-gray-100 dark:bg-zinc-800">
+                    {service.coverImage?.url ? (
                       <Image
-                        src={b.coverImage.url}
-                        alt={b.title}
+                        src={service.coverImage.url}
+                        alt={service.title}
                         fill
-                        className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                        sizes="(max-w-768px) 100vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-w-768px) 100vw, 33vw"
+                        priority={index < 3}
                       />
                     ) : (
-                      <div className="w-full h-full bg-[#003459] dark:bg-zinc-850" />
+                      <div className="w-full h-full bg-[#003459]/10 flex items-center justify-center text-[#003459] font-bold">
+                        e-Rentals Showcase
+                      </div>
                     )}
+                  </div>
 
-                    {/* Dark Overlap Gradient Behind Title */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-                    {/* Text Overlay at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
-                      <p className="text-white text-xs font-bold leading-snug line-clamp-2 drop-shadow-md">
-                        {b.title}
-                      </p>
+                  {/* Card Main Body */}
+                  <div className="p-6">
+                    {/* Event metadata row */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium border-b pb-3 border-gray-50 dark:border-zinc-800/50">
+                      <div className="flex items-center gap-1">
+                        <User className="w-3.5 h-3.5" />
+                        <span>{service.authorName ? service.authorName.split(',')[0] : 'Technical Team'}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>{new Date(service.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                      </div>
                     </div>
-                  </button>
-                ))}
-              </div>
 
-              {/* Sidebar Quick Connect Details */}
-              <div className="mt-6 pt-6 border-t border-gray-100 dark:border-zinc-800 space-y-4">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
-                  <HeartHandshake className="w-4 h-4" />
-                  <span>Immediate Booking</span>
+                    {/* Service Title */}
+                    <h3 className="font-extrabold text-lg md:text-xl text-gray-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-3">
+                      {service.title}
+                    </h3>
+
+                    {/* Service Description Snippet */}
+                    <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-3 leading-relaxed mb-4">
+                      {service.metaDescription || (service.content ? service.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 'Premium fabrication & custom structural installation configurations in Mumbai.')}
+                    </p>
+
+                    {/* Inline Keywords */}
+                    {service.metaKeywords && Array.isArray(service.metaKeywords) && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {service.metaKeywords.slice(0, 3).map((keyword, idx) => (
+                          <span key={idx} className="px-2.5 py-1 bg-gray-50 dark:bg-zinc-800 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase rounded-lg">
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                
-                <a 
-                  href="tel:+919867348165"
-                  className="flex items-center gap-3 text-xs md:text-sm font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400"
-                >
-                  <Phone className="w-4 h-4 shrink-0" />
-                  <span>+91 98673 48165</span>
-                </a>
-                
-                <a 
-                  href="mailto:support@e-rentals.in"
-                  className="flex items-center gap-3 text-xs md:text-sm text-gray-500 hover:text-blue-600"
-                >
-                  <Mail className="w-4 h-4 shrink-0" />
-                  <span>support@e-rentals.in</span>
-                </a>
-              </div>
 
-            </div>
+                {/* Card CTA Footer */}
+                <div className="px-6 pb-6 pt-3 border-t border-gray-50 dark:border-zinc-800/30 flex items-center justify-between">
+
+                  <span className="inline-flex items-center gap-1 py-2 px-4 rounded-xl text-xs font-extrabold text-blue-600 group-hover:text-white group-hover:bg-blue-600 dark:text-blue-400 dark:group-hover:text-white dark:group-hover:bg-blue-600 transition-all duration-200">
+                    View Details <ArrowUpRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
-
-        </div>
-
+        )}
       </div>
+
     </div>
   );
 }

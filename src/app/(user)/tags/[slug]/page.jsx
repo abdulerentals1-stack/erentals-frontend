@@ -9,62 +9,103 @@ export const dynamic = "force-dynamic"; // Always fresh SSR
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const tags = data?.tags || [];
+    return tags.map((t) => ({
+      slug: t.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for tags:", err);
+    return [];
+  }
+}
+
 // ✅ Dynamic Metadata for Tag Page
 export async function generateMetadata({ params }) {
-  const { slug } = params;
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
 
-  const tagRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}`, {
-    cache: "no-store",
-  });
-  const tagData = await tagRes.json();
-  const tag = tagData?.tag;
-
-  if (!tag) {
+  if (!slug) {
     return {
-      title: "Tag not found - e-Rentals",
-      description: "The tag you are looking for does not exist.",
-      alternates: { canonical: `${siteDomain}/tags/${slug}` },
+      title: "Tags - e-Rentals",
+      description: "Explore corporate and party event setup tag details on rent in Mumbai.",
+      alternates: { canonical: `${siteDomain}/tags` },
     };
   }
 
-  const tagUrl = `${siteDomain}/tags/${tag.slug}`;
-  const imageUrl = tag.image?.url || "/placeholder.jpg";
+  try {
+    const tagRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}`, {
+      cache: "no-store",
+    });
+    const tagData = await tagRes.json();
+    const tag = tagData?.tag;
 
-  const fallbackDesc = tag.metaDescription || `Get dynamic event services with premium ${tag.name} in Mumbai. e-Rentals simplifies on-demand staging, fabrication, props, and design for corporate and private events.`;
-
-  return {
-    title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
-    description: fallbackDesc,
-    keywords: tag.metaKeywords || [],
-    alternates: { canonical: tagUrl },
-    openGraph: {
-      title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
-      description: fallbackDesc,
-      url: tagUrl,
-      type: "website",
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: tag.name,
+    if (!tag) {
+      return {
+        title: "Tag not found - e-Rentals",
+        description: "The tag you are looking for does not exist.",
+        alternates: { canonical: `${siteDomain}/tags/${slug}` },
+        openGraph: {
+          url: `${siteDomain}/tags/${slug}`,
         },
-      ],
-      siteName: "e-Rentals",
-    },
-    twitter: {
-      card: "summary_large_image",
+      };
+    }
+
+    const tagUrl = `${siteDomain}/tags/${tag.slug}`;
+    const imageUrl = tag.image?.url || "/placeholder.jpg";
+
+    const fallbackDesc = tag.metaDescription || `Get dynamic event services with premium ${tag.name} in Mumbai. e-Rentals simplifies on-demand staging, fabrication, props, and design for corporate and private events.`;
+
+    return {
       title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
       description: fallbackDesc,
-      images: [imageUrl],
-      creator: "@erentals",
-    },
-  };
+      keywords: tag.metaKeywords || [],
+      alternates: { canonical: tagUrl },
+      openGraph: {
+        title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
+        description: fallbackDesc,
+        url: tagUrl,
+        type: "website",
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: tag.name,
+          },
+        ],
+        siteName: "e-Rentals",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: tag.metaTitle || `${tag.name} Event Hire on Rent in Mumbai | e-Rentals`,
+        description: fallbackDesc,
+        images: [imageUrl],
+        creator: "@erentals",
+      },
+    };
+  } catch (err) {
+    console.error("Error generating metadata for tag slug:", slug, err);
+    return {
+      title: "Event Tag Hire - e-Rentals",
+      description: "Premium on-demand staging, fabrication, and props in Mumbai.",
+      alternates: { canonical: `${siteDomain}/tags/${slug}` },
+      openGraph: {
+        url: `${siteDomain}/tags/${slug}`,
+      },
+    };
+  }
 }
 
 export default async function TagPage({ params, searchParams }) {
-  const { slug } = params;
-  const page = parseInt(searchParams?.page || "1");
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const slug = resolvedParams?.slug;
+  const page = parseInt(resolvedSearchParams?.page || "1");
   const limit = 20;
 
   // ✅ 1. Fetch tag data by slug

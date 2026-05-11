@@ -31,6 +31,11 @@ const nextConfig = {
         destination: '/quotation/:id',
         permanent: true,
       },
+      {
+        source: '/blogs/:slug',
+        destination: '/services/:slug',
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
