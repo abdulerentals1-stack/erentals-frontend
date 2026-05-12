@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Secure Login & Registration – e-Rentals.in",
   description: "Securely sign in or create an account on e-Rentals India to request quotations, manage orders, and unlock curated rental catalogs.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({ children }) {

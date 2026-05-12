@@ -6,6 +6,12 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+
+function getCleanCategoryName(name) {
+  if (!name) return "";
+  return name.replace(/^(Category\s*[\/\-]\s*)/i, "").trim();
+}
 
 export async function generateStaticParams() {
   try {
@@ -72,7 +78,7 @@ export async function generateMetadata({ params }) {
         type: "website",
         images: [
           {
-            url: product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg",
+            url: product.images?.[0]?.url || product.images?.[0] || logoUrl,
             width: 1200,
             height: 630,
             alt: product.name,
@@ -84,7 +90,7 @@ export async function generateMetadata({ params }) {
         card: "summary_large_image",
         title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
         description: fallbackDescription,
-        images: [product.images?.[0]?.url || product.images?.[0] || "/default-image.jpg"],
+        images: [product.images?.[0]?.url || product.images?.[0] || logoUrl],
         creator: "@erentals",
       },
     };
@@ -168,7 +174,7 @@ export default async function ProductPage({ params }) {
         <Breadcrumbs items={[
           { label: "Products", href: "/products" },
           ...(product.category ? [{
-            label: typeof product.category === 'object' ? (product.category.name || "Category") : "Category",
+            label: typeof product.category === 'object' ? (getCleanCategoryName(product.category.name) || "Category") : "Category",
             href: typeof product.category === 'object' ? `/categories/${product.category.slug}` : `/categories/${product.category}`
           }] : []),
           { label: product.name }

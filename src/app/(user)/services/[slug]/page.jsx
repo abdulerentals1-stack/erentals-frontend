@@ -2,6 +2,7 @@ import { getPublicServiceBySlug, fetchPublicServicesISR } from '@/services/servi
 import ServiceDetailClient from './ServiceDetailClient';
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
 
 export async function generateStaticParams() {
   try {
@@ -65,7 +66,7 @@ export async function generateMetadata({ params }) {
         type: "article",
         images: [
           {
-            url: service.coverImage?.url || service.images?.[0]?.url || "/logo.png",
+            url: service.coverImage?.url || service.images?.[0]?.url || logoUrl,
             width: 1200,
             height: 630,
             alt: service.title,
@@ -77,7 +78,7 @@ export async function generateMetadata({ params }) {
         card: "summary_large_image",
         title,
         description: fallbackDesc,
-        images: [service.coverImage?.url || service.images?.[0]?.url || "/logo.png"],
+        images: [service.coverImage?.url || service.images?.[0]?.url || logoUrl],
       },
     };
   } catch (err) {
