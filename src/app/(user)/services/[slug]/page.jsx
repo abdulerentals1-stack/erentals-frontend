@@ -1,4 +1,4 @@
-import { getPublicServiceBySlug } from '@/services/serviceService';
+import { getPublicServiceBySlug, fetchPublicServicesISR } from '@/services/serviceService';
 import ServiceDetailClient from './ServiceDetailClient';
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
@@ -98,16 +98,15 @@ export async function generateMetadata({ params }) {
 export default async function ServiceSlugPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  let service = null;
 
-  try {
-    if (slug) {
-      const res = await getPublicServiceBySlug(slug);
-      service = res.data?.service;
-    }
-  } catch (err) {
-    console.error("Failed to load service on server render:", err);
-  }
+  // Fetch service detail AND sidebar list in parallel on the server
+  const [serviceResult, sidebarResult] = await Promise.allSettled([
+    slug ? getPublicServiceBySlug(slug) : Promise.resolve(null),
+    fetchPublicServicesISR(1, 20),
+  ]);
 
-  return <ServiceDetailClient initialService={service} slug={slug} />;
+  const service = serviceResult.status === 'fulfilled' ? serviceResult.value?.data?.service ?? null : null;
+  const sidebarServices = sidebarResult.status === 'fulfilled' ? sidebarResult.value?.data?.services ?? [] : [];
+
+  return <ServiceDetailClient initialService={service} initialServices={sidebarServices} slug={slug} />;
 }
