@@ -1,70 +1,35 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getPublicServices } from '@/services/serviceService';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Sparkles,
-  MapPin,
-  Phone,
-  ArrowUpRight,
-  Calendar,
-  User,
-  Zap
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Sparkles, Phone, ArrowUpRight, Calendar, User, Zap } from 'lucide-react';
 
-export default function ServicesPage() {
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    const fetchAllServices = async () => {
-      try {
-        setLoading(true);
-        const { data } = await getPublicServices(1, 100);
-        setServices(data.services || []);
-      } catch (err) {
-        console.error('Failed to fetch services catalog', err);
-        toast.error('Failed to load event setups catalog.');
-      } finally {
-        setLoading(false);
-      }
-    };
+// Helper: strip HTML once at build/render time, not per-card
+function stripHtml(html) {
+  return html ? html.replace(/<[^>]*>/g, '') : '';
+}
 
-    fetchAllServices();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="bg-gray-50 dark:bg-zinc-950 min-h-screen py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-4 mb-10">
-            <Skeleton className="h-4 w-32 rounded bg-gray-200 dark:bg-zinc-800" />
-            <Skeleton className="h-10 w-2/3 rounded-xl bg-gray-200 dark:bg-zinc-800" />
-            <Skeleton className="h-6 w-1/2 rounded bg-gray-200 dark:bg-zinc-800" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-3xl p-5 space-y-4">
-                <Skeleton className="h-52 w-full rounded-2xl bg-gray-200 dark:bg-zinc-800" />
-                <Skeleton className="h-6 w-3/4 rounded bg-gray-200 dark:bg-zinc-800" />
-                <Skeleton className="h-4 w-1/2 rounded bg-gray-200 dark:bg-zinc-800" />
-                <Skeleton className="h-4 w-full rounded bg-gray-200 dark:bg-zinc-800" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+async function fetchServices() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/services?page=1&limit=100`,
+      { cache: 'no-store' }
     );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.services || [];
+  } catch {
+    return [];
   }
+}
+
+export default async function ServicesPage() {
+  const services = await fetchServices();
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-white dark:from-zinc-950 dark:to-zinc-900 min-h-screen pb-20">
 
-      {/* 🚀 Gorgeous Hero Jumbotron Header */}
+      {/* 🚀 Hero Jumbotron Header */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#003459] to-[#001f35] text-white py-16 md:py-20 mb-12">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px]" />
         <div className="absolute -left-20 -top-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl" />
@@ -116,77 +81,78 @@ export default function ServicesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <Link
-                key={service._id}
-                href={`/services/${service.slug}`}
-                className="group bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800/80 shadow-sm hover:shadow-xl hover:border-blue-500/20 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
-              >
-                <div>
-                  {/* Aspect-Ratio Rich Image container */}
-                  <div className="relative h-56 w-full overflow-hidden bg-gray-100 dark:bg-zinc-800">
-                    {service.coverImage?.url ? (
-                      <Image
-                        src={service.coverImage.url}
-                        alt={service.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-w-768px) 100vw, 33vw"
-                        priority={index < 3}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[#003459]/10 flex items-center justify-center text-[#003459] font-bold">
-                        e-Rentals Showcase
-                      </div>
-                    )}
-                  </div>
+            {services.map((service, index) => {
+              // Strip HTML once per card — not inside JSX render
+              const snippet = service.metaDescription
+                || (service.content ? `${stripHtml(service.content).substring(0, 150)}...` : 'Premium fabrication & custom structural installation configurations in Mumbai.');
 
-                  {/* Card Main Body */}
-                  <div className="p-6">
-                    {/* Event metadata row */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium border-b pb-3 border-gray-50 dark:border-zinc-800/50">
-                      <div className="flex items-center gap-1">
-                        <User className="w-3.5 h-3.5" />
-                        <span>{service.authorName ? service.authorName.split(',')[0] : 'Technical Team'}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>{new Date(service.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-                      </div>
+              return (
+                <Link
+                  key={service._id}
+                  href={`/services/${service.slug}`}
+                  className="group bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800/80 shadow-sm hover:shadow-xl hover:border-blue-500/20 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
+                >
+                  <div>
+                    {/* Image */}
+                    <div className="relative h-56 w-full overflow-hidden bg-gray-100 dark:bg-zinc-800">
+                      {service.coverImage?.url ? (
+                        <Image
+                          src={service.coverImage.url}
+                          alt={service.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          priority={index < 2}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#003459]/10 flex items-center justify-center text-[#003459] font-bold">
+                          e-Rentals Showcase
+                        </div>
+                      )}
                     </div>
 
-                    {/* Service Title */}
-                    <h3 className="font-extrabold text-lg md:text-xl text-gray-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-3">
-                      {service.title}
-                    </h3>
-
-                    {/* Service Description Snippet */}
-                    <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-3 leading-relaxed mb-4">
-                      {service.metaDescription || (service.content ? service.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 'Premium fabrication & custom structural installation configurations in Mumbai.')}
-                    </p>
-
-                    {/* Inline Keywords */}
-                    {service.metaKeywords && Array.isArray(service.metaKeywords) && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {service.metaKeywords.slice(0, 3).map((keyword, idx) => (
-                          <span key={idx} className="px-2.5 py-1 bg-gray-50 dark:bg-zinc-800 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase rounded-lg">
-                            {keyword}
-                          </span>
-                        ))}
+                    {/* Card Body */}
+                    <div className="p-6">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium border-b pb-3 border-gray-50 dark:border-zinc-800/50">
+                        <div className="flex items-center gap-1">
+                          <User className="w-3.5 h-3.5" />
+                          <span>{service.authorName ? service.authorName.split(',')[0] : 'Technical Team'}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>{new Date(service.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                        </div>
                       </div>
-                    )}
+
+                      <h3 className="font-extrabold text-lg md:text-xl text-gray-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-3">
+                        {service.title}
+                      </h3>
+
+                      <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-3 leading-relaxed mb-4">
+                        {snippet}
+                      </p>
+
+                      {service.metaKeywords && Array.isArray(service.metaKeywords) && service.metaKeywords.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {service.metaKeywords.slice(0, 3).map((keyword, idx) => (
+                            <span key={idx} className="px-2.5 py-1 bg-gray-50 dark:bg-zinc-800 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase rounded-lg">
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* Card CTA Footer */}
-                <div className="px-6 pb-6 pt-3 border-t border-gray-50 dark:border-zinc-800/30 flex items-center justify-between">
-
-                  <span className="inline-flex items-center gap-1 py-2 px-4 rounded-xl text-xs font-extrabold text-blue-600 group-hover:text-white group-hover:bg-blue-600 dark:text-blue-400 dark:group-hover:text-white dark:group-hover:bg-blue-600 transition-all duration-200">
-                    View Details <ArrowUpRight className="w-3.5 h-3.5" />
-                  </span>
-                </div>
-              </Link>
-            ))}
+                  {/* Card CTA Footer */}
+                  <div className="px-6 pb-6 pt-3 border-t border-gray-50 dark:border-zinc-800/30 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 py-2 px-4 rounded-xl text-xs font-extrabold text-blue-600 group-hover:text-white group-hover:bg-blue-600 dark:text-blue-400 dark:group-hover:text-white dark:group-hover:bg-blue-600 transition-all duration-200">
+                      View Details <ArrowUpRight className="w-3.5 h-3.5" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

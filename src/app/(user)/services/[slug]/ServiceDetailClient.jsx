@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { getPublicServices, getPublicServiceBySlug } from '@/services/serviceService';
+import { getPublicServiceBySlug } from '@/services/serviceService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sparkles, Send, Phone, Mail, ShieldCheck, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
@@ -13,10 +13,10 @@ import Script from 'next/script';
 
 import api from '@/lib/axios';
 
-export default function ServiceDetailClient({ initialService, slug }) {
+export default function ServiceDetailClient({ initialService, initialServices = [], slug }) {
   const router = useRouter();
 
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState(initialServices);
   const [service, setService] = useState(initialService);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [loading, setLoading] = useState(!initialService);
@@ -51,19 +51,7 @@ export default function ServiceDetailClient({ initialService, slug }) {
     fetchServiceDetail();
   }, [slug, service]);
 
-  // Fetch sidebar items
-  useEffect(() => {
-    const fetchServicesList = async () => {
-      try {
-        const { data } = await getPublicServices(1, 20);
-        setServices(data.services || []);
-      } catch (err) {
-        console.error('Failed to fetch services sidebar', err);
-      }
-    };
-
-    fetchServicesList();
-  }, []);
+  // Sidebar list is pre-fetched server-side and seeded via initialServices prop
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
