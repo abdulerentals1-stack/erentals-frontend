@@ -9,6 +9,11 @@ export const dynamic = "force-dynamic"; // Always fresh SSR
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
+function getCleanCategoryName(name) {
+  if (!name) return "";
+  return name.replace(/^(Category\s*[\/\-]\s*)/i, "").trim();
+}
+
 export async function generateStaticParams() {
   try {
     const { fetchCategoriesISR } = await import('@/services/category');
@@ -57,15 +62,18 @@ export async function generateMetadata({ params }) {
     const categoryUrl = `${siteDomain}/categories/${category.slug}`;
     const imageUrl = category.image?.url || "/placeholder.jpg";
 
-    const fallbackDesc = category.metaDescription || `Rent premium ${category.name} for party and event hire in Mumbai. Explore high-quality catalog items, transparent rates and instant quotation estimates at e-Rentals.`;
+    const cleanName = getCleanCategoryName(category.name);
+    const fallbackDesc = category.metaDescription || `Rent premium ${cleanName} for party and event hire in Mumbai. Explore high-quality catalog items, transparent rates and instant quotation estimates at e-Rentals.`;
+
+    const displayTitle = category.metaTitle || `${cleanName} on Rent in Mumbai | e-Rentals`;
 
     return {
-      title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
+      title: displayTitle,
       description: fallbackDesc,
       keywords: category.metaKeywords || [],
       alternates: { canonical: categoryUrl },
       openGraph: {
-        title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
+        title: displayTitle,
         description: fallbackDesc,
         url: categoryUrl,
         type: "website",
@@ -74,19 +82,19 @@ export async function generateMetadata({ params }) {
             url: imageUrl,
             width: 1200,
             height: 630,
-            alt: category.name,
+            alt: cleanName,
           },
         ],
         siteName: "e-Rentals",
       },
-    twitter: {
-      card: "summary_large_image",
-      title: category.metaTitle || `${category.name} on Rent in Mumbai | e-Rentals`,
-      description: fallbackDesc,
-      images: [imageUrl],
-      creator: "@erentals",
-    },
-  };
+      twitter: {
+        card: "summary_large_image",
+        title: displayTitle,
+        description: fallbackDesc,
+        images: [imageUrl],
+        creator: "@erentals",
+      },
+    };
   } catch (err) {
     console.error("Error generating metadata for category slug:", slug, err);
     return {
@@ -132,18 +140,20 @@ export default async function CategoryPage({ params, searchParams }) {
   const products = productData?.products || [];
   const total = productData?.total || 0;
 
+  const cleanName = getCleanCategoryName(category.name);
+
   // ✅ 3. JSON-LD Structured Data for Google Rich Results
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: category.name,
+    name: cleanName,
     description: category.metaDescription || "",
     url: `${siteDomain}/categories/${category.slug}`,
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: siteDomain },
-        { "@type": "ListItem", position: 2, name: category.name, item: `${siteDomain}/categories/${category.slug}` },
+        { "@type": "ListItem", position: 2, name: cleanName, item: `${siteDomain}/categories/${category.slug}` },
       ],
     },
   };
@@ -159,7 +169,7 @@ export default async function CategoryPage({ params, searchParams }) {
 
       <div className="py-4 md:py-12 bg-[#003459] px-4 md:px-16 lg:px-16 flex items-center">
         <h1 className="font-semibold md:text-2xl text-md text-white">
-          <span className="text-white">{category.name} Rentals in Mumbai</span>
+          <span className="text-white">{cleanName} Rentals in Mumbai</span>
         </h1>
       </div>
 
@@ -167,7 +177,7 @@ export default async function CategoryPage({ params, searchParams }) {
       <div className="px-4 md:px-16 lg:px-16 py-6 md:py-12">
         <Breadcrumbs items={[
           { label: "Categories", href: "/products" },
-          { label: category.name }
+          { label: cleanName }
         ]} />
         {products.length === 0 ? (
           <div className="text-center text-gray-500 mt-20 text-lg">No products found.</div>

@@ -25,7 +25,7 @@ export const metadata = {
     title: "Contact Us – eRentals Mumbai | Event & Party Equipment Rental",
     description:
       "Get in touch with eRentals Mumbai for event rentals, party gear hire, furniture, lighting, sound, tent and decor on rent. Reach us via call, email or our contact form.",
-    url: `${siteDomain}/contact`,
+    url: `${siteDomain}/contact-us`,
     siteName: "e-Rentals",
     images: [
       {

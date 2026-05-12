@@ -23,7 +23,7 @@ export const metadata = {
     title: "About Us – eRentals | Event Rentals & Equipment Hire Mumbai",
     description:
       "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
-    url: `${siteDomain}/about`,
+    url: `${siteDomain}/about-us`,
     siteName: "e-Rentals",
     images: [
       {
@@ -63,7 +63,7 @@ export default function AboutUs() {
     name: "About Us – eRentals",
     description:
       "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
-    url: `${siteDomain}/about`,
+    url: `${siteDomain}/about-us`,
     publisher: {
       "@type": "Organization",
       name: "e-Rentals",

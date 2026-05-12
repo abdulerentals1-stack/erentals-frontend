@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "OTP Verification – e-Rentals.in",
   description: "Securely sign in or sign up with single-use verification passcode access on e-Rentals India.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({ children }) {
