@@ -14,7 +14,7 @@ export const getAllProducts = () => api.get("/products");
 
 export const getProductBySlug = async (slug) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`, {
-    cache: "no-store",  // ✅ Fresh every time
+    next: { revalidate: 3600 },  // ✅ Enable ISR caching (1 hour)
   });
 
   if (!res.ok) throw new Error(`Failed to fetch product with slug: ${slug}`);

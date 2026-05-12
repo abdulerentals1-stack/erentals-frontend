@@ -32,8 +32,19 @@ export const getPublicServices = (page = 1, limit = 10) =>
   api.get(`/services?page=${page}&limit=${limit}`);
 
 // 👉 Get single active service by slug
-export const getPublicServiceBySlug = (slug) =>
-  api.get(`/services/${slug}`);
+export const getPublicServiceBySlug = async (slug) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/${slug}`, {
+      next: { revalidate: 3600 }, // ✅ Cache for 1 hour on server
+    });
+    if (!res.ok) throw new Error(`Failed to fetch service slug: ${slug}`);
+    const data = await res.json();
+    return { data }; // ✅ Shape to match Axios res.data
+  } catch (err) {
+    console.error("Failed to fetch public service by slug ISR:", err);
+    throw err;
+  }
+};
 
 // 🚀 ISR Fetch for Server Components
 export const fetchPublicServicesISR = async (page = 1, limit = 10) => {
