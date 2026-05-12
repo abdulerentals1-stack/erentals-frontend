@@ -18,8 +18,11 @@ export default async function HomePage() {
   return (
     <main className="space-y-12 pb-16 bg-gray-50/50 dark:bg-zinc-950/50 animate-fade-in">
       <TagsList />
-      
-      {/* ✅ Visible, Premium SEO Compliant Hero Title Block */}
+
+      <BannerCarousel initialBanners={initialBanners} />
+      <CategoriesPage />
+
+      {/* ✅ Visible, Premium SEO Compliant Hero Title Block placed below Cover Image */}
       <div className="max-w-7xl mx-auto px-4 pt-2 md:pt-4 text-center">
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-[#003459] dark:text-white tracking-tight leading-none">
           Premium Event, Party & <span className="text-[#007EA7] dark:text-blue-400">Furniture Rentals</span> in Mumbai
@@ -29,8 +32,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      <BannerCarousel initialBanners={initialBanners} />
-      <CategoriesPage />
+
       <Services />
 
       <HotDealsPage />
