@@ -29,13 +29,13 @@ export const metadata = {
     "e-rentals terms",
   ],
   alternates: {
-    canonical: `${siteDomain}/terms`,
+    canonical: `${siteDomain}/terms-and-conditions`,
   },
   openGraph: {
     title: "Terms & Conditions – eRentals Mumbai | Event Rental Services",
     description:
       "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
-    url: `${siteDomain}/terms`,
+    url: `${siteDomain}/terms-and-conditions`,
     siteName: "e-Rentals",
     images: [
       {
@@ -75,7 +75,7 @@ export default function TermsAndConditions() {
     name: "Terms & Conditions – eRentals Mumbai",
     description:
       "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
-    url: `${siteDomain}/terms`,
+    url: `${siteDomain}/terms-and-conditions`,
     publisher: {
       "@type": "Organization",
       name: "e-Rentals",

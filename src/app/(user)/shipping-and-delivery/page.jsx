@@ -1,12 +1,74 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
+import Script from "next/script";
+
+const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+
+export const metadata = {
+  metadataBase: new URL(siteDomain),
+  title: "Shipping & Delivery Policy – eRentals Mumbai | Event Logistics",
+  description:
+    "Read eRentals Mumbai's Shipping & Delivery Policy. Learn about our delivery slots, setup assistance, vendor responsibilities, and customer pickup guidelines for event equipment rentals.",
+  keywords: [
+    "shipping and delivery policy",
+    "eRentals shipping Mumbai",
+    "event rental delivery",
+    "furniture rental setup Mumbai",
+  ],
+  alternates: {
+    canonical: `${siteDomain}/shipping-and-delivery`,
+  },
+  openGraph: {
+    title: "Shipping & Delivery Policy – eRentals Mumbai | Event Logistics",
+    description:
+      "Read eRentals Mumbai's Shipping & Delivery Policy. Learn about our delivery slots, setup assistance, vendor responsibilities, and customer pickup guidelines for event equipment rentals.",
+    url: `${siteDomain}/shipping-and-delivery`,
+    siteName: "e-Rentals",
+    images: [
+      {
+        url: logoUrl,
+        width: 1200,
+        height: 630,
+        alt: "e-Rentals Logo - Shipping & Delivery Policy",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shipping & Delivery Policy – eRentals Mumbai | Event Logistics",
+    description:
+      "Read eRentals Mumbai's Shipping & Delivery Policy. Learn about our delivery slots, setup assistance, vendor responsibilities, and customer pickup guidelines for event equipment rentals.",
+    images: [logoUrl],
+  },
+};
 
 export default function ShippingAndDeliveryPage() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Shipping and Delivery Policy – eRentals Mumbai",
+    description:
+      "Read eRentals Mumbai's Shipping & Delivery Policy. Learn about our delivery slots, setup assistance, vendor responsibilities, and customer pickup guidelines for event equipment rentals.",
+    url: `${siteDomain}/shipping-and-delivery`,
+    publisher: {
+      "@type": "Organization",
+      name: "e-Rentals",
+      logo: {
+        "@type": "ImageObject",
+        url: logoUrl,
+      },
+    },
+  };
+
   return (
     <section className="bg-gray-50 pt-8 pb-16">
-      {/* Page Heading */}
-     
+      <Script
+        id="shipping-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       {/* Content */}
       <div className="max-w-4xl mx-auto md:px-4">
         <Card className="shadow-md">

@@ -8,6 +8,9 @@ Disallow: /checkout
 Disallow: /profile
 Disallow: /orders
 Disallow: /myaccount
+Disallow: /address
+Disallow: /quotation
+Disallow: /qoutation
 Disallow: /qoutation-checkout
 Disallow: /quotation-checkout
 Allow: /

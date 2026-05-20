@@ -53,18 +53,6 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: '/quotation',
-        destination: '/qoutation',
-      },
-      {
-        source: '/quotation/:id',
-        destination: '/qoutation/:id',
-      },
-    ];
-  },
 };
 
 export default nextConfig;
