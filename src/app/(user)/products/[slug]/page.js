@@ -2,7 +2,7 @@ import { getProductBySlug, getFilteredProducts } from "@/services/productService
 import ProductInfoSection from "@/components/user/product/ProductInfoSection";
 import ProductDetailsTabs from "@/components/user/product/ProductDetailsTabs";
 import ProductCard from "@/components/ui/ProductCard";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
+
 import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
@@ -171,14 +171,7 @@ export default async function ProductPage({ params }) {
       />
 
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <Breadcrumbs items={[
-          { label: "Products", href: "/products" },
-          ...(product.category ? [{
-            label: typeof product.category === 'object' ? (getCleanCategoryName(product.category.name) || "Category") : "Category",
-            href: typeof product.category === 'object' ? `/categories/${product.category.slug}` : `/categories/${product.category}`
-          }] : []),
-          { label: product.name }
-        ]} />
+
         <ProductInfoSection product={product} />
         <ProductDetailsTabs product={product} />
         

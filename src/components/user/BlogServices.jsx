@@ -91,7 +91,7 @@ const BlogServices = ({ initialBlogs: initialServices = [] }) => {
                       <div className="relative h-48 md:h-56 w-full rounded-t-2xl overflow-hidden">
                         <Image
                           src={service.coverImage.url}
-                          alt={service.title}
+                          alt={service.coverImage?.alt || service.title || "Event Service"}
                           fill
                           className="object-cover transition-transform duration-500 group-hover/card:scale-105"
                           sizes="(max-w-768px) 100vw, 33vw"

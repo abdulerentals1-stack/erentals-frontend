@@ -14,13 +14,16 @@ export default async function HotDealsPage() {
   return (
     <div className="space-y-12 bg-transparent">
       {/* 🏷️ Hot Deals Products */}
-      {/* <ProductSection title="🔥 Special Hot Deals" type="hotdeal" /> */}
+      <ProductSection title="🔥 Special Hot Deals" type="hotdeal" />
 
       {/* 🌟 Featured Products */}
       <ProductSection title="⭐ Featured Rental Items" type="featured" />
 
       {/* 🏆 Top Rental Products */}
       <ProductSection title="🏆 Top Rental Products" type="toprental" />
+        
+      {/* ✨ New Rental Products */}
+      <ProductSection title="✨ New Rental Items" type="newrental" />
         
       {/* 📝 Portfolio & Setup Services Slider */}
       <BlogServices initialBlogs={initialServices} />

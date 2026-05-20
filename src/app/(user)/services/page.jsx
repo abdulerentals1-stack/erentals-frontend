@@ -173,15 +173,6 @@ export default async function ServicesPage() {
                         {snippet}
                       </p>
 
-                      {service.metaKeywords && Array.isArray(service.metaKeywords) && service.metaKeywords.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {service.metaKeywords.slice(0, 3).map((keyword, idx) => (
-                            <span key={idx} className="px-2.5 py-1 bg-gray-50 dark:bg-zinc-800 text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase rounded-lg">
-                              {keyword}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
 

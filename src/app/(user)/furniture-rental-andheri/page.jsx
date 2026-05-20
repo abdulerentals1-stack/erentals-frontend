@@ -1,5 +1,5 @@
 import ProductCard from "@/components/ui/ProductCard";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
+
 import Script from "next/script";
 
 export const dynamic = "force-dynamic";
@@ -75,10 +75,7 @@ export default async function AndheriFurniturePage() {
       </div>
 
       <div className="px-4 md:px-16 lg:px-16 py-6 md:py-12 max-w-7xl mx-auto">
-        <Breadcrumbs items={[
-          { label: "Local Rentals", href: "/products" },
-          { label: "Andheri Furniture" }
-        ]} />
+
 
         {/* Local Copy Section */}
         <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 mb-10 shadow-sm">

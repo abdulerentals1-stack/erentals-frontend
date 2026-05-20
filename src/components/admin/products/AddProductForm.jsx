@@ -120,10 +120,10 @@ export default function AddProductForm() {
       };
 
       if (slug) {
-        await updateProduct(productId, {});
+        await updateProduct(productId, payload);
         toast.success("Product updated successfully");
       } else {
-        await createProduct({});
+        await createProduct(payload);
         toast.success("Product created successfully");
       }
 
@@ -382,7 +382,13 @@ export default function AddProductForm() {
 
       <ImageUploader images={images} setImages={setImages} />
 
-      <pre className="text-red-500 text-xs">{JSON.stringify(errors, null, 2)}</pre>
+      <pre className="text-red-500 text-xs">
+        {JSON.stringify(
+          errors,
+          (key, value) => (key === "ref" ? undefined : value),
+          2
+        )}
+      </pre>
 
       <Button type="submit" className="w-full md:w-auto">
         {slug ? "Update Product" : "Create Product"}
