@@ -1,13 +1,74 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
+import Script from "next/script";
+
+const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+
+export const metadata = {
+  metadataBase: new URL(siteDomain),
+  title: "Privacy Policy – eRentals Mumbai | Event Rental Marketplace",
+  description:
+    "Read eRentals Mumbai's Privacy Policy to understand how we collect, store, verify, and protect your personal and KYC data for event rentals.",
+  keywords: [
+    "privacy policy",
+    "eRentals privacy policy",
+    "event rentals privacy Mumbai",
+    "kyc verification privacy",
+  ],
+  alternates: {
+    canonical: `${siteDomain}/privacy-policy`,
+  },
+  openGraph: {
+    title: "Privacy Policy – eRentals Mumbai | Event Rental Marketplace",
+    description:
+      "Read eRentals Mumbai's Privacy Policy to understand how we collect, store, verify, and protect your personal and KYC data for event rentals.",
+    url: `${siteDomain}/privacy-policy`,
+    siteName: "e-Rentals",
+    images: [
+      {
+        url: logoUrl,
+        width: 1200,
+        height: 630,
+        alt: "e-Rentals Logo - Privacy Policy",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy – eRentals Mumbai | Event Rental Marketplace",
+    description:
+      "Read eRentals Mumbai's Privacy Policy to understand how we collect, store, verify, and protect your personal and KYC data for event rentals.",
+    images: [logoUrl],
+  },
+};
 
 export default function PrivacyPolicyPage() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Privacy Policy – eRentals Mumbai",
+    description:
+      "Read eRentals Mumbai's Privacy Policy to understand how we collect, store, verify, and protect your personal and KYC data for event rentals.",
+    url: `${siteDomain}/privacy-policy`,
+    publisher: {
+      "@type": "Organization",
+      name: "e-Rentals",
+      logo: {
+        "@type": "ImageObject",
+        url: logoUrl,
+      },
+    },
+  };
+
   return (
     <section className="bg-gray-50 pt-8 pb-16">
-      {/* Page Heading */}
-      
-
+      <Script
+        id="privacy-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <div className="max-w-4xl mx-auto md:px-4">
         <Card className="shadow-md">
           <CardContent className="space-y-8 p-6 md:p-10 text-gray-700 leading-relaxed">

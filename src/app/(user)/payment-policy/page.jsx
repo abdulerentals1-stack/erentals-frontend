@@ -1,11 +1,74 @@
 import { Card, CardContent } from "@/components/ui/card";
+import Script from "next/script";
+
+const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+
+export const metadata = {
+  metadataBase: new URL(siteDomain),
+  title: "Payment Policy & KYC Verification – eRentals Mumbai",
+  description:
+    "Review the eRentals Mumbai Payment Policy. Learn about rental security deposits, vendor payout schedules, refunds, billing, and KYC document requirements.",
+  keywords: [
+    "payment policy",
+    "eRentals billing Mumbai",
+    "rental security deposit refunds",
+    "kyc verification eRentals",
+  ],
+  alternates: {
+    canonical: `${siteDomain}/payment-policy`,
+  },
+  openGraph: {
+    title: "Payment Policy & KYC Verification – eRentals Mumbai",
+    description:
+      "Review the eRentals Mumbai Payment Policy. Learn about rental security deposits, vendor payout schedules, refunds, billing, and KYC document requirements.",
+    url: `${siteDomain}/payment-policy`,
+    siteName: "e-Rentals",
+    images: [
+      {
+        url: logoUrl,
+        width: 1200,
+        height: 630,
+        alt: "e-Rentals Logo - Payment Policy",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Payment Policy & KYC Verification – eRentals Mumbai",
+    description:
+      "Review the eRentals Mumbai Payment Policy. Learn about rental security deposits, vendor payout schedules, refunds, billing, and KYC document requirements.",
+    images: [logoUrl],
+  },
+};
 
 export default function PaymentPolicy() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Payment Policy – eRentals Mumbai",
+    description:
+      "Review the eRentals Mumbai Payment Policy. Learn about rental security deposits, vendor payout schedules, refunds, billing, and KYC document requirements.",
+    url: `${siteDomain}/payment-policy`,
+    publisher: {
+      "@type": "Organization",
+      name: "e-Rentals",
+      logo: {
+        "@type": "ImageObject",
+        url: logoUrl,
+      },
+    },
+  };
+
   return (
     <div className=" mx-auto bg-gray-50 md:p-6 space-y-8">
-      {/* Page Header */}
-     
-
+      <Script
+        id="payment-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       {/* Payment Policy Details */}
       <Card className="shadow-md rounded-2xl max-w-5xl mx-auto">
         <CardContent className="p-6 space-y-4 text-gray-700 leading-relaxed">
