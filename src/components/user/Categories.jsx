@@ -33,8 +33,6 @@ export default async function CategoriesPage() {
                   sizes="(max-width: 768px) 50vw,
                          (max-width: 1200px) 33vw,
                          20vw"
-                  placeholder="blur"
-                  blurDataURL="/placeholder.jpg"
                 />
               </div>
 

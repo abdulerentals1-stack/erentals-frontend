@@ -73,8 +73,6 @@ export default function BannerCarousel({ initialBanners = [] }) {
                 className="object-cover"
                 sizes={isMobile ? "100vw" : "100vw"}
                 priority={idx === 0}
-                placeholder="blur"
-                blurDataURL="/placeholder.jpg"
               />
             );
 

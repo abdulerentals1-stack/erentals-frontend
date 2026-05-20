@@ -16,8 +16,6 @@ export default function ProductCarousel({ images = [], productName = "Product" }
           fill
           className="object-contain"
           sizes="100vw"
-          placeholder="blur"
-          blurDataURL="/placeholder.jpg"
           priority
         />
       </div>
@@ -39,8 +37,6 @@ export default function ProductCarousel({ images = [], productName = "Product" }
                 fill
                 className="object-contain rounded"
                 sizes="80px"
-                placeholder="blur"
-                blurDataURL="/placeholder.jpg"
               />
             </div>
           ))}
