@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { AuthProvider } from "../../context/AuthContext";
 import Navbar from "@/components/layouts/Navbar";
+import TagsList from "@/components/user/TagsList";
 import { Toaster } from "sonner";
 import Footer from "@/components/layouts/Footer";
 import Script from "next/script";
@@ -156,6 +157,7 @@ export default function RootLayout({ children }) {
           <div className="flex flex-col min-h-screen">
             {/* Navbar */}
             <Navbar />
+            <TagsList />
 
             {/* Main Content */}
             <main className="flex-1">{children}</main>

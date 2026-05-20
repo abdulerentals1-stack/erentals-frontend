@@ -2,7 +2,7 @@
 
 import ProductCard from "@/components/ui/ProductCard";
 import PaginationControls from "@/components/user/PaginationControls";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
+
 import Script from "next/script";
 
 export const dynamic = "force-dynamic"; // Always fresh SSR
@@ -175,10 +175,7 @@ export default async function CategoryPage({ params, searchParams }) {
 
       {/* Products Grid */}
       <div className="px-4 md:px-16 lg:px-16 py-6 md:py-12">
-        <Breadcrumbs items={[
-          { label: "Categories", href: "/products" },
-          { label: cleanName }
-        ]} />
+
         {products.length === 0 ? (
           <div className="text-center text-gray-500 mt-20 text-lg">No products found.</div>
         ) : (

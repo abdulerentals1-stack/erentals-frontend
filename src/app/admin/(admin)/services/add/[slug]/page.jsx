@@ -155,7 +155,7 @@ export default function EditServiceForm() {
 
             try {
               const uploaded = await uploadImage(file);
-              setCoverImage([{ url: uploaded.imageUrl, public_id: uploaded.public_id }]);
+              setCoverImage([{ url: uploaded.imageUrl, public_id: uploaded.public_id, alt: "" }]);
             } catch (err) {
               toast.error("Failed to upload image");
             }
@@ -164,11 +164,25 @@ export default function EditServiceForm() {
         {coverImage[0]?.url && (
           <div className="mt-2">
             <p className="text-sm text-gray-500">Current Image Preview:</p>
-            <img
-              src={coverImage[0].url}
-              alt="Cover Image"
-              className="h-32 rounded-md border mt-1"
-            />
+            <div className="mt-2 flex flex-col md:flex-row gap-4 items-start">
+              <img
+                src={coverImage[0].url}
+                alt="Cover Image Preview"
+                className="h-32 w-48 object-cover rounded-md border mt-1 shrink-0"
+              />
+              <div className="flex-1 w-full space-y-1">
+                <Label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Cover Image Alt Text (SEO)</Label>
+                <Input
+                  value={coverImage[0]?.alt || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCoverImage(prev => [{ ...prev[0], alt: val }]);
+                  }}
+                  placeholder="e.g. Wedding flower-decked grand stage setup"
+                  className="mt-1"
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -191,7 +205,7 @@ export default function EditServiceForm() {
             for (const file of files) {
               try {
                 const uploaded = await uploadImage(file);
-                uploadedList.push({ url: uploaded.imageUrl, public_id: uploaded.public_id });
+                uploadedList.push({ url: uploaded.imageUrl, public_id: uploaded.public_id, alt: "" });
               } catch (err) {
                 toast.error(`Failed to upload ${file.name}`);
               }
@@ -204,24 +218,41 @@ export default function EditServiceForm() {
         
         {/* Uploaded List Preview with Remove Buttons */}
         {images.length > 0 && (
-          <div className="mt-4">
-            <p className="text-xs font-semibold text-gray-600 mb-2">Active Slider Images ({images.length}):</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          <div className="mt-6">
+            <p className="text-xs font-semibold text-[#003459] dark:text-blue-400 mb-3">Active Slider Images ({images.length}) & Alt Tags:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {images.map((img, index) => (
-                <div key={index} className="relative group border rounded-lg overflow-hidden h-24 bg-white dark:bg-zinc-900">
-                  <img
-                    src={img.url}
-                    alt={`Slider Preview ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== index))}
-                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full h-5 w-5 flex items-center justify-center p-0 shadow transition opacity-0 group-hover:opacity-100 text-xs font-bold leading-none"
-                    title="Remove Image"
-                  >
-                    &times;
-                  </button>
+                <div key={index} className="relative border rounded-xl overflow-hidden bg-white dark:bg-zinc-900 p-3 flex flex-col space-y-3 shadow-sm">
+                  <div className="relative h-40 w-full rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                    <img
+                      src={img.url}
+                      alt={img.alt || `Slider Preview ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== index))}
+                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full h-6 w-6 flex items-center justify-center p-0 shadow transition text-sm font-bold"
+                      title="Remove Image"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Alt Text (SEO)</Label>
+                    <Input
+                      value={img.alt || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setImages((prev) =>
+                          prev.map((item, idx) => (idx === index ? { ...item, alt: val } : item))
+                        );
+                      }}
+                      placeholder="e.g. Corporate event stage side view"
+                      className="text-xs h-8"
+                    />
+                  </div>
                 </div>
               ))}
             </div>

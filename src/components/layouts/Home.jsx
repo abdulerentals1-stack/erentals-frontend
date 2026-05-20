@@ -1,7 +1,6 @@
 import BannerCarousel from '../user/Banner';
 import HotDealsPage from '../user/HotDeals';
 import Services from '../user/Services';
-import TagsList from '../user/TagsList';
 import CategoriesPage from '../user/Categories';
 import { fetchBannersISR } from '@/services/banner';
 import Link from 'next/link';
@@ -17,8 +16,6 @@ export default async function HomePage() {
 
   return (
     <main className="space-y-12 pb-16 bg-gray-50/50 dark:bg-zinc-950/50 animate-fade-in">
-      <TagsList />
-
       <BannerCarousel initialBanners={initialBanners} />
       <CategoriesPage />
 

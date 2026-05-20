@@ -8,7 +8,7 @@ import { getPublicServiceBySlug } from '@/services/serviceService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Sparkles, Send, Phone, Mail, ShieldCheck, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
+
 import Script from 'next/script';
 
 import api from '@/lib/axios';
@@ -139,11 +139,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
       />
       <div className="max-w-7xl mx-auto px-4">
         
-        {/* Breadcrumb Navigation */}
-        <Breadcrumbs items={[
-          { label: "Services", href: "/services" },
-          { label: service.title }
-        ]} />
+
 
         {/* Main Columns Container */}
         <div className="flex flex-col lg:flex-row gap-8">
@@ -253,7 +249,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="e.g. Vikas Sharma"
+                      placeholder="e.g. John Doe"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500"
                       required
                     />
@@ -267,7 +263,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="e.g. +91 98673 48165"
+                      placeholder="e.g. +91 98765 43210"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500"
                       required
                     />
@@ -281,7 +277,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="e.g. vikas@gmail.com"
+                      placeholder="e.g. name@example.com"
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500"
                       required
                     />
@@ -296,7 +292,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
                     name="requirements"
                     value={formData.requirements}
                     onChange={handleInputChange}
-                    placeholder={`Describe what you need (e.g. setup similar to "${service.title}", approximate budget, size of the venue...)`}
+                    placeholder="Describe what you need (e.g. specific setup requirements, approximate budget, size of the venue...)"
                     rows="3"
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-transparent text-sm outline-none focus:border-blue-500 resize-none"
                   />
