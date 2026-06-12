@@ -99,7 +99,7 @@ export default function RootLayout({ children }) {
         },
       },
       {
-        "@type": "LocalBusiness",
+        "@type": "EquipmentRentalAgency",
         "@id": `${siteDomain}/#localbusiness`,
         "name": "e-Rentals",
         "image": logoUrl,

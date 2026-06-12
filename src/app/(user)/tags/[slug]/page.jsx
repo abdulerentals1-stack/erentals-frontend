@@ -39,7 +39,7 @@ export async function generateMetadata({ params }) {
 
   try {
     const tagRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}`, {
-      cache: "no-store",
+      next: { revalidate: 300 },
     });
     const tagData = await tagRes.json();
     const tag = tagData?.tag;
@@ -110,7 +110,7 @@ export default async function TagPage({ params, searchParams }) {
 
   // ✅ 1. Fetch tag data by slug
   const tagRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}`, {
-    cache: "no-store",
+    next: { revalidate: 300 },
   });
   const tagData = await tagRes.json();
   const tag = tagData?.tag;
@@ -126,7 +126,7 @@ export default async function TagPage({ params, searchParams }) {
   // ✅ 2. Fetch products for this tag
   const productRes = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/products/search?tags=${tag._id}&page=${page}&limit=${limit}`,
-    { cache: "no-store" }
+    { next: { revalidate: 300 } }
   );
 
   const productData = await productRes.json();

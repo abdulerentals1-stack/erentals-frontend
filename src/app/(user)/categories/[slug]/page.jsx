@@ -43,7 +43,7 @@ export async function generateMetadata({ params }) {
 
   try {
     const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`, {
-      cache: "no-store",
+      next: { revalidate: 300 },
     });
     const catData = await catRes.json();
     const category = catData?.category;
@@ -117,7 +117,7 @@ export default async function CategoryPage({ params, searchParams }) {
 
   // ✅ 1. Fetch category data by slug
   const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`, {
-    cache: "no-store",
+    next: { revalidate: 300 },
   });
   const catData = await catRes.json();
   const category = catData?.category;
@@ -133,7 +133,7 @@ export default async function CategoryPage({ params, searchParams }) {
   // ✅ 2. Fetch products for this category
   const productRes = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/products/search?categories=${category._id}&page=${page}&limit=${limit}`,
-    { cache: "no-store" }
+    { next: { revalidate: 300 } }
   );
 
   const productData = await productRes.json();

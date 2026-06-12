@@ -136,6 +136,7 @@ export default async function ProductPage({ params }) {
     image: product.images?.map((img) => img.url || img),
     description: product.metaDescription || product.description,
     sku: product.productCode,
+    url: `${siteDomain}/products/${product.slug}`,
     brand: {
       "@type": "Brand",
       name: "e-Rentals",
@@ -145,6 +146,7 @@ export default async function ProductPage({ params }) {
       url: `${siteDomain}/products/${product.slug}`,
       priceCurrency: "INR",
       price: product.discountPrice || product.basePrice,
+      priceValidUntil: "2027-12-31",
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
       seller: {
