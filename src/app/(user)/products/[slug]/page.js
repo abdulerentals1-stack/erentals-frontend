@@ -15,9 +15,10 @@ function getCleanCategoryName(name) {
 
 export async function generateStaticParams() {
   try {
-    const { getFilteredProducts } = await import('@/services/productService');
-    const res = await getFilteredProducts({ limit: 500 });
-    const products = res?.products || [];
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const products = data?.products || [];
     return products.map((p) => ({
       slug: p.slug,
     }));
