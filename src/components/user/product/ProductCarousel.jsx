@@ -33,7 +33,7 @@ export default function ProductCarousel({ images = [], productName = "Product" }
             >
               <Image
                 src={img.url}
-                alt={`Thumbnail ${i + 1}`}
+                alt={`${productName} View ${i + 1}`}
                 fill
                 className="object-contain rounded"
                 sizes="80px"

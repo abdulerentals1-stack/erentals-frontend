@@ -45,8 +45,7 @@ export default function ProductCard({ product }) {
         {/* ✅ Wrap name with Link */}
         <Link href={`/products/${slug}`}>
           <p className="font-semibold text-sm line-clamp-2 hover:underline">
-              {name?.split(" ").slice(0, 3).join(" ")} 
-              {name?.split(" ").length > 5 && " ..."}
+              {name}
           </p>
         </Link>
 

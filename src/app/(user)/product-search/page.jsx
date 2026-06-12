@@ -6,6 +6,10 @@ import { getFilteredProducts } from "@/services/productService";
 export const metadata = {
   title: "Search Event Rental Products – e-Rentals Mumbai",
   description: "Search our catalog of event rental equipment in Mumbai.",
+  robots: {
+    index: false,
+    follow: true,
+  },
   alternates: {
     canonical: "https://e-rentals.in/product-search",
   },
@@ -32,8 +36,8 @@ export default async function ProductSearchPage({ searchParams }) {
   // ✅ Step 3: Call backend API
   const res = await getFilteredProducts({ ...queryObj, page, limit });
 
-  const products = res?.data?.products || [];
-  const total = res?.data?.total || 0;
+  const products = res?.products || res?.data?.products || [];
+  const total = res?.total || res?.data?.total || 0;
 
   return (
     <div className="relative z-0 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-2 md:py-12 py-4">
@@ -42,21 +46,21 @@ export default async function ProductSearchPage({ searchParams }) {
       <div className="grid md:grid-cols-[260px_1fr] gap-6">
         {/* Sidebar Filters */}
         <aside className="relative z-0">
-      <div className="sticky top-24 md:h-[calc(100vh-6rem)] overflow-hidden">
-        <FiltersSidebar searchParams={queryObj} path="/product-search" />
-      </div>
-    </aside>
+          <div className="sticky top-24 md:h-[calc(100vh-6rem)] overflow-hidden">
+            <FiltersSidebar searchParams={queryObj} path="/product-search" />
+          </div>
+        </aside>
 
         {/* Product Grid */}
         <section>
-          {res?.products.length === 0 ? (
+          {products.length === 0 ? (
             <div className="text-center text-gray-500 mt-20 text-lg">
               No products found.
             </div>
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 px-2">
-                {res?.products.map((product) => (
+                {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
