@@ -3,7 +3,7 @@ import "../globals.css";
 import { AuthProvider } from "../../context/AuthContext";
 import Navbar from "@/components/layouts/Navbar";
 import TagsList from "@/components/user/TagsList";
-import { Toaster } from "sonner";
+import ToasterProvider from "@/components/user/ToasterProvider";
 import Footer from "@/components/layouts/Footer";
 import Script from "next/script";
 import { GoogleTagManager } from '@next/third-parties/google';
@@ -153,7 +153,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <GoogleTagManager gtmId="GTM-N5GLP4RZ" />
         <AuthProvider>
-          <Toaster position="top-center" richColors />
+          <ToasterProvider />
           <div className="flex flex-col min-h-screen">
             {/* Navbar */}
             <Navbar />

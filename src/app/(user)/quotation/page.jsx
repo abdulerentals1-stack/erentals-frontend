@@ -75,9 +75,9 @@ export default function MyQuotations() {
             </p>
             <Badge
               variant={
-                quote.status === "approved"
+                quote.status === "responded"
                   ? "default"
-                  : quote.status === "rejected"
+                  : quote.status === "cancelled"
                   ? "destructive"
                   : "outline"
               }

@@ -205,6 +205,7 @@ const loadRazorpay = () =>
       <PaymentMethodSelector
         selected={watch("paymentMethod")}
         onChange={(val) => setValue("paymentMethod", val)}
+        advancePercentage={cart?.advancePercentage || 20}
       />
       {errors.paymentMethod && <p className="text-sm text-red-500">{errors.paymentMethod.message}</p>}
 

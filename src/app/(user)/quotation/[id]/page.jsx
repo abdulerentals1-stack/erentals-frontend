@@ -41,9 +41,9 @@ export default function QuotationDetailsPage() {
           <strong>Status:</strong>{" "}
           <Badge
             variant={
-              quotation.status === "approved"
+              quotation.status === "responded"
                 ? "default"
-                : quotation.status === "rejected"
+                : quotation.status === "cancelled"
                 ? "destructive"
                 : "outline"
             }
@@ -114,7 +114,7 @@ export default function QuotationDetailsPage() {
       </div>
 
       {/* ✅ Download Invoice */}
-      {quotation.status === "approved" && quotation.invoiceUrl && (
+      {quotation.status === "responded" && quotation.invoiceUrl && (
         <div className="mt-6">
           <Button onClick={() => window.open(quotation.invoiceUrl, "_blank")}>
             <DownloadIcon className="w-4 h-4 mr-2" />

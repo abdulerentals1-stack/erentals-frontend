@@ -7,7 +7,7 @@ const METHODS = [
   { id: "razorpay", label: "Prepaid (Razorpay)" },
 ];
 
-export default function PaymentMethodSelector({ selected, onChange }) {
+export default function PaymentMethodSelector({ selected, onChange, advancePercentage = 20 }) {
   return (
     <div className="border rounded p-4 space-y-4">
       <h2 className="text-lg font-semibold">Payment Method</h2>
@@ -27,7 +27,7 @@ export default function PaymentMethodSelector({ selected, onChange }) {
 
       {selected === "razorpay" && (
         <p className="text-green-600 text-sm pt-1">
-          💸 You’ll only pay <strong>20% in advance</strong>. The remaining amount will be requested after admin confirmation.
+          💸 You’ll only pay <strong>{advancePercentage}% in advance</strong>. The remaining amount will be requested after admin confirmation.
         </p>
       )}
     </div>
