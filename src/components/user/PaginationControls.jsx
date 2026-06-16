@@ -23,11 +23,11 @@ export default function PaginationControls({ page, limit, total, path, searchPar
           Previous
         </Button>
       ) : (
-        <Link href={getPageUrl(Number(page) - 1)} passHref legacyBehavior>
-          <Button size="sm" variant="outline" asChild>
-            <a className="cursor-pointer">Previous</a>
-          </Button>
-        </Link>
+        <Button size="sm" variant="outline" asChild>
+          <Link href={getPageUrl(Number(page) - 1)} className="cursor-pointer">
+            Previous
+          </Link>
+        </Button>
       )}
 
       {/* Page Numbers */}
@@ -45,15 +45,16 @@ export default function PaginationControls({ page, limit, total, path, searchPar
             {pageNum}
           </Button>
         ) : (
-          <Link key={pageNum} href={getPageUrl(pageNum)} passHref legacyBehavior>
-            <Button
-              size="sm"
-              variant="outline"
-              asChild
-            >
-              <a className="cursor-pointer">{pageNum}</a>
-            </Button>
-          </Link>
+          <Button
+            key={pageNum}
+            size="sm"
+            variant="outline"
+            asChild
+          >
+            <Link href={getPageUrl(pageNum)} className="cursor-pointer">
+              {pageNum}
+            </Link>
+          </Button>
         );
       })}
 
@@ -63,11 +64,11 @@ export default function PaginationControls({ page, limit, total, path, searchPar
           Next
         </Button>
       ) : (
-        <Link href={getPageUrl(Number(page) + 1)} passHref legacyBehavior>
-          <Button size="sm" variant="outline" asChild>
-            <a className="cursor-pointer">Next</a>
-          </Button>
-        </Link>
+        <Button size="sm" variant="outline" asChild>
+          <Link href={getPageUrl(Number(page) + 1)} className="cursor-pointer">
+            Next
+          </Link>
+        </Button>
       )}
     </div>
   );

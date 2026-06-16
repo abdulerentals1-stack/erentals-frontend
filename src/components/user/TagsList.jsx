@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { getAllTags } from "@/services/tag";
+import { fetchTagsISR } from "@/services/tag";
 
 export default async function TagsList() {
   let AllTags = [];
   try {
-    const res = await getAllTags();
+    const res = await fetchTagsISR();
     AllTags = res?.data?.tags || [];
   } catch (err) {
     console.error("Failed to fetch tags in TagsList component:", err);
