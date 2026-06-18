@@ -5,20 +5,20 @@ import { Button } from "@/components/ui/button";
 
 export default function ServiceToggle({ formData, setFormData }) {
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="flex gap-3 mt-4">
       <Button
-        className={`px-4 py-6 flex-1/2 cursor-pointer rounded border ${
-          !formData.withService  ? 'bg-[#003459] text-white hover:bg-[#002c4a] active:bg-[#00243b]'
-            : 'bg-white text-[#003459] hover:bg-gray-100 active:bg-gray-200'
+        className={`h-12 flex-1 cursor-pointer rounded-xl border font-semibold transition-all duration-300 ${
+          !formData.withService  ? 'bg-[#003459] text-white hover:bg-[#002240] border-[#003459] shadow-sm'
+            : 'bg-gray-50 text-[#003459] hover:bg-gray-100 border-gray-200'
         }`}
         onClick={() => setFormData((p) => ({ ...p, withService: false }))}
       >
         Without Service
       </Button>
       <Button
-        className={`px-4 py-6 flex-1/2 cursor-pointer rounded border ${
-          formData.withService ? 'bg-[#003459] text-white hover:bg-[#002c4a] active:bg-[#00243b]'
-            : 'bg-white text-[#003459] hover:bg-gray-100 active:bg-gray-200'
+        className={`h-12 flex-1 cursor-pointer rounded-xl border font-semibold transition-all duration-300 ${
+          formData.withService ? 'bg-[#003459] text-white hover:bg-[#002240] border-[#003459] shadow-sm'
+            : 'bg-gray-50 text-[#003459] hover:bg-gray-100 border-gray-200'
         }`}
         onClick={() => setFormData((p) => ({ ...p, withService: true }))}
       >

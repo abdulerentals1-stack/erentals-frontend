@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { addOrUpdateCartItem } from '@/services/cartService';
 import { useRouter } from 'next/navigation';
 
-export default function AddToRentalButton({ product }) {
+export default function AddToRentalButton({ product, className }) {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -40,7 +40,11 @@ export default function AddToRentalButton({ product }) {
   };
 
   return (
-    <Button onClick={handleAdd} variant="default" className="w-full cursor-pointer rounded-none bg-[#003459] hover:bg-[#003459]">
+    <Button 
+      onClick={handleAdd} 
+      variant="default" 
+      className={`cursor-pointer ${className || 'w-full rounded-none bg-[#003459] hover:bg-[#003459]'}`}
+    >
       Add To Rental
     </Button>
   );
