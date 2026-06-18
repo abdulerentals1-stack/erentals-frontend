@@ -72,17 +72,36 @@ export default function ProductActionButtons({ product, formData }) {
   };
 
   return (
-    <div className="grid gap-2 mt-4">
-      <div className="grid grid-cols-2 gap-2">
-        {/* Add to Quote Button */}
+    <div className="flex flex-col gap-3 mt-6">
+      {/* Add to Rental Button - Primary Action */}
+      <Button
+        className="h-14 rounded-xl bg-[#003459] hover:bg-[#002240] cursor-pointer text-white flex items-center justify-center gap-2 w-full text-base font-bold shadow-md shadow-[#003459]/20 transition-all duration-300"
+        onClick={() => handleAddToCart(true)}
+        disabled={loadingType !== null}
+      >
+        {loadingType === "rental" ? (
+          <>
+            <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <Package size={20} />
+            Rent Now
+          </>
+        )}
+      </Button>
+
+      <div className="grid grid-cols-2 gap-3">
+        {/* Add to Quote Button - Secondary Action */}
         <Button
-          className="py-6 bg-[#003459] hover:bg-[#003459] cursor-pointer text-white flex items-center justify-center gap-2"
+          className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-2 font-semibold transition-all duration-300 shadow-sm"
           onClick={handleAddToQuote}
           disabled={loadingType !== null}
         >
           {loadingType === "quote" ? (
             <>
-              <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
+              <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-[#003459]" />
               Adding...
             </>
           ) : (
@@ -93,15 +112,15 @@ export default function ProductActionButtons({ product, formData }) {
           )}
         </Button>
 
-        {/* Add to Cart Button */}
+        {/* Add to Cart Button - Secondary Action */}
         <Button
-          className="py-6 bg-[#003459] hover:bg-[#003459] cursor-pointer text-white flex items-center justify-center gap-2"
+          className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-2 font-semibold transition-all duration-300 shadow-sm"
           onClick={() => handleAddToCart(false)}
           disabled={loadingType !== null}
         >
           {loadingType === "cart" ? (
             <>
-              <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
+              <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-[#003459]" />
               Adding...
             </>
           ) : (
@@ -112,25 +131,6 @@ export default function ProductActionButtons({ product, formData }) {
           )}
         </Button>
       </div>
-
-      {/* Add to Rental Button */}
-      <Button
-        className="py-6 bg-[#003459] hover:bg-[#003459] cursor-pointer text-white flex items-center justify-center gap-2 w-full"
-        onClick={() => handleAddToCart(true)}
-        disabled={loadingType !== null}
-      >
-        {loadingType === "rental" ? (
-          <>
-            <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
-            Processing...
-          </>
-        ) : (
-          <>
-            <Package size={18} />
-            Add To Rental
-          </>
-        )}
-      </Button>
     </div>
   );
 }

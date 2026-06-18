@@ -51,7 +51,7 @@ const formSchema = z.object({
       z.object({
         value: z.number().positive(),
         unit: z.string().min(1),
-        price: z.number().positive(),
+        price: z.number().optional(),
       })
     )
     .min(1),
@@ -90,7 +90,7 @@ export default function AddProductForm() {
     defaultValues: {
       pricingType: "quantity",
       location: { city: "", state: "", pincode: "" },
-      thresholds: [{ value: 1, unit: "", price: 0 }],
+      thresholds: [{ value: 1, unit: "" }],
       categories: [],
       tags: [],
       suggestedProducts: [],
@@ -219,8 +219,16 @@ export default function AddProductForm() {
           <Input type="number" {...register("basePrice", { valueAsNumber: true })} />
         </div>
         <div>
-          <Label>Discount Price</Label>
-          <Input type="number" {...register("discountPrice", { valueAsNumber: true })} />
+          <Label className="flex items-center gap-1.5">
+            Discount Price 
+            <span 
+              className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200 cursor-help"
+              title="This discounted price is automatically applied when the user's quantity reaches your specified Threshold below."
+            >
+              (Bulk Price) ⓘ
+            </span>
+          </Label>
+          <Input type="number" {...register("discountPrice", { valueAsNumber: true })} className="mt-1.5" />
         </div>
         <div>
           <Label>Stock</Label>
@@ -250,6 +258,27 @@ export default function AddProductForm() {
           <Label>Average Rating</Label>
           <Input type="number" step="0.1" min="1" max="5" {...register("averageRating", { valueAsNumber: true })} />
         </div>
+      </div>
+
+      {/* Thresholds */}
+      <div>
+        <Label>Thresholds</Label>
+        {fields.map((field, index) => (
+          <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
+            <Input
+              type="number"
+              placeholder="Value"
+              {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
+            />
+            <Input placeholder="Unit (pcs/sqft)" {...register(`thresholds.${index}.unit`)} />
+            <Button type="button" variant="destructive" onClick={() => remove(index)}>
+              Remove
+            </Button>
+          </div>
+        ))}
+        <Button type="button" onClick={() => append({ value: 1, unit: "" })}>
+          + Add Threshold
+        </Button>
       </div>
 
       {/* Rich Text Editors */}
@@ -297,31 +326,7 @@ export default function AddProductForm() {
         )}
       />
 
-      {/* Thresholds */}
-      <div>
-        <Label>Thresholds</Label>
-        {fields.map((field, index) => (
-          <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
-            <Input
-              type="number"
-              placeholder="Value"
-              {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
-            />
-            <Input placeholder="Unit (pcs/sqft)" {...register(`thresholds.${index}.unit`)} />
-            <Input
-              type="number"
-              placeholder="Price"
-              {...register(`thresholds.${index}.price`, { valueAsNumber: true })}
-            />
-            <Button type="button" variant="destructive" onClick={() => remove(index)}>
-              Remove
-            </Button>
-          </div>
-        ))}
-        <Button type="button" onClick={() => append({ value: 1, unit: "", price: 0 })}>
-          + Add Threshold
-        </Button>
-      </div>
+
 
       {/* Meta */}
       <div>

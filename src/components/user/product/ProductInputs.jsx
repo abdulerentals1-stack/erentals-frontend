@@ -22,7 +22,7 @@ export default function ProductInputs({ pricingType, formData, setFormData, unit
           min={1}
           value={formData.days}
           onChange={(e) => update('days', e.target.value)}
-          className="input"
+          className="input rounded-xl h-12"
         />
       </div>
 
@@ -36,7 +36,7 @@ export default function ProductInputs({ pricingType, formData, setFormData, unit
           min={1}
           value={formData.quantity}
           onChange={(e) => update('quantity', e.target.value)}
-          className="input"
+          className="input rounded-xl h-12"
         />
       </div>
 
@@ -50,7 +50,7 @@ export default function ProductInputs({ pricingType, formData, setFormData, unit
             min={1}
             value={formData.length}
             onChange={(e) => update('length', e.target.value)}
-            className="input"
+            className="input rounded-xl h-12"
           />
         </div>
       )}
@@ -65,7 +65,7 @@ export default function ProductInputs({ pricingType, formData, setFormData, unit
             min={1}
             value={formData.width}
             onChange={(e) => update('width', e.target.value)}
-            className="input"
+            className="input rounded-xl h-12"
           />
         </div>
       )}
