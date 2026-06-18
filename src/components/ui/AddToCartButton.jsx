@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { useState, useRef } from 'react';
 
-export default function AddToCartButton({ product }) {
+export default function AddToCartButton({ product, className }) {
   const { user } = useAuth();
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(false);
@@ -51,11 +51,11 @@ export default function AddToCartButton({ product }) {
   return (
     <Button
       onClick={handleAdd}
-      variant="ghost"
-      className="rounded-none border-r gap-2 cursor-pointer"
+      variant="outline"
+      className={`gap-1.5 cursor-pointer text-xs font-medium ${className || 'rounded-none border-r'}`}
       disabled={isDisabled}
     >
-      <ShoppingCart className="w-4 h-4" style={{ color: '#003459' }} />
+      <ShoppingCart className="w-3.5 h-3.5" style={{ color: '#003459' }} />
       {isDisabled ? 'Adding...' : 'Cart'}
     </Button>
   );

@@ -8,7 +8,7 @@ import { FileText } from 'lucide-react';
 import { useState } from 'react';
 import { addOrUpdateQuotationCartItem } from '@/services/quotationCartServices';
 
-export default function AddToQuoteButton({ product }) {
+export default function AddToQuoteButton({ product, className }) {
   const { user } = useAuth();
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(false);
@@ -50,11 +50,11 @@ export default function AddToQuoteButton({ product }) {
   return (
     <Button 
       onClick={handleAddToQuote} 
-      variant="ghost" 
-      className="rounded-none border-r gap-2 cursor-pointer"
+      variant="outline" 
+      className={`gap-1.5 cursor-pointer text-xs font-medium ${className || 'rounded-none border-r'}`}
       disabled={isDisabled}
     >
-      <FileText className="w-4 h-4" style={{ color: '#003459' }} />
+      <FileText className="w-3.5 h-3.5" style={{ color: '#003459' }} />
       {isDisabled ? 'Adding...' : 'Quote'}
     </Button>
   );
