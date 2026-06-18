@@ -57,6 +57,10 @@ To let crawlers read meta tags from initial payloads while keeping interactivity
 *   **Article Page Schema:** Structured schema injected inside service case studies.
 *   **Dynamic Sitemap:** Located inside `src/app/sitemap.xml/route.js`, auto-indexing primary, product, and dynamic local pages.
 
+### 3. Advanced Bulk Pricing Engine
+*   **Dynamic Threshold Calculations:** Real-time quantity validation that triggers cascading bulk discount pricing blocks automatically.
+*   **Consistent Premium UI:** Uses global design system constraints (`h-12`, `rounded-xl`) across cart, inputs, and toggle components.
+
 ---
 
 ## 📦 Directory Structure
