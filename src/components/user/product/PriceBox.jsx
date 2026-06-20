@@ -28,18 +28,11 @@ export default function PriceBox({ priceData, product }) {
           </span>
         </div>
         
-        {priceData.serviceCharge > 0 && (
-          <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-            <span className="text-gray-600 font-medium">Service Charge</span>
-            <span className="text-lg font-semibold text-gray-800">
-              ₹{priceData.serviceCharge}
-            </span>
-          </div>
-        )}
+
 
         <div className="flex justify-between items-end">
           <span className="text-gray-900 font-bold text-lg mb-1">Total Cost</span>
-          <span className="text-[#003459] text-4xl font-extrabold tracking-tight drop-shadow-sm">₹{priceData.finalPrice}</span>
+          <span className="text-[#003459] text-3xl md:text-4xl font-extrabold tracking-tight drop-shadow-sm">₹{priceData.finalPrice}</span>
         </div>
       </div>
     </div>

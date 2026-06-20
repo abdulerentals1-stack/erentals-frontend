@@ -38,16 +38,16 @@ export default function ProductDetailsTabs({ product }) {
 
   return (
     <div className="mt-10">
-      {/* Tab buttons */}
-      <div className="flex gap-2 border-b overflow-x-auto whitespace-nowrap scrollbar-hide border-gray-200 mb-4">
+      {/* Tab Navigation */}
+      <div className="flex space-x-1 sm:space-x-4 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 cursor-pointer py-2 text-sm font-medium border-b-2 transition ${
+            className={`py-2 px-3 sm:px-4 shrink-0 whitespace-nowrap text-sm sm:text-base font-semibold transition-all duration-300 border-b-2 ${
               activeTab === tab.key
-                ? "border-black text-black"
-                : "border-transparent text-gray-500 hover:text-black"
+                ? 'border-[#003459] text-[#003459]'
+                : 'border-transparent text-gray-500 hover:text-[#003459] hover:border-gray-300'
             }`}
           >
             {tab.label}
@@ -56,7 +56,9 @@ export default function ProductDetailsTabs({ product }) {
       </div>
 
       {/* Content */}
-      <div className="bg-white p-4 rounded shadow-sm border">{renderContent()}</div>
+      <div className="bg-white p-4 rounded shadow-sm border overflow-x-auto">
+        {renderContent()}
+      </div>
     </div>
   );
 }

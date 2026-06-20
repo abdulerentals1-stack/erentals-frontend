@@ -28,56 +28,56 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => {
         </div>
 
         <nav className="p-4 space-y-4">
-          <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-            <Home size={18} /> Home
+          <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <Home size={20} /> <span className="font-medium">Home</span>
           </Link>
 
-          <Link href="/services" onClick={() => setIsOpen(false)} className="flex items-center gap-2 text-[#003459] font-semibold">
-            <Sparkles size={18} /> Our Services
+          <Link href="/services" onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2 text-[#003459] hover:text-blue-600 transition-colors">
+            <Sparkles size={20} /> <span className="font-bold">Our Services</span>
           </Link>
 
-          <Link href="/products" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-            <Box size={18} /> All Products
+          <Link href="/products" onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <Box size={20} /> <span className="font-medium">All Products</span>
           </Link>
 
           <Link
             href={user ? "/checkout" : "/login"}
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
           >
-            <ShoppingCart size={18} /> Cart
+            <ShoppingCart size={20} /> <span className="font-medium">Cart</span>
           </Link>
 
           <Link
             href={user ? "/orders" : "/login"}
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
           >
-            <FileText size={18} /> Orders
+            <FileText size={20} /> <span className="font-medium">Orders</span>
           </Link>
 
           <Link
             href={user ? "/address" : "/login"}
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
           >
-            <FileText size={18} /> Address
+            <FileText size={20} /> <span className="font-medium">Address</span>
           </Link>
 
           <hr className="border-gray-200" />
 
           {user ? (
             <>
-              <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-                <User size={18} /> Profile
+              <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
+                <User size={20} /> <span className="font-medium">Profile</span>
               </Link>
-              <button onClick={logout} className="flex items-center gap-2 text-red-600">
-                <LogOut size={18} /> Logout
+              <button onClick={logout} className="flex items-center gap-3 py-2 text-red-600 hover:text-red-700 transition-colors w-full text-left">
+                <LogOut size={20} /> <span className="font-medium">Logout</span>
               </button>
             </>
           ) : (
-            <Link href="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
-              <User size={18} /> Login / Signup
+            <Link href="/login" onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
+              <User size={20} /> <span className="font-medium">Login / Signup</span>
             </Link>
           )}
         </nav>

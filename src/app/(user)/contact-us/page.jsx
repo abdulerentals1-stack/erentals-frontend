@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import ContactUsForm from "@/components/user/ContactUsForm";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
-const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 
 export const metadata = {
   metadataBase: new URL(siteDomain),
@@ -29,7 +29,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Logo - Contact Us",
@@ -43,7 +43,7 @@ export const metadata = {
     title: "Contact Us – eRentals Mumbai | Event & Party Equipment Rental",
     description:
       "Get in touch with eRentals Mumbai for event rentals, party gear hire, furniture, lighting, sound, tent and decor on rent. Reach us via call, email or our contact form.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
     creator: "@erentals",
   },
   icons: {

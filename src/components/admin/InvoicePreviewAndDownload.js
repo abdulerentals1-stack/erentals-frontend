@@ -79,7 +79,7 @@ const InvoicePDF = ({ order, terms, persons }) => {
         {/* Header Image with TAX INVOICE & Date */}
         <View style={{ position: "relative" }}>
           <Image
-            src="https://res.cloudinary.com/danhxbweb/image/upload/v1760262056/erentals/products/cc5ocs3hdyqw76fhun0l.png"
+            src="/Erental_Invoice_Header.png"
             style={{ width: "100%", marginBottom: 10 }}
           />
           <Text style={styles.invoiceNumber}>TAX INVOICE: {order._id.slice(-6)}</Text>
@@ -271,7 +271,7 @@ const InvoicePDF = ({ order, terms, persons }) => {
 
         {/* Footer Image */}
         <Image
-          src="https://res.cloudinary.com/dsc5aznps/image/upload/v1754374924/erentals/products/rznbkrrvd6f4yuwnj1tl.png"
+          src="/Erental_Footer.png"
           style={{ width: "100%", marginTop: 10 }}
         />
       </Page>

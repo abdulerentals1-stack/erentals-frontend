@@ -9,33 +9,48 @@ export default function ProductCarousel({ images = [], productName = "Product" }
   return (
     <div>
       {/* ✅ Main Product Image */}
-      <div className="relative w-full aspect-square md:aspect-[4/3] border rounded-md overflow-hidden bg-white">
+      <div className="relative w-full max-h-[50vh] md:max-h-[500px] border border-gray-200/60 rounded-xl overflow-hidden bg-zinc-50 flex items-center justify-center group shadow-sm">
+        {/* Blurred Background Layer for uneven images */}
         <Image
           src={selectedImage}
-          alt={`${productName} - Rental Product Image`}
+          alt={`${productName} background blur`}
           fill
-          className="object-contain"
-          sizes="100vw"
+          className="object-cover opacity-30 blur-2xl scale-110 saturate-150"
+          sizes="(max-width: 768px) 100vw, 50vw"
           priority
+        />
+        {/* Main Image - using standard img to perfectly shrink-wrap natural aspect ratio without Next.js forcing 1:1 */}
+        <img
+          src={selectedImage}
+          alt={`${productName} - Rental Product Image`}
+          className="relative w-full h-auto max-h-[50vh] md:max-h-[500px] object-contain z-10 p-2 sm:p-4 drop-shadow-sm transition-transform duration-500 group-hover:scale-105"
         />
       </div>
 
       {/* ✅ Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 mt-4 overflow-x-auto">
+        <div className="flex gap-2.5 mt-3 px-1.5 pt-1.5 pb-2 overflow-x-auto no-scrollbar">
           {images.map((img, i) => (
             <div
               key={img._id || i}
               onClick={() => setSelectedIndex(i)}
-              className={`relative w-20 aspect-square border rounded cursor-pointer bg-gray-50 ${
-                selectedIndex === i ? 'border-blue-600' : ''
+              className={`relative shrink-0 w-20 aspect-square border rounded-lg cursor-pointer overflow-hidden bg-zinc-100 transition-all duration-300 ${
+                selectedIndex === i ? 'border-[#003459] ring-1 ring-[#003459] shadow-md scale-105' : 'hover:border-gray-400'
               }`}
             >
+              {/* Blurred bg for thumbnail */}
+              <Image
+                src={img.url}
+                alt={`${productName} View ${i + 1} blur`}
+                fill
+                className="object-cover opacity-30 blur-md scale-110 saturate-150"
+                sizes="80px"
+              />
               <Image
                 src={img.url}
                 alt={`${productName} View ${i + 1}`}
                 fill
-                className="object-contain rounded"
+                className="object-contain z-10 p-1"
                 sizes="80px"
               />
             </div>

@@ -40,7 +40,7 @@ export default async function BandraFurniturePage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "e-Rentals Bandra Furniture Hire",
-    "image": "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png",
+    "image": "https://e-rentals.in/e-rental-logo.png",
     "telephone": "+919867348165",
     "address": {
       "@type": "PostalAddress",

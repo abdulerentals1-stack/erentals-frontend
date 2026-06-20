@@ -3,6 +3,7 @@ import "../globals.css";
 import { AuthProvider } from "../../context/AuthContext";
 import Navbar from "@/components/layouts/Navbar";
 import TagsList from "@/components/user/TagsList";
+import TagsListWrapper from "@/components/user/TagsListWrapper";
 import ToasterProvider from "@/components/user/ToasterProvider";
 import Footer from "@/components/layouts/Footer";
 import Script from "next/script";
@@ -20,7 +21,7 @@ const geistMono = Geist_Mono({
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 const logoUrl =
-  "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+  typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 
 export const metadata = {
   metadataBase: new URL(siteDomain),
@@ -49,7 +50,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Logo and event rental services in Mumbai",
@@ -63,7 +64,7 @@ export const metadata = {
     title: "Event & Party Equipment Rental in Mumbai | e-Rentals",
     description:
       "Event and party rentals in Mumbai — furniture, sound, lighting, tents, decor and more at affordable rates.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
     creator: "@erentals",
   },
   icons: {
@@ -150,14 +151,16 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-[100vw] overflow-x-hidden bg-white`}>
         <GoogleTagManager gtmId="GTM-N5GLP4RZ" />
         <AuthProvider>
           <ToasterProvider />
           <div className="flex flex-col min-h-screen">
             {/* Navbar */}
             <Navbar />
-            <TagsList />
+            <TagsListWrapper>
+              <TagsList />
+            </TagsListWrapper>
 
             {/* Main Content */}
             <main className="flex-1">{children}</main>

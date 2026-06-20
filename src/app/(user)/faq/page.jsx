@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
-const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 
 export const metadata = {
   metadataBase: new URL(siteDomain),
@@ -33,7 +33,7 @@ export const metadata = {
       "Rent a wide range of event equipment and party supplies from eRentals – including furniture, mandaps, lights, sound systems, electronics, crockery and more. Serving Mumbai and cities across India, we provide reliable delivery, setup and flexible rental packages for weddings, corporate events, exhibitions and private parties.",
     url: `${siteDomain}/faq`,
     siteName: "e-Rentals",
-    images: [{ url: logoUrl, width: 1200, height: 630, alt: "e-Rentals Logo" }],
+    images: [{ url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg', width: 1200, height: 630, alt: "e-Rentals Logo" }],
     locale: "en_IN",
     type: "website",
   },
@@ -42,7 +42,7 @@ export const metadata = {
     title: "Event Equipment & Furniture Rentals in Mumbai | eRentals India",
     description:
       "Rent a wide range of event equipment and party supplies from eRentals – including furniture, mandaps, lights, sound systems, electronics, crockery and more. Serving Mumbai and cities across India, we provide reliable delivery, setup and flexible rental packages for weddings, corporate events, exhibitions and private parties.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
     creator: "@erentals",
   },
   icons: { icon: logoUrl, shortcut: logoUrl, apple: logoUrl },

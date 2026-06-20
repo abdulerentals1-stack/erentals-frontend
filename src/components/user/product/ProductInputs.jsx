@@ -14,58 +14,57 @@ export default function ProductInputs({ pricingType, formData, setFormData, unit
   }, [pricingType]);
 
   return (
-    <div className="space-y-4 mt-4">
-      <div>
-        <label className="block text-sm font-medium">Days</label>
+    <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-1 w-full min-w-0">
+      <div className="bg-gray-50/50 p-2 sm:p-3 rounded-lg border border-gray-100 shadow-sm flex flex-col gap-1 min-w-0">
+        <label className="text-[11px] sm:text-xs font-semibold text-gray-700">Days</label>
         <Input
           type="number"
-          min={1}
-          value={formData.days}
+          min="1"
+          value={formData.days || 1}
           onChange={(e) => update('days', e.target.value)}
-          className="input rounded-xl h-12"
+          className="h-8 sm:h-9 text-sm rounded bg-white w-full min-w-0"
         />
       </div>
 
-      {/* ✅ Always show quantity */}
-      <div>
-        <label className="block text-sm font-medium">
-          Quantity (pcs)
+      <div className="bg-gray-50/50 p-2 sm:p-3 rounded-lg border border-gray-100 shadow-sm flex flex-col gap-1 min-w-0">
+        <label className="text-[11px] sm:text-xs font-semibold text-gray-700">
+          Quantity <span className="text-[10px] text-gray-400 font-normal">(pcs)</span>
         </label>
         <Input
           type="number"
-          min={1}
-          value={formData.quantity}
+          min="1"
+          value={formData.quantity || 1}
           onChange={(e) => update('quantity', e.target.value)}
-          className="input rounded-xl h-12"
+          className="h-8 sm:h-9 text-sm rounded bg-white w-full min-w-0"
         />
       </div>
 
       {['length_width', 'area'].includes(pricingType) && (
-        <div>
-          <label className="block text-sm font-medium">
-            Length ({unitinfo})
+        <div className="bg-gray-50/50 p-2 sm:p-3 rounded-lg border border-gray-100 shadow-sm flex flex-col gap-1 min-w-0">
+          <label className="text-[11px] sm:text-xs font-semibold text-gray-700">
+            Length <span className="text-[10px] text-gray-400 font-normal">({unitinfo})</span>
           </label>
           <Input
             type="number"
-            min={1}
-            value={formData.length}
+            min="1"
+            value={formData.length || 1}
             onChange={(e) => update('length', e.target.value)}
-            className="input rounded-xl h-12"
+            className="h-8 sm:h-9 text-sm rounded bg-white w-full min-w-0"
           />
         </div>
       )}
 
       {pricingType === 'area' && (
-        <div>
-          <label className="block text-sm font-medium">
-            Width ({unitinfo})
+        <div className="bg-gray-50/50 p-2 sm:p-3 rounded-lg border border-gray-100 shadow-sm flex flex-col gap-1 min-w-0">
+          <label className="text-[11px] sm:text-xs font-semibold text-gray-700">
+            Width <span className="text-[10px] text-gray-400 font-normal">({unitinfo})</span>
           </label>
           <Input
             type="number"
-            min={1}
-            value={formData.width}
+            min="1"
+            value={formData.width || 1}
             onChange={(e) => update('width', e.target.value)}
-            className="input rounded-xl h-12"
+            className="h-8 sm:h-9 text-sm rounded bg-white w-full min-w-0"
           />
         </div>
       )}

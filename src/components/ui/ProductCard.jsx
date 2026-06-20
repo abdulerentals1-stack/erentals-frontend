@@ -43,15 +43,22 @@ export default function ProductCard({ product }) {
       )}
 
       {/* ✅ Wrap image with Link */}
-      <Link href={`/products/${slug}`} className="block w-full aspect-square relative bg-zinc-50 overflow-hidden">
+      <Link href={`/products/${slug}`} className="block w-full aspect-square relative bg-zinc-50 overflow-hidden flex items-center justify-center group-hover:bg-zinc-100 transition-colors">
+        {/* Blurred Background Layer for uneven images */}
+        <Image
+          src={imageUrl}
+          alt={`${name} background blur`}
+          fill
+          className="object-cover opacity-30 blur-2xl scale-110 saturate-150 group-hover:opacity-40 transition-opacity duration-500"
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+        {/* Main Image */}
         <Image
           src={imageUrl}
           alt={name}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw,
-                (max-width: 1200px) 50vw,
-                33vw"
+          className="object-contain p-4 z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-sm"
+          sizes="(max-width: 768px) 100vw, 50vw, 33vw"
         />
       </Link>
 
@@ -59,17 +66,17 @@ export default function ProductCard({ product }) {
         <div className="space-y-2.5">
           {/* ✅ Wrap name with Link */}
           <Link href={`/products/${slug}`}>
-            <h3 className="font-semibold text-sm leading-snug text-zinc-800 line-clamp-2 hover:text-blue-600 transition-colors">
+            <h3 className="font-semibold text-sm leading-snug text-zinc-800 line-clamp-2 min-h-[40px] hover:text-blue-600 transition-colors">
                 {name}
             </h3>
           </Link>
 
           <div className="flex flex-col mt-0.5">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[#003459] font-extrabold text-[22px] tracking-tight">₹{displayPrice}</span>
-              <span className="text-gray-500 text-xs font-medium">/day</span>
+              <span className="text-[#003459] font-extrabold text-lg sm:text-[22px] tracking-tight">₹{displayPrice}</span>
+              <span className="text-gray-500 text-[10px] sm:text-xs font-medium">/day</span>
               {basePrice > displayPrice && (
-                <span className="text-gray-400 line-through text-[11px] ml-1">₹{basePrice}</span>
+                <span className="text-gray-400 line-through text-[10px] sm:text-[11px] ml-1">₹{basePrice}</span>
               )}
             </div>
             
@@ -88,14 +95,14 @@ export default function ProductCard({ product }) {
             product={product} 
             className="w-full h-8 rounded-md bg-[#003459] hover:bg-[#002240] text-white shadow-sm text-xs font-semibold transition-all duration-300" 
           />
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5 w-full">
             <AddToQuoteButton 
               product={product} 
-              className="flex-1 h-8 rounded-md bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors duration-300" 
+              className="flex-1 h-8 !px-1 sm:!px-2 rounded-md bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors duration-300" 
             />
             <AddToCartButton 
               product={product} 
-              className="flex-1 h-8 rounded-md bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors duration-300" 
+              className="flex-1 h-8 !px-1 sm:!px-2 rounded-md bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors duration-300" 
             />
           </div>
         </div>

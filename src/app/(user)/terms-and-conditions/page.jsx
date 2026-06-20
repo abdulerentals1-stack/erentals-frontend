@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
-const logoUrl = "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png";
+const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 
 export const metadata = {
   metadataBase: new URL(siteDomain),
@@ -39,7 +39,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Logo - Terms & Conditions",
@@ -53,7 +53,7 @@ export const metadata = {
     title: "Terms & Conditions – eRentals Mumbai | Event Rental Services",
     description:
       "Read eRentals Mumbai’s Terms & Conditions — rules, booking & cancellation policy for event rentals: furniture, lighting, sound, tents, stage & decor hire in Mumbai.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
     creator: "@erentals",
   },
   icons: {
@@ -81,7 +81,7 @@ export default function TermsAndConditions() {
       name: "e-Rentals",
       logo: {
         "@type": "ImageObject",
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
       },
     },
   };

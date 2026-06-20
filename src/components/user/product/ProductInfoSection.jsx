@@ -50,11 +50,13 @@ export default function ProductInfoSection({ product }) {
   }, [inputs]);
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-8 w-full min-w-0">
       <ProductCarousel images={product.images} productName={product.name} />
 
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">{product.name}</h1>
+      <div className="flex flex-col gap-5 w-full min-w-0">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight leading-snug">
+          {product.name}
+        </h1>
         <ProductInputs
             pricingType={product.pricingType}
             formData={inputs}
