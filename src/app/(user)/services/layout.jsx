@@ -14,7 +14,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Premium Event Setup Services in Mumbai",
@@ -27,7 +27,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Premium Event Fabrication & Staging Services in Mumbai | e-Rentals",
     description: "Browse our stunning custom stages, welcome gates, sound, lighting, and venue setups crafted for weddings, corporate meets, and private parties in Mumbai.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
   },
 };
 

@@ -26,7 +26,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Logo - Shipping & Delivery Policy",
@@ -40,7 +40,7 @@ export const metadata = {
     title: "Shipping & Delivery Policy – eRentals Mumbai | Event Logistics",
     description:
       "Read eRentals Mumbai's Shipping & Delivery Policy. Learn about our delivery slots, setup assistance, vendor responsibilities, and customer pickup guidelines for event equipment rentals.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
   },
 };
 
@@ -57,7 +57,7 @@ export default function ShippingAndDeliveryPage() {
       name: "e-Rentals",
       logo: {
         "@type": "ImageObject",
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
       },
     },
   };

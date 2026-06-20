@@ -27,7 +27,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Logo - About Us",
@@ -41,7 +41,7 @@ export const metadata = {
     title: "About Us – eRentals | Event Rentals & Equipment Hire Mumbai",
     description:
       "eRentals is Mumbai’s leading event rental platform — offering furniture, lighting, sound, decor, tents, stages & more. Trusted, convenient & quality rentals in Mumbai",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
     creator: "@erentals",
   },
   icons: {
@@ -69,7 +69,7 @@ export default function AboutUs() {
       name: "e-Rentals",
       logo: {
         "@type": "ImageObject",
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
       },
     },
   };

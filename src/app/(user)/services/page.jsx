@@ -26,7 +26,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Event Services Portfolio",
@@ -39,7 +39,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Premium Event & Corporate Production Services in Mumbai | e-Rentals",
     description: "Browse our premium event fabrication, custom main stages, background setups, ambient lighting, sound systems, and wedding decoration services in Mumbai.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
   },
 };
 

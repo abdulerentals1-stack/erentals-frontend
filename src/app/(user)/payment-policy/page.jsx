@@ -26,7 +26,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
         width: 1200,
         height: 630,
         alt: "e-Rentals Logo - Payment Policy",
@@ -40,7 +40,7 @@ export const metadata = {
     title: "Payment Policy & KYC Verification – eRentals Mumbai",
     description:
       "Review the eRentals Mumbai Payment Policy. Learn about rental security deposits, vendor payout schedules, refunds, billing, and KYC document requirements.",
-    images: [logoUrl],
+    images: [typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg'],
   },
 };
 
@@ -57,7 +57,7 @@ export default function PaymentPolicy() {
       name: "e-Rentals",
       logo: {
         "@type": "ImageObject",
-        url: logoUrl,
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : 'https://e-rentals.in/og-image.jpg',
       },
     },
   };

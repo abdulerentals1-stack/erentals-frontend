@@ -7,6 +7,7 @@ import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
+const ogImageUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : "https://e-rentals.in/og-image.jpg";
 
 function getCleanCategoryName(name) {
   if (!name) return "";
@@ -79,7 +80,7 @@ export async function generateMetadata({ params }) {
         type: "website",
         images: [
           {
-            url: product.images?.[0]?.url || product.images?.[0] || logoUrl,
+            url: product.images?.[0]?.url || product.images?.[0] || ogImageUrl,
             width: 1200,
             height: 630,
             alt: product.name,
@@ -91,7 +92,7 @@ export async function generateMetadata({ params }) {
         card: "summary_large_image",
         title: product.metaTitle || `${product.name} on Rent in Mumbai – e-Rentals`,
         description: fallbackDescription,
-        images: [product.images?.[0]?.url || product.images?.[0] || logoUrl],
+        images: [product.images?.[0]?.url || product.images?.[0] || ogImageUrl],
         creator: "@erentals",
       },
     };
