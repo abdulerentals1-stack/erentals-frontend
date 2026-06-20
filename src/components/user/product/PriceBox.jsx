@@ -39,7 +39,7 @@ export default function PriceBox({ priceData, product }) {
 
         <div className="flex justify-between items-end">
           <span className="text-gray-900 font-bold text-lg mb-1">Total Cost</span>
-          <span className="text-[#003459] text-4xl font-extrabold tracking-tight drop-shadow-sm">₹{priceData.finalPrice}</span>
+          <span className="text-[#003459] text-3xl md:text-4xl font-extrabold tracking-tight drop-shadow-sm">₹{priceData.finalPrice}</span>
         </div>
       </div>
     </div>

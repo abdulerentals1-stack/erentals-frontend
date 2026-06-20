@@ -3,6 +3,7 @@ import "../globals.css";
 import { AuthProvider } from "../../context/AuthContext";
 import Navbar from "@/components/layouts/Navbar";
 import TagsList from "@/components/user/TagsList";
+import TagsListWrapper from "@/components/user/TagsListWrapper";
 import ToasterProvider from "@/components/user/ToasterProvider";
 import Footer from "@/components/layouts/Footer";
 import Script from "next/script";
@@ -150,14 +151,16 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-[100vw] overflow-x-hidden bg-white`}>
         <GoogleTagManager gtmId="GTM-N5GLP4RZ" />
         <AuthProvider>
           <ToasterProvider />
           <div className="flex flex-col min-h-screen">
             {/* Navbar */}
             <Navbar />
-            <TagsList />
+            <TagsListWrapper>
+              <TagsList />
+            </TagsListWrapper>
 
             {/* Main Content */}
             <main className="flex-1">{children}</main>

@@ -47,7 +47,7 @@ const Navbar = () => {
 
   return (
     <header className="relative border-b md:h-[5.2rem] h-16 bg-white w-full">
-      <nav className="fixed bg-white md:border-b top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 justify-between items-center">
+      <nav className="fixed bg-white md:border-b top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-3 sm:px-12 md:px-16 lg:px-12 2xl:px-28 justify-between items-center">
         <div className="flex items-center justify-between w-full gap-4 md:gap-10">
           {/* Logo */}
           <div className="flex items-center flex-shrink-0 mr-4 md:mr-8">
@@ -69,7 +69,7 @@ const Navbar = () => {
                   <Input
                     name="search"
                     type="search"
-                    placeholder="Search for Rental Item..."
+                    placeholder="Search rentals..."
                     value={searchField}
                     onChange={handleSearchChange}
                     className='pl-10 h-10 bg-[#F3F9FB]'

@@ -19,7 +19,7 @@ export default async function TagsList() {
       flex items-center gap-3 
       px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28
       overflow-x-auto lg:overflow-x-visible 
-      scrollbar-hide justify-between">
+      no-scrollbar justify-between">
       {AllTags.map((tag) => (
         <Link
           key={tag._id}

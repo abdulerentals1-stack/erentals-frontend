@@ -92,10 +92,10 @@ export default function ProductActionButtons({ product, formData }) {
         )}
       </Button>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 w-full min-w-0">
         {/* Add to Quote Button - Secondary Action */}
         <Button
-          className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-2 font-semibold transition-all duration-300 shadow-sm"
+          className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-1.5 font-semibold whitespace-normal px-2 transition-all duration-300 shadow-sm min-w-0"
           onClick={handleAddToQuote}
           disabled={loadingType !== null}
         >
@@ -106,15 +106,15 @@ export default function ProductActionButtons({ product, formData }) {
             </>
           ) : (
             <>
-              <FileText size={18} />
-              Quote
+              <FileText size={18} className="shrink-0" />
+              <span className="truncate">Quote</span>
             </>
           )}
         </Button>
 
         {/* Add to Cart Button - Secondary Action */}
         <Button
-          className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-2 font-semibold transition-all duration-300 shadow-sm"
+          className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-1.5 font-semibold whitespace-normal px-2 transition-all duration-300 shadow-sm min-w-0"
           onClick={() => handleAddToCart(false)}
           disabled={loadingType !== null}
         >
@@ -125,8 +125,8 @@ export default function ProductActionButtons({ product, formData }) {
             </>
           ) : (
             <>
-              <ShoppingCart size={18} />
-              Cart
+              <ShoppingCart size={18} className="shrink-0" />
+              <span className="truncate">Cart</span>
             </>
           )}
         </Button>
