@@ -50,14 +50,14 @@ export default function VerifyPage() {
       {/* <h2 className="text-xl font-semibold">Email Verification</h2> */}
        <Link href="/" className='flex justify-center'>
               <Image
-                  src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
-                  alt="Logo"
-                  width={80}
-                  height={40}
-                  priority // 👈 forces SSR load
-                  unoptimized   // 👈 disables optimization
-                  className="h-18 w-36 object-contain mix-blend-multiply"
-                />
+            src="/e-rental-logo.png"
+            alt="Logo"
+            width={160}
+            height={60}
+            priority
+            unoptimized
+            className="w-20 md:w-28 h-auto object-contain mx-auto"
+          />
               {/* e-Renalts */}
             </Link>
 

@@ -50,17 +50,16 @@ const Navbar = () => {
       <nav className="fixed bg-white md:border-b top-0 left-0 z-50 h-16 md:h-[5.2rem] w-full flex px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 justify-between items-center">
         <div className="flex items-center justify-between w-full gap-4 md:gap-10">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className='space-x-2'>
+          <div className="flex items-center flex-shrink-0 mr-4 md:mr-8">
+            <Link href="/" className="inline-block transition-transform hover:scale-[1.02]">
               <Image
-                  src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+                  src="/e-rental-logo.png"
                   alt="e-Rentals Mumbai – Event Equipment Rental"
-                  width={100}
-                  height={50}
+                  width={200}
+                  height={200}
                   priority // 👈 forces SSR load
-                  className="h-full w-full object-contain mix-blend-multiply"
+                  className="w-20 sm:w-24 md:w-28 h-auto object-contain"
                 />
-              {/* e-Renalts */}
             </Link>
           </div>
 

@@ -18,7 +18,7 @@ export const metadata = {
     siteName: "e-Rentals",
     images: [
       {
-        url: "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png",
+        url: typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png",
         width: 1200,
         height: 630,
         alt: "e-Rentals Event and Party Rental Catalog",
@@ -31,7 +31,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "All Event & Party Rental Products in Mumbai | e-Rentals",
     description: "Browse our comprehensive event and party equipment rental catalog in Mumbai. Rent luxury furniture, sound systems, stage setup, lights and appliances at affordable daily rates.",
-    images: ["https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"],
+    images: [typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png"],
   },
 };
 

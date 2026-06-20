@@ -111,7 +111,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
     "@type": "Article",
     headline: service?.title,
     image: [
-      service?.images?.[0]?.url || service?.coverImage?.url || "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+      service?.images?.[0]?.url || service?.coverImage?.url || (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png")
     ],
     datePublished: service?.createdAt || new Date().toISOString(),
     dateModified: service?.updatedAt || new Date().toISOString(),
@@ -125,7 +125,7 @@ export default function ServiceDetailClient({ initialService, initialServices = 
       name: "e-Rentals",
       logo: {
         "@type": "ImageObject",
-        url: "https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+        url: typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png"
       }
     }
   };

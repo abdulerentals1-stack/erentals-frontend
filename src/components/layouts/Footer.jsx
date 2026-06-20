@@ -8,11 +8,11 @@ export default function Footer() {
         {/* Brand */}
         <div className="text-center md:text-left">
           <Image
-            src="https://blr1.vultrobjects.com/erental-object/11b39b1a-3c1e-41d8-933a-6486505ff395.png"
+            src="/e-rental-logo.png"
             alt="Erentals Logo"
-            width={160}
-            height={45}
-            className="mx-auto md:mx-0 mb-4"
+            width={200}
+            height={200}
+            className="w-32 md:w-40 h-auto object-contain mx-auto md:mx-0 mb-6 bg-white p-3 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
           />
           <p className="text-base text-gray-300 leading-relaxed">
             Erentals is your trusted marketplace for renting products for weddings, exhibitions, and corporate events.
@@ -56,8 +56,17 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[#1e4c75] mt-8 text-center py-4 text-sm text-gray-400">
-        © {new Date().getFullYear()} Erentals. All rights reserved.
+      <div className="border-t border-[#1e4c75] mt-8">
+        <Image 
+          src="/Erental_Footer.png" 
+          alt="Footer Stripe" 
+          width={1920} 
+          height={100} 
+          className="w-full h-auto object-cover"
+        />
+        <div className="text-center py-4 text-sm text-gray-400">
+          © {new Date().getFullYear()} Erentals. All rights reserved.
+        </div>
       </div>
     </footer>
   );

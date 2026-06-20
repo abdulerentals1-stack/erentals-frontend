@@ -115,13 +115,13 @@ export default function OtpLoginPage() {
       <div className="w-full max-w-sm space-y-5 border border-gray-200 rounded-xl p-6 shadow-md bg-white">
         <Link href="/" className="flex justify-center">
           <Image
-            src="https://blr1.vultrobjects.com/erental-object/378f01fe-2344-4c35-90d2-07dcd2236dd8.png"
+            src="/e-rental-logo.png"
             alt="Logo"
-            width={80}
-            height={40}
+            width={160}
+            height={60}
             priority
             unoptimized
-            className="h-18 w-36 object-contain mix-blend-multiply"
+            className="w-20 md:w-28 h-auto object-contain mx-auto"
           />
         </Link>
 

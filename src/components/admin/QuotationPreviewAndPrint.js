@@ -84,7 +84,7 @@ const QuotationPDF = ({ quotation }) => {
 
         {/* Header Banner */}
         <Image
-          src="https://res.cloudinary.com/danhxbweb/image/upload/v1760250366/erentals/products/a8ljrtm4eazwh1xp7osn.png"
+          src="/Erental_Quotation_Header.png"
           style={styles.headerImage}
         />
 
@@ -224,7 +224,7 @@ const QuotationPDF = ({ quotation }) => {
 
         {/* Footer Banner */}
         <Image
-          src="https://res.cloudinary.com/dsc5aznps/image/upload/v1754374924/erentals/products/rznbkrrvd6f4yuwnj1tl.png"
+          src="/Erental_Footer.png"
           style={styles.footerImage}
         />
       </Page>
