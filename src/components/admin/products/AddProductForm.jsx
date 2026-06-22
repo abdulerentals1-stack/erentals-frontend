@@ -209,9 +209,9 @@ export default function AddProductForm() {
             {...register("pricingType")}
             className="w-full border rounded-md p-2"
           >
-            <option value="quantity">Quantity</option>
-            <option value="length_width">Length × Width</option>
-            <option value="area">Area</option>
+            <option value="quantity">Quantity Based (pcs)</option>
+            <option value="length_width">Length Based (Linear ft/m)</option>
+            <option value="area">Area Based (Length × Width)</option>
           </select>
         </div>
         <div>

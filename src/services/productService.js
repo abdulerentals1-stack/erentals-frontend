@@ -14,7 +14,7 @@ export const getAllProducts = () => api.get("/products");
 
 export const getProductBySlug = async (slug) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`, {
-    next: { revalidate: 3600 },  // ✅ Enable ISR caching (1 hour)
+    cache: "no-store",  // ✅ Always fresh so pricing calculations are never out of sync
   });
 
   if (!res.ok) throw new Error(`Failed to fetch product with slug: ${slug}`);
@@ -28,7 +28,7 @@ export const getFlaggedProducts = async (type) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/flagged?type=${type}`, {
       method: "GET",
-      next: { revalidate: 3600 }, // Cache for 1 hour instead of no-store
+      cache: "no-store", // Always fetch fresh to avoid pricing mismatches
       headers: {
         "Content-Type": "application/json",
       },
