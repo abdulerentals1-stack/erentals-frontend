@@ -264,7 +264,7 @@ export default function AddProductForm() {
           <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
             <Input
               type="number"
-              placeholder="Quantity Threshold"
+              placeholder={`Threshold (${watch("pricingType") === "area" ? "sq.ft" : watch("pricingType") === "length_width" ? "ft" : "pcs"})`}
               {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
             />
             <Input
