@@ -150,20 +150,12 @@ export default function PriceBox({ priceData, product, formData }) {
           </span>
         </div>
 
-        {/* Service Charge (if applicable) */}
-        {serviceCharge > 0 && (
-          <div className="flex justify-between items-center pb-3 border-b border-gray-200/60 text-xs text-gray-600">
-            <span className="font-semibold uppercase tracking-wider text-gray-500">Service Charge</span>
-            <span className="font-bold text-gray-800">+₹{serviceCharge}</span>
-          </div>
-        )}
-
         {/* Total Cost */}
         <div className="flex justify-between items-end pt-1">
           <div className="flex flex-col">
             <span className="text-gray-900 font-extrabold text-lg">Total Cost</span>
             <span className="text-[10px] text-gray-400 font-medium mt-0.5">
-              ₹{formatPrice(dailyTotalRate)}/day × {days} {days === 1 ? 'day' : 'days'} {serviceCharge > 0 ? `+ ₹${serviceCharge} service charge` : ''}
+              ₹{formatPrice(dailyTotalRate)}/day × {days} {days === 1 ? 'day' : 'days'}
             </span>
           </div>
           <span className="text-[#003459] text-3xl md:text-4xl font-extrabold tracking-tight drop-shadow-sm">₹{finalPrice}</span>
