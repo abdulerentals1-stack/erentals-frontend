@@ -209,9 +209,9 @@ export default function AddProductForm() {
             {...register("pricingType")}
             className="w-full border rounded-md p-2"
           >
-            <option value="quantity">Quantity</option>
-            <option value="length_width">Length × Width</option>
-            <option value="area">Area</option>
+            <option value="quantity">Quantity Based (pcs)</option>
+            <option value="length_width">Length Based (Linear ft/m)</option>
+            <option value="area">Area Based (Length × Width)</option>
           </select>
         </div>
         <div>
@@ -264,7 +264,7 @@ export default function AddProductForm() {
           <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
             <Input
               type="number"
-              placeholder="Quantity Threshold"
+              placeholder={`Threshold (${watch("pricingType") === "area" ? "sq.ft" : watch("pricingType") === "length_width" ? "ft" : "pcs"})`}
               {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
             />
             <Input

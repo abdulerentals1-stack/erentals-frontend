@@ -43,9 +43,24 @@ export default function PriceBox({ priceData, product, formData }) {
   const dailyUnitRate = finalDayPrice / days;
   const dailyTotalRate = rentalPrice / days;
 
+  const unitPlural = priceData.unit || (product?.pricingType === 'area' ? 'sq.ft' : product?.pricingType === 'length_width' ? 'ft' : 'pcs');
+  const unitSingular = unitPlural === 'pcs' ? 'pc' : unitPlural;
+
   return (
     <div className="mt-4 flex flex-col gap-3">
 
+
+      {/* ✅ Next tier nudge — if not on highest tier */}
+      {nextTier && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div>
+            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/{unitSingular}</p>
+            <p className="text-amber-600 text-xs mt-0.5">
+              Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per {unitSingular === 'pc' ? 'piece' : unitSingular} at {nextTier.value}+ {unitPlural}
+            </p>
+          </div>
+        </div>
+      )}
       {/* ✅ Bulk Tiers Overview — always visible if tiers exist */}
       {allThresholds.length > 0 && (
         <div className="border border-gray-200 rounded-xl overflow-hidden">
@@ -56,7 +71,7 @@ export default function PriceBox({ priceData, product, formData }) {
             {/* Base price row (< first threshold) */}
             <div className={`flex items-center justify-between px-4 py-2.5 ${!isBulkApplied ? 'bg-blue-50' : 'bg-white'}`}>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">1 – {allThresholds[0].value - 1} pcs</span>
+                <span className="text-sm text-gray-700">1 – {allThresholds[0].value - 1} {unitPlural}</span>
                 {!isBulkApplied && (
                   <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-semibold">ACTIVE</span>
                 )}
@@ -65,7 +80,7 @@ export default function PriceBox({ priceData, product, formData }) {
                 {product?.discountPrice && product.discountPrice < basePrice && (
                   <span className="text-xs text-gray-400 line-through">₹{basePrice}</span>
                 )}
-                <span className="text-sm font-semibold text-gray-900">₹{product?.discountPrice || basePrice}/pc</span>
+                <span className="text-sm font-semibold text-gray-900">₹{product?.discountPrice || basePrice}/{unitSingular}</span>
               </div>
             </div>
 
@@ -82,7 +97,7 @@ export default function PriceBox({ priceData, product, formData }) {
                 >
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm text-gray-700">
-                      {tier.value}{rangeEnd !== '+' ? `–${rangeEnd}` : '+'} pcs
+                      {tier.value}{rangeEnd !== '+' ? `–${rangeEnd}` : '+'} {unitPlural}
                     </span>
                     {isActive && (
                       <span className="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded font-semibold">ACTIVE</span>
@@ -93,7 +108,7 @@ export default function PriceBox({ priceData, product, formData }) {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-gray-400 line-through">₹{basePrice}</span>
-                    <span className={`text-sm font-bold ${isActive ? 'text-emerald-700' : 'text-gray-900'}`}>₹{tier.price}/pc</span>
+                    <span className={`text-sm font-bold ${isActive ? 'text-emerald-700' : 'text-gray-900'}`}>₹{tier.price}/{unitSingular}</span>
                   </div>
                 </div>
               );
@@ -102,21 +117,9 @@ export default function PriceBox({ priceData, product, formData }) {
         </div>
       )}
 
-      {/* ✅ Next tier nudge — if not on highest tier */}
-      {nextTier && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/pc</p>
-            <p className="text-amber-600 text-xs mt-0.5">
-              Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per piece at {nextTier.value}+ pcs
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* ✅ Main price breakdown box */}
       <div className="p-5 border border-gray-200/80 rounded-xl bg-gray-50 shadow-sm flex flex-col gap-4">
-        
+
         {/* Unit Price Row */}
         <div className="flex justify-between items-center pb-3 border-b border-gray-200/60">
           <div className="flex flex-col">
@@ -129,10 +132,10 @@ export default function PriceBox({ priceData, product, formData }) {
           </div>
           <div className="flex flex-col items-end">
             {savedPercent > 0 && (
-              <span className="text-xs text-gray-400 line-through">₹{basePrice} / {priceData.unit || 'pcs'} / day</span>
+              <span className="text-xs text-gray-400 line-through">₹{basePrice} / {unitPlural} / day</span>
             )}
             <span className="text-base font-bold text-gray-800">
-              ₹{formatPrice(dailyUnitRate)} <span className="text-xs font-medium text-gray-500">/ {priceData.unit || 'pcs'} / day</span>
+              ₹{formatPrice(dailyUnitRate)} <span className="text-xs font-medium text-gray-500">/ {unitPlural} / day</span>
             </span>
           </div>
         </div>
@@ -142,7 +145,7 @@ export default function PriceBox({ priceData, product, formData }) {
           <div className="flex flex-col">
             <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Per Day Breakdown</span>
             <span className="text-[11px] text-gray-500 mt-0.5">
-              {userValue} {priceData.unit || 'pcs'} × ₹{formatPrice(dailyUnitRate)}/day
+              {userValue} {unitPlural} × ₹{formatPrice(dailyUnitRate)}/day
             </span>
           </div>
           <span className="text-base font-bold text-gray-800">
