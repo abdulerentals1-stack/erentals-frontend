@@ -85,7 +85,7 @@ export default function ProductCard({ product }) {
             {/* Bulk offer teaser from first threshold tier */}
             {firstBulkTier && firstBulkTier.value > 1 && (
               <p className="text-[11px] font-semibold text-emerald-600 tracking-tight mt-0.5">
-                Discounts start at {firstBulkTier.value}+ pcs
+                Quantity discounts available
               </p>
             )}
           </div>
