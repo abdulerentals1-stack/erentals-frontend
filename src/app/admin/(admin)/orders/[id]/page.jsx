@@ -156,8 +156,8 @@ const getActualUnitPrice = (item) => {
 
   // Threshold logic: find closest threshold that matches
   const matchedThreshold = thresholds
-    .filter((t) => userValue <= t.value)
-    .sort((a, b) => a.value - b.value)[0];
+    .filter((t) => userValue >= t.value)
+    .sort((a, b) => b.value - a.value)[0];
 
   const unitPrice = matchedThreshold?.price || discountPrice || basePrice;
 
