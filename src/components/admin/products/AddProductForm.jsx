@@ -220,39 +220,9 @@ export default function AddProductForm() {
         </div>
         <div className="flex flex-col">
           <Label className="flex items-center gap-1.5 mb-1.5">
-            Discount Price 
-            <span 
-              className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200 cursor-help"
-              title="Standard discounted price. E.g. Base Price: 20, Discount Price: 18 shows as a 10% discount on the frontend."
-            >
-              (Standard Discount) ⓘ
-            </span>
+            Discount Price
           </Label>
           <Input type="number" {...register("discountPrice", { valueAsNumber: true })} />
-          
-          {(() => {
-            const basePriceVal = watch("basePrice") || 0;
-            const discPriceVal = watch("discountPrice") || 0;
-            const percent = basePriceVal > 0 && discPriceVal > 0 && basePriceVal > discPriceVal 
-              ? Math.round(((basePriceVal - discPriceVal) / basePriceVal) * 100) 
-              : 0;
-
-            if (basePriceVal > 0 && discPriceVal > 0) {
-              return (
-                <div className="mt-2 text-sm p-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-md flex items-center gap-2">
-                  <span className="text-zinc-500 text-xs uppercase font-semibold">Preview:</span>
-                  <span className="line-through text-zinc-400 decoration-red-400 decoration-2 font-medium">₹{basePriceVal}</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">₹{discPriceVal}</span>
-                  {percent > 0 && (
-                    <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-100 bg-emerald-200 dark:bg-emerald-800 px-1.5 py-0.5 rounded-full">
-                      {percent}% OFF
-                    </span>
-                  )}
-                </div>
-              );
-            }
-            return null;
-          })()}
         </div>
         <div>
           <Label>Stock</Label>
