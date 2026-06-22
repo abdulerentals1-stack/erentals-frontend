@@ -49,6 +49,18 @@ export default function PriceBox({ priceData, product, formData }) {
   return (
     <div className="mt-4 flex flex-col gap-3">
 
+
+      {/* ✅ Next tier nudge — if not on highest tier */}
+      {nextTier && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div>
+            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/{unitSingular}</p>
+            <p className="text-amber-600 text-xs mt-0.5">
+              Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per {unitSingular === 'pc' ? 'piece' : unitSingular} at {nextTier.value}+ {unitPlural}
+            </p>
+          </div>
+        </div>
+      )}
       {/* ✅ Bulk Tiers Overview — always visible if tiers exist */}
       {allThresholds.length > 0 && (
         <div className="border border-gray-200 rounded-xl overflow-hidden">
@@ -105,21 +117,9 @@ export default function PriceBox({ priceData, product, formData }) {
         </div>
       )}
 
-      {/* ✅ Next tier nudge — if not on highest tier */}
-      {nextTier && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between">
-          <div>
-            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/{unitSingular}</p>
-            <p className="text-amber-600 text-xs mt-0.5">
-              Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per {unitSingular === 'pc' ? 'piece' : unitSingular} at {nextTier.value}+ {unitPlural}
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* ✅ Main price breakdown box */}
       <div className="p-5 border border-gray-200/80 rounded-xl bg-gray-50 shadow-sm flex flex-col gap-4">
-        
+
         {/* Unit Price Row */}
         <div className="flex justify-between items-center pb-3 border-b border-gray-200/60">
           <div className="flex flex-col">
