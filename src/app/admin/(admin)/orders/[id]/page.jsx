@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
-import { getAllProducts } from "@/services/productService";
+import { getAllProducts, calculatePrice } from "@/services/productService";
 import {
   getOrderById,
   adminUpdateOrder,
@@ -74,18 +74,46 @@ export default function OrderDetailsPage() {
     }
   };
 
-  const handleItemChange = (index, field, value) => {
-  const newItems = [...items];
-  if (field === "withService") {
-    newItems[index][field] = value;
-  } else if (field === "customPrice") {
-    newItems[index][field] = value === "" ? null : Number(value);
-  } else {
-    newItems[index][field] = Number(value);
-  }
 
-  setItems(newItems);
-};
+  const recalculateItemViaAPI = async (item) => {
+    if (!item.product?._id) return item;
+    try {
+      const payload = {
+        productId: item.product._id,
+        quantity: item.quantity || 1,
+        days: item.days || 1,
+        includeServiceCharge: item.withService || false,
+      };
+      if (item.product.pricingType === "length_width") payload.length = item.length || 1;
+      if (item.product.pricingType === "area") {
+        payload.length = item.length || 1;
+        payload.width = item.width || 1;
+      }
+      const { data } = await calculatePrice(payload);
+      return {
+        ...item,
+        unitPrice: data.discountPrice,
+        finalPrice: data.finalPrice,
+      };
+    } catch {
+      return item;
+    }
+  };
+
+  const handleItemChange = async (index, field, value) => {
+    const newItems = [...items];
+    if (field === "withService") {
+      newItems[index][field] = value;
+    } else if (field === "customPrice") {
+      newItems[index][field] = value === "" ? null : Number(value);
+    } else {
+      newItems[index][field] = Number(value);
+    }
+    setItems([...newItems]);
+    const updated = await recalculateItemViaAPI(newItems[index]);
+    newItems[index] = updated;
+    setItems([...newItems]);
+  };
 
 
   const removeItem = (index) => {
@@ -134,35 +162,7 @@ export default function OrderDetailsPage() {
   };
 
 
-const getActualUnitPrice = (item) => {
-  if (!item.product) return 0;
 
-  // 1️⃣ If custom price is set → show that
-  if (item.customPrice !== null && item.customPrice > 0) {
-    return item.customPrice;
-  }
-
-  // 2️⃣ Else calculate based on pricing type and threshold
-  const { pricingType, basePrice, discountPrice, thresholds = [] } = item.product;
-
-  let userValue = 0;
-  if (pricingType === "quantity") {
-    userValue = item.quantity;
-  } else if (pricingType === "length_width") {
-    userValue = item.length * item.quantity;
-  } else if (pricingType === "area") {
-    userValue = item.length * item.width * item.quantity;
-  }
-
-  // Threshold logic: find closest threshold that matches
-  const matchedThreshold = thresholds
-    .filter((t) => userValue >= t.value)
-    .sort((a, b) => b.value - a.value)[0];
-
-  const unitPrice = matchedThreshold?.price || discountPrice || basePrice;
-
-  return unitPrice;
-};
 
 
 
@@ -367,7 +367,7 @@ const getActualUnitPrice = (item) => {
 
                 {/* Unit Price Display */}
                   <p className="text-sm">
-                    <strong>Unit Price:</strong> ₹{getActualUnitPrice(item)}
+                    <strong>Unit Price:</strong> ₹{item.unitPrice || 0}
                   </p>
 
                   {/* Custom Price Input */}
@@ -489,10 +489,10 @@ const getActualUnitPrice = (item) => {
           onChange={(e) => setProductSearch(e.target.value)}
         />
         <Select
-          onValueChange={(productId) => {
+          onValueChange={async (productId) => {
             const selected = products.find((p) => p?._id === productId);
             if (selected) {
-              const newItem = {
+              let newItem = {
                 product: selected,
                 pricingType: selected.pricingType,
                 quantity: 1,
@@ -502,6 +502,7 @@ const getActualUnitPrice = (item) => {
                 withService: false,
                 finalPrice: 0,
               };
+              newItem = await recalculateItemViaAPI(newItem);
               setItems((prev) => [...prev, newItem]);
             }
           }}
