@@ -43,6 +43,10 @@ export default function PriceBox({ priceData, product, formData }) {
   const dailyUnitRate = finalDayPrice / days;
   const dailyTotalRate = rentalPrice / days;
 
+  const unit = priceData.unit || 'pcs';
+  const shortUnit = unit === 'pcs' || unit === 'qty' ? 'pc' : unit;
+  const pieceText = shortUnit === 'pc' ? 'piece' : shortUnit;
+
   return (
     <div className="mt-4 flex flex-col gap-3">
 
@@ -56,7 +60,7 @@ export default function PriceBox({ priceData, product, formData }) {
             {/* Base price row (< first threshold) */}
             <div className={`flex items-center justify-between px-4 py-2.5 ${!isBulkApplied ? 'bg-blue-50' : 'bg-white'}`}>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">1 – {allThresholds[0].value - 1} pcs</span>
+                <span className="text-sm text-gray-700">1 – {allThresholds[0].value - 1} {unit}</span>
                 {!isBulkApplied && (
                   <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-semibold">ACTIVE</span>
                 )}
@@ -65,7 +69,7 @@ export default function PriceBox({ priceData, product, formData }) {
                 {product?.discountPrice && product.discountPrice < basePrice && (
                   <span className="text-xs text-gray-400 line-through">₹{basePrice}</span>
                 )}
-                <span className="text-sm font-semibold text-gray-900">₹{product?.discountPrice || basePrice}/pc</span>
+                <span className="text-sm font-semibold text-gray-900">₹{product?.discountPrice || basePrice}/{shortUnit}</span>
               </div>
             </div>
 
@@ -82,7 +86,7 @@ export default function PriceBox({ priceData, product, formData }) {
                 >
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm text-gray-700">
-                      {tier.value}{rangeEnd !== '+' ? `–${rangeEnd}` : '+'} pcs
+                      {tier.value}{rangeEnd !== '+' ? `–${rangeEnd}` : '+'} {unit}
                     </span>
                     {isActive && (
                       <span className="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded font-semibold">ACTIVE</span>
@@ -93,7 +97,7 @@ export default function PriceBox({ priceData, product, formData }) {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-gray-400 line-through">₹{basePrice}</span>
-                    <span className={`text-sm font-bold ${isActive ? 'text-emerald-700' : 'text-gray-900'}`}>₹{tier.price}/pc</span>
+                    <span className={`text-sm font-bold ${isActive ? 'text-emerald-700' : 'text-gray-900'}`}>₹{tier.price}/{shortUnit}</span>
                   </div>
                 </div>
               );
@@ -106,9 +110,9 @@ export default function PriceBox({ priceData, product, formData }) {
       {nextTier && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/pc</p>
+            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/{shortUnit}</p>
             <p className="text-amber-600 text-xs mt-0.5">
-              Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per piece at {nextTier.value}+ pcs
+              Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per {pieceText} at {nextTier.value}+ {unit}
             </p>
           </div>
         </div>
