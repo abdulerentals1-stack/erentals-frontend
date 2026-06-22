@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Tag } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
 import AddToQuoteButton from './AddToQuoteButton';
 import AddToRentalButton from './AddToRentalButton';
@@ -84,8 +85,9 @@ export default function ProductCard({ product }) {
             
             {/* Bulk offer teaser from first threshold tier */}
             {firstBulkTier && firstBulkTier.value > 1 && (
-              <p className="text-[11px] font-semibold text-emerald-600 tracking-tight mt-0.5">
-                Bulk Offer: ₹{firstBulkTier.price}/day ({firstBulkTier.value}+ pcs)
+              <p className="text-[11px] font-semibold text-emerald-600 tracking-tight mt-0.5 flex items-center gap-1">
+                <Tag className="w-3 h-3" />
+                Quantity discounts available
               </p>
             )}
           </div>
