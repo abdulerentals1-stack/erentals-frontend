@@ -18,27 +18,29 @@ export default function ProductCard({ product }) {
     thresholds,
   } = product;
 
-  // Calculate true starting price (for 1 unit) if thresholds exist
-  let displayPrice = discountPrice || basePrice;
-  if (thresholds && thresholds.length > 0) {
-    let matched = [...thresholds]
-      .filter((t) => 1 >= t.value)
-      .sort((a, b) => b.value - a.value)[0];
-    
-    if (matched) {
-      displayPrice = discountPrice || basePrice;
-    } else {
-      displayPrice = basePrice;
-    }
-  }
+  // For the card listing view, qty is 1 — show discountPrice if available, otherwise basePrice.
+  // If a threshold is matched at qty=1, use that threshold price instead.
+  const firstMatchedAtOne = thresholds?.find((t) => t.value <= 1);
+  let displayPrice = firstMatchedAtOne?.price || (discountPrice && discountPrice > 0 ? discountPrice : basePrice);
+
+  // Best bulk offer = the lowest threshold price (highest qty tier)
+  const sortedTiers = [...(thresholds || [])]
+    .filter((t) => t.value > 0 && t.price > 0)
+    .sort((a, b) => a.value - b.value); // ascending
+  const firstBulkTier = sortedTiers[0]; // show the first bulk tier as a teaser
+
+  // Dynamically calculate the discount percent for standard discount display
+  const calculatedDiscountPercent = (basePrice > 0 && discountPrice > 0 && basePrice > discountPrice)
+    ? Math.round(((basePrice - discountPrice) / basePrice) * 100)
+    : 0;
 
   const imageUrl = images?.[0]?.url || '/placeholder.jpg';
 
   return (
     <div className="group flex flex-col h-full border border-gray-200/60 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 bg-white relative">
-      {discountPercent && (
-        <div className="absolute top-2.5 left-2.5 bg-[#003459] text-white text-[11px] font-bold px-2 py-0.5 z-10 rounded shadow-sm">
-          {discountPercent}% OFF
+      {calculatedDiscountPercent > 0 && (
+        <div className="absolute top-2.5 left-2.5 bg-[#003459] text-white text-[11px] font-bold px-2 py-0.5 z-20 rounded shadow-sm">
+          {calculatedDiscountPercent}% OFF
         </div>
       )}
 
@@ -80,10 +82,10 @@ export default function ProductCard({ product }) {
               )}
             </div>
             
-            {/* Display threshold pricing as professional, flush-left text instead of a floating pill */}
-            {thresholds && thresholds.length > 0 && discountPrice && (
+            {/* Bulk offer teaser from first threshold tier */}
+            {firstBulkTier && firstBulkTier.value > 1 && (
               <p className="text-[11px] font-semibold text-emerald-600 tracking-tight mt-0.5">
-                Bulk Offer: ₹{discountPrice}/day ({thresholds[0].value}+ {thresholds[0].unit})
+                Bulk Offer: ₹{firstBulkTier.price}/day ({firstBulkTier.value}+ pcs)
               </p>
             )}
           </div>

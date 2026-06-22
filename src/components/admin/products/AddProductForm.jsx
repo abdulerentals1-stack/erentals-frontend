@@ -50,8 +50,8 @@ const formSchema = z.object({
     .array(
       z.object({
         value: z.number().positive(),
-        unit: z.string().min(1),
-        price: z.number().optional(),
+        unit: z.string().optional(),
+        price: z.number().min(0, "Required"),
       })
     )
     .min(1),
@@ -90,7 +90,7 @@ export default function AddProductForm() {
     defaultValues: {
       pricingType: "quantity",
       location: { city: "", state: "", pincode: "" },
-      thresholds: [{ value: 1, unit: "" }],
+      thresholds: [{ value: 1, price: 0 }],
       categories: [],
       tags: [],
       suggestedProducts: [],
@@ -218,17 +218,41 @@ export default function AddProductForm() {
           <Label>Base Price</Label>
           <Input type="number" {...register("basePrice", { valueAsNumber: true })} />
         </div>
-        <div>
-          <Label className="flex items-center gap-1.5">
+        <div className="flex flex-col">
+          <Label className="flex items-center gap-1.5 mb-1.5">
             Discount Price 
             <span 
               className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200 cursor-help"
-              title="This discounted price is automatically applied when the user's quantity reaches your specified Threshold below."
+              title="Standard discounted price. E.g. Base Price: 20, Discount Price: 18 shows as a 10% discount on the frontend."
             >
-              (Bulk Price) ⓘ
+              (Standard Discount) ⓘ
             </span>
           </Label>
-          <Input type="number" {...register("discountPrice", { valueAsNumber: true })} className="mt-1.5" />
+          <Input type="number" {...register("discountPrice", { valueAsNumber: true })} />
+          
+          {(() => {
+            const basePriceVal = watch("basePrice") || 0;
+            const discPriceVal = watch("discountPrice") || 0;
+            const percent = basePriceVal > 0 && discPriceVal > 0 && basePriceVal > discPriceVal 
+              ? Math.round(((basePriceVal - discPriceVal) / basePriceVal) * 100) 
+              : 0;
+
+            if (basePriceVal > 0 && discPriceVal > 0) {
+              return (
+                <div className="mt-2 text-sm p-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-md flex items-center gap-2">
+                  <span className="text-zinc-500 text-xs uppercase font-semibold">Preview:</span>
+                  <span className="line-through text-zinc-400 decoration-red-400 decoration-2 font-medium">₹{basePriceVal}</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">₹{discPriceVal}</span>
+                  {percent > 0 && (
+                    <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-100 bg-emerald-200 dark:bg-emerald-800 px-1.5 py-0.5 rounded-full">
+                      {percent}% OFF
+                    </span>
+                  )}
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
         <div>
           <Label>Stock</Label>
@@ -263,20 +287,27 @@ export default function AddProductForm() {
       {/* Thresholds */}
       <div>
         <Label>Thresholds</Label>
+        <p className="text-xs text-zinc-500 mb-3">
+          Example logic: If base price is 100, set 10 qty at 90, 20 qty at 80, etc.
+        </p>
         {fields.map((field, index) => (
           <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
             <Input
               type="number"
-              placeholder="Value"
+              placeholder="Quantity Threshold"
               {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
             />
-            <Input placeholder="Unit (pcs/sqft)" {...register(`thresholds.${index}.unit`)} />
+            <Input
+              type="number"
+              placeholder="Price per item"
+              {...register(`thresholds.${index}.price`, { valueAsNumber: true })}
+            />
             <Button type="button" variant="destructive" onClick={() => remove(index)}>
               Remove
             </Button>
           </div>
         ))}
-        <Button type="button" onClick={() => append({ value: 1, unit: "" })}>
+        <Button type="button" onClick={() => append({ value: 1, price: 0 })}>
           + Add Threshold
         </Button>
       </div>
