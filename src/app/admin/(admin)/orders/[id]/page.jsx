@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import axios from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import {
   getOrderById,
   adminUpdateOrder,
   updateOrderStatus,
+  getOrderAuditLog,
 } from "@/services/orderService";
 import { getAllCoupons } from "@/services/couponService";
 import InvoicePreviewAndDownload from "@/components/admin/InvoicePreviewAndDownload";
@@ -35,6 +37,9 @@ export default function OrderDetailsPage() {
   const [productSearch, setProductSearch] = useState("");
   const [coupons, setCoupons] = useState([]);
   const [updateorder, setUpdateorder] = useState(true);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [verifyingGateway, setVerifyingGateway] = useState(false);
+  const [gatewayVerifyResults, setGatewayVerifyResults] = useState(null);
 
   useEffect(() => {
     fetchOrder();
@@ -54,10 +59,19 @@ export default function OrderDetailsPage() {
       setItems(data.order.items);
       setStatus(data.order.status);
       setTransportationCharge(data.order.transportationCharge || 0);
-       const matchedCoupon = coupondata.data.coupons.find(
-      (c) => c._id === data.order.coupon
-    );
-    setCouponCode(matchedCoupon?.code || "");
+      
+      const matchedCoupon = coupondata.data.coupons.find(
+        (c) => c._id === data.order.coupon
+      );
+      setCouponCode(matchedCoupon?.code || "");
+
+      // Fetch audit logs
+      try {
+        const auditRes = await getOrderAuditLog(id);
+        setAuditLogs(auditRes.logs || []);
+      } catch (auditErr) {
+        console.error("Failed to fetch audit logs", auditErr);
+      }
     } catch (err) {
       console.error("Failed to fetch order", err);
     } finally {
@@ -142,22 +156,49 @@ export default function OrderDetailsPage() {
   };
 
   const handleStatusChange = async () => {
+    const reason = prompt("Enter reason for changing status:");
+    if (reason === null) return; // customer pressed cancel
     try {
-      await updateOrderStatus(id, status);
+      await updateOrderStatus(id, status, reason || "Admin updated status");
       alert("Status updated successfully");
+      fetchOrder();
     } catch (err) {
       console.error("Failed to update status", err);
-      alert("Status update failed");
+      alert(err.response?.data?.message || "Status update failed");
     }
   };
 
   const cancelOrder = async () => {
+    const reason = prompt("Enter reason for cancelling order:");
+    if (reason === null) return; // customer pressed cancel
     try {
-      await updateOrderStatus(id, "cancelled");
+      await updateOrderStatus(id, "cancelled", reason || "Cancelled by admin");
       setStatus("cancelled");
-      alert("Order cancelled");
+      alert("Order cancelled successfully");
+      fetchOrder();
     } catch (err) {
       console.error("Cancel failed", err);
+      alert(err.response?.data?.message || "Cancellation failed");
+    }
+  };
+
+  const handleVerifyGateway = async () => {
+    if (verifyingGateway) return;
+    setVerifyingGateway(true);
+    try {
+      const res = await axios.get(`/orders/${id}/verify-gateway`);
+      setGatewayVerifyResults(res.data.results);
+      if (res.data.recovered) {
+        alert("Order recovery completed! Detected paid amount on Razorpay and updated order status to Placed.");
+        fetchOrder();
+      } else {
+        alert("Verification complete. Razorpay states and local database are consistent.");
+      }
+    } catch (err) {
+      console.error("Gateway verification failed:", err);
+      alert("Verification query failed.");
+    } finally {
+      setVerifyingGateway(false);
     }
   };
 
@@ -248,6 +289,9 @@ export default function OrderDetailsPage() {
                 ₹<strong>{payment?.amount}</strong> via{" "}
                 <span className="capitalize">{payment?.method || "N/A"}</span>
               </p>
+              <p className="text-gray-500 text-[10px] font-mono">
+                Payment ID: {payment?.razorpay_payment_id || "N/A"}
+              </p>
               <p className="text-gray-500 text-xs">
                 {payment?.paidAt ? new Date(payment.paidAt).toLocaleString() : "Unknown Date"}
               </p>
@@ -267,8 +311,98 @@ export default function OrderDetailsPage() {
     )}
   </div>
 
+  {/* ⌛ Status History Timeline */}
+  <div className="border p-4 rounded-md shadow-sm bg-white">
+    <h2 className="text-lg font-semibold text-zinc-800 mb-2">⌛ Status History Timeline</h2>
+    <div className="space-y-3 pl-2">
+      {order?.statusHistory?.map((h, i) => (
+        <div key={i} className="flex gap-3 text-xs">
+          <div className="flex flex-col items-center">
+            <div className="w-2 h-2 bg-zinc-600 rounded-full"></div>
+            {i < order.statusHistory.length - 1 && <div className="w-0.5 h-full bg-zinc-200"></div>}
+          </div>
+          <div className="pb-1">
+            <p className="font-semibold capitalize text-gray-800">
+              {h.from.replace(/_/g, ' ')} ➔ {h.to.replace(/_/g, ' ')}
+            </p>
+            <p className="text-gray-500 text-[10px]">
+              {new Date(h.timestamp).toLocaleString()} by {h.changedBy?.name || "System"} ({h.changedByRole})
+            </p>
+            <p className="text-gray-600 italic">"{h.reason}"</p>
+          </div>
+        </div>
+      ))}
+      {(!order?.statusHistory || order.statusHistory.length === 0) && (
+        <p className="text-gray-500 text-xs">No status timeline available</p>
+      )}
+    </div>
+  </div>
+
+  {/* 🔗 Gateway Order IDs Verification */}
+  {order?.paymentMethod === "razorpay" && (
+    <div className="border p-4 rounded-md shadow-sm bg-white">
+      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <h2 className="text-lg font-semibold text-teal-700">🔗 Razorpay Gateway Sync</h2>
+        <Button 
+          type="button" 
+          size="sm" 
+          onClick={handleVerifyGateway}
+          disabled={verifyingGateway}
+          className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3 py-1.5 rounded"
+        >
+          {verifyingGateway ? "Verifying..." : "Verify with Razorpay"}
+        </Button>
+      </div>
+      
+      {order?.razorpayOrderIds?.length > 0 ? (
+        <div className="space-y-3">
+          {order.razorpayOrderIds.map((item, idx) => (
+            <div key={idx} className="bg-gray-50 p-2.5 rounded border text-xs flex justify-between items-start flex-wrap gap-2">
+              <div>
+                <p><strong>Razorpay Order ID:</strong> <span className="font-mono text-zinc-950 font-medium">{item.razorpayOrderId}</span></p>
+                <p><strong>Type:</strong> <span className="capitalize">{item.type}</span> | <strong>Amount:</strong> ₹{item.amount}</p>
+                <p><strong>Database Status:</strong> <span className="font-semibold uppercase text-zinc-700">{item.status}</span></p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] text-gray-500">{new Date(item.createdAt).toLocaleString()}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500 text-xs">No Razorpay orders generated for this order</p>
+      )}
+
+      {/* Gateway Verification Output */}
+      {gatewayVerifyResults && (
+        <div className="mt-4 bg-teal-50 border border-teal-200 p-3 rounded text-xs space-y-2 text-zinc-900">
+          <h3 className="font-bold text-teal-800">Live Gateway Verification Results:</h3>
+          {gatewayVerifyResults.map((res, i) => (
+            <div key={i} className="border-b last:border-none pb-2 mb-2">
+              <p><strong>RP Order:</strong> {res.razorpayOrderId}</p>
+              <p><strong>Gateway Order Status:</strong> <span className="font-semibold uppercase text-indigo-700">{res.gatewayStatus}</span></p>
+              <p><strong>In Sync?</strong> {res.match ? "✅ Yes" : "❌ Discrepancy Found!"}</p>
+              {res.payments && res.payments.length > 0 ? (
+                <div className="mt-1 pl-2 border-l-2 border-teal-300">
+                  <p className="font-semibold text-gray-600">Gateway Payments:</p>
+                  {res.payments.map((p, pi) => (
+                    <p key={pi} className="text-[10px]">
+                      • {p.id} - ₹{p.amount} - <span className="capitalize">{p.status}</span> ({p.method})
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] text-gray-500 mt-1">• No payments registered on Razorpay for this order ID</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+
   {/* 💰 Remaining Amount */}
-  <div className="flex justify-between items-center mt-4 p-4 bg-yellow-50 border rounded-md shadow-inner">
+  <div className="flex justify-between items-center p-4 bg-yellow-50 border rounded-md shadow-inner">
     <span className="font-medium text-gray-700 text-sm">🧮 Remaining Amount</span>
     <span className="text-lg font-semibold text-red-600">
       ₹{Math.max((order?.finalAmount || 0) - (order?.paidAmount || 0), 0).toFixed(2)}
@@ -569,6 +703,55 @@ export default function OrderDetailsPage() {
 )}
 
 <InvoicePreviewAndDownload order={order} />
+
+      {/* 📋 System Audit Trail */}
+      <Card className="mt-8 text-black bg-white shadow-sm border border-zinc-200">
+        <CardHeader className="bg-gray-50 border-b">
+          <CardTitle className="text-lg font-bold flex items-center gap-2">
+            📋 System Audit Trail
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="overflow-x-auto text-xs">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 text-gray-600 font-semibold">
+                <tr>
+                  <th className="p-3 text-left">Action</th>
+                  <th className="p-3 text-left">Performed By</th>
+                  <th className="p-3 text-left">Role</th>
+                  <th className="p-3 text-left">Changes</th>
+                  <th className="p-3 text-left">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 text-gray-800">
+                {auditLogs.map((log) => (
+                  <tr key={log._id} className="hover:bg-gray-50">
+                    <td className="p-3 font-mono font-medium text-indigo-700">{log.action}</td>
+                    <td className="p-3">{log.performedBy?.name || "System"}</td>
+                    <td className="p-3 capitalize">{log.performedByRole}</td>
+                    <td className="p-3">
+                      <details className="cursor-pointer text-xs">
+                        <summary className="text-[10px] text-blue-600 hover:text-blue-800 font-medium">View Changes JSON</summary>
+                        <pre className="mt-2 p-3 bg-gray-50 rounded text-[10px] text-zinc-800 font-mono overflow-auto max-w-xl max-h-[150px]">
+                          {JSON.stringify(log.changes, null, 2)}
+                        </pre>
+                      </details>
+                    </td>
+                    <td className="p-3 text-gray-500">{new Date(log.createdAt).toLocaleString("en-IN")}</td>
+                  </tr>
+                ))}
+                {auditLogs.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="p-4 text-center text-gray-500">
+                      No system audit logs recorded for this order.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
     </div>
   );
