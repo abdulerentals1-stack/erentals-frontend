@@ -19,11 +19,15 @@ export default function ProductCarousel({ images = [], productName = "Product" }
           sizes="(max-width: 768px) 100vw, 50vw"
           priority
         />
-        {/* Main Image - using standard img to perfectly shrink-wrap natural aspect ratio without Next.js forcing 1:1 */}
-        <img
+        {/* Main Image */}
+        <Image
           src={selectedImage}
           alt={`${productName} - Rental Product Image`}
+          width={800}
+          height={600}
+          priority
           className="relative w-full h-auto max-h-[50vh] md:max-h-[500px] object-contain z-10 p-2 sm:p-4 drop-shadow-sm transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
 

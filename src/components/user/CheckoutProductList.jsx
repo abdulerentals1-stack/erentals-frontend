@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -36,11 +37,13 @@ export default function CheckoutProductList({ cart, onUpdated }) {
           >
             {/* Left: Image + Name */}
             <div className="flex gap-4 flex-1">
-              <Link href={`/products/${productSlug}`} className="shrink-0">
-                <img
+              <Link href={`/products/${productSlug}`} className="shrink-0 relative w-16 h-16 rounded border overflow-hidden">
+                <Image
                   src={productImage}
                   alt={productName}
-                  className="w-16 h-16 object-cover rounded border"
+                  fill
+                  sizes="64px"
+                  className="object-cover"
                 />
               </Link>
               <div>
