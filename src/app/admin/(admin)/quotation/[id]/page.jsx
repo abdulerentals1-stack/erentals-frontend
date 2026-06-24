@@ -211,12 +211,13 @@ export default function OrderDetailsPage() {
     <h2 className="text-lg font-semibold text-green-600 mb-2">💳 Quotation Summary</h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       <p><strong>Status:</strong>
-        <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
+        <span className={`ml-2 px-2 py-1 rounded text-xs font-medium capitalize ${
           order?.paymentStatus === "paid" ? "bg-green-100 text-green-800" :
           order?.paymentStatus === "partial" ? "bg-yellow-100 text-yellow-800" :
+          order?.paymentStatus === "not_required" ? "bg-blue-100 text-blue-800" :
           "bg-red-100 text-red-800"
         }`}>
-          {order?.paymentStatus || "pending"}
+          {order?.paymentStatus === "not_required" ? "Pay on Delivery" : (order?.paymentStatus || "pending").replace(/_/g, ' ')}
         </span>
       </p>
       <p><strong>Price Before Tax:</strong> ₹{order?.priceBeforeTax?.toFixed(2) || "0.00"}</p>

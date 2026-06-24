@@ -98,7 +98,7 @@ export default function MyOrders() {
                   }
                   className="capitalize text-xs"
                 >
-                  Payment: {order.paymentStatus.replace(/_/g, ' ')}
+                  Payment: {order.paymentStatus === "not_required" ? "Pay on Delivery" : order.paymentStatus.replace(/_/g, ' ')}
                 </Badge>
               </div>
               <p className="text-xs text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString("en-IN")}</p>

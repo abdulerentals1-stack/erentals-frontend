@@ -210,7 +210,7 @@ export default function OrderDetailsPage() {
             order.paymentStatus === "partial" ? "warning" :
             order.paymentStatus === "failed" || order.paymentStatus === "expired" ? "destructive" : "default"
           } className="capitalize">
-            Payment: {order.paymentStatus.replace(/_/g, ' ')}
+            Payment: {order.paymentStatus === "not_required" ? "Pay on Delivery" : order.paymentStatus.replace(/_/g, ' ')}
           </Badge>
         </div>
       </div>
