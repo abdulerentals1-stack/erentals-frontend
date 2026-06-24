@@ -134,7 +134,7 @@ export default function AdminOrdersPage() {
             <SelectContent>
               {paymentStatusOptions.map((ps) => (
                 <SelectItem key={ps} value={ps}>
-                  {ps === 'all' ? 'All Payments' : ps.replace(/_/g, ' ')}
+                  {ps === 'all' ? 'All Payments' : ps === 'not_required' ? 'Pay on Delivery' : ps.replace(/_/g, ' ')}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -189,9 +189,10 @@ export default function AdminOrdersPage() {
                             order.paymentStatus === 'paid' ? 'bg-green-50 text-green-800 border border-green-200' :
                             order.paymentStatus === 'partial' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
                             order.paymentStatus === 'failed' || order.paymentStatus === 'expired' ? 'bg-red-50 text-red-800 border border-red-200' :
+                            order.paymentStatus === 'not_required' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
                             'bg-gray-50 text-gray-800 border border-gray-200'
                           }`}>
-                            {order.paymentStatus.replace(/_/g, ' ')}
+                            {order.paymentStatus === 'not_required' ? 'Pay on Delivery' : order.paymentStatus.replace(/_/g, ' ')}
                           </span>
                         </td>
                         <td className="p-3 text-xs">{format(new Date(order.deliveryDate), "dd MMM yyyy")}</td>
@@ -233,7 +234,13 @@ export default function AdminOrdersPage() {
                       <p>Final Amount: <strong>₹{order.finalAmount}</strong></p>
                       <p className="text-green-700">Paid: <strong>₹{order.paidAmount}</strong></p>
                     </div>
-                    <p className="text-xs">Payment status: <span className="capitalize font-semibold">{order.paymentStatus.replace(/_/g, ' ')}</span></p>
+                     <p className="text-xs">Payment status: <span className={`px-2 py-0.5 rounded capitalize font-semibold ${
+                        order.paymentStatus === 'paid' ? 'bg-green-50 text-green-800 border border-green-200' :
+                        order.paymentStatus === 'partial' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
+                        order.paymentStatus === 'failed' || order.paymentStatus === 'expired' ? 'bg-red-50 text-red-800 border border-red-200' :
+                        order.paymentStatus === 'not_required' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
+                        'bg-gray-50 text-gray-800 border border-gray-200'
+                      }`}>{order.paymentStatus === 'not_required' ? 'Pay on Delivery' : order.paymentStatus.replace(/_/g, ' ')}</span></p>
                     <p className="text-xs text-gray-500">Delivery Date: {format(new Date(order.deliveryDate), "dd MMM yyyy")}</p>
                     <Button size="sm" className="w-full mt-2 bg-zinc-800 hover:bg-zinc-900 text-white" onClick={() => router.push(`/admin/orders/${order._id}`)}>
                       Manage Order
