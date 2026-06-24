@@ -43,7 +43,7 @@ export const metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 600; // Revalidate every 10 minutes (ISR)
 
 // Helper: strip HTML once at build/render time, not per-card
 function stripHtml(html) {
@@ -54,7 +54,7 @@ async function fetchServices() {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/services?page=1&limit=100`,
-      { cache: 'no-store' }
+      { next: { revalidate: 600 } }
     );
     if (!res.ok) return [];
     const data = await res.json();

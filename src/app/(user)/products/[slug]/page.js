@@ -5,6 +5,8 @@ import ProductCard from "@/components/ui/ProductCard";
 
 import Script from "next/script";
 
+export const revalidate = 600; // Revalidate products page every 10 minutes (ISR)
+
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 const ogImageUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : "https://e-rentals.in/og-image.jpg";
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }) {
   }
 
   try {
-    const data = await getProductBySlug(slug);
+    const data = await getProductBySlug(slug, { next: { revalidate: 600 } });
     const product = data?.product;
 
     if (!product) {
@@ -112,7 +114,7 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const data = await getProductBySlug(slug);
+  const data = await getProductBySlug(slug, { next: { revalidate: 600 } });
   const product = data?.product;
 
   if (!product) {
