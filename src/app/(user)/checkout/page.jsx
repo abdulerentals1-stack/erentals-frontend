@@ -11,9 +11,9 @@ import { useRouter } from 'next/navigation';
 import { getCart } from '@/services/cartService';
 import { getUserAddresses } from '@/services/addressService';
 import {
-  placeOrder,
-  createAdvancePayment,
-  verifyRazorpayPayment,
+  initiateCheckout,
+  verifyPayment,
+  reportPaymentFailure,
 } from '@/services/checkoutService'; 
 
 import CheckoutProductList from '@/components/user/CheckoutProductList';
@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
 import Script from "next/script";
-
+import api from '@/lib/axios';
 
 const schema = z.object({
   addressId: z.string().min(1, "Please select an address"),
@@ -38,8 +38,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState(null);
   const [addresses, setAddresses] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { isLoggedIn, isAdmin, ready } = useAuthStatus();
-
 
   const {
     register,
@@ -57,110 +57,199 @@ export default function CheckoutPage() {
     },
   });
 
- const fetchData = async () => {
-  try {
-    const cartRes = await getCart();
-    const addrRes = await getUserAddresses();
+  const fetchData = async () => {
+    try {
+      const cartRes = await getCart();
+      const addrRes = await getUserAddresses();
 
-    if (!cartRes?.cart) {
-      toast.error("Cart not found");
-      setCart({ items: [] }); // fallback empty cart
-    } else {
-      setCart(cartRes);
+      if (!cartRes?.cart) {
+        toast.error("Cart not found");
+        setCart({ items: [] }); // fallback empty cart
+      } else {
+        setCart(cartRes);
+      }
+
+      setAddresses(addrRes.data?.addresses || []);
+    } catch (err) {
+      toast.error("Failed to load cart or addresses.");
+      setCart({ items: [] }); // to avoid infinite loading
     }
+  };
 
-    setAddresses(addrRes.data?.addresses || []);
-  } catch (err) {
-    toast.error("Failed to load cart or addresses.");
-    setCart({ items: [] }); // to avoid infinite loading
-  }
-};
+  const loadRazorpay = () =>
+    new Promise((resolve, reject) => {
+      if (typeof window !== "undefined" && window.Razorpay) {
+        return resolve(window.Razorpay);
+      }
 
-const loadRazorpay = () =>
-  new Promise((resolve, reject) => {
-    if (typeof window !== "undefined" && window.Razorpay) {
-      return resolve(window.Razorpay);
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(window.Razorpay);
-    script.onerror = () => reject("Razorpay SDK failed to load");
-    document.body.appendChild(script);
-  });
-
-
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(window.Razorpay);
+      script.onerror = () => reject("Razorpay SDK failed to load");
+      document.body.appendChild(script);
+    });
 
   useEffect(() => {
     fetchData();
   }, []);
 
- const onSubmit = async (data) => {
-  try {
-    if (data.paymentMethod === "cod") {
-      // ✅ COD flow
-      await placeOrder(data);
-      toast.success("Order placed!");
-      router.push("/orders");
-    } else {
-      // ✅ Razorpay advance payment flow
-      const res = await createAdvancePayment(data); // 🔁 Use your service
-      const razorData = res.data;
+  // Poll for order status recovery (in case verification request times out)
+  const pollOrderStatus = async (orderId, maxAttempts = 5) => {
+    let attempt = 0;
+    const interval = 2000; // 2s
+    
+    return new Promise((resolve) => {
+      const checkStatus = setInterval(async () => {
+        attempt++;
+        try {
+          const res = await api.get(`/orders/${orderId}`);
+          const order = res.data?.order;
+          if (order && order.status !== "pending_payment" && order.status !== "payment_failed") {
+            clearInterval(checkStatus);
+            resolve(true);
+            return;
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
+        }
+        
+        if (attempt >= maxAttempts) {
+          clearInterval(checkStatus);
+          resolve(false);
+        }
+      }, interval);
+    });
+  };
 
-      if (!razorData.success) {
-        throw new Error(razorData.message || "Payment initiation failed");
+  const onSubmit = async (data) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    // Generate UUID v4 equivalent for idempotency
+    const idempotencyKey = crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    try {
+      // Save checkout intent locally for session crash protection
+      sessionStorage.setItem("pending_checkout_idempotency_key", idempotencyKey);
+
+      const initiateRes = await initiateCheckout({ ...data, idempotencyKey });
+      const checkoutData = initiateRes.data;
+
+      if (!checkoutData.success) {
+        throw new Error(checkoutData.message || "Checkout initiation failed");
       }
 
-      const options = {
-        key: razorData.razorpayKeyId,
-        amount: razorData.amount * 100, // in paise
-        currency: "INR",
-        name: "eRentals",
-        description: "Advance Payment",
-        order_id: razorData.orderId,
-        handler: async function (response) {
-          try {
-              await verifyRazorpayPayment({
-                addressId: data.addressId,
-                deliveryDate: data.deliveryDate,
-                timeSlot: data.timeSlot,
+      const orderId = checkoutData.orderId;
+
+      if (data.paymentMethod === "cod") {
+        toast.success("Order placed successfully with Cash on Delivery!");
+        sessionStorage.removeItem("pending_checkout_idempotency_key");
+        router.push("/orders");
+      } else {
+        // Razorpay Payment Flow
+        const razorpayOrderId = checkoutData.razorpayOrderId;
+        const amount = checkoutData.amount;
+
+        const options = {
+          key: checkoutData.razorpayKeyId,
+          amount: amount * 100, // paise
+          currency: "INR",
+          name: "e-Rentals.in",
+          description: "Rental Advance Payment",
+          order_id: razorpayOrderId,
+          handler: async function (response) {
+            const verifToast = toast.loading("Verifying your payment, please wait...");
+            try {
+              const verifyRes = await verifyPayment({
+                orderId,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
               });
 
-            toast.success("Order placed with advance payment!");
-            router.push("/orders");
+              toast.dismiss(verifToast);
+              if (verifyRes.data.success) {
+                toast.success("Advance payment verified! Order placed successfully.");
+                sessionStorage.removeItem("pending_checkout_idempotency_key");
+                router.push(`/orders/${orderId}`);
+              } else {
+                throw new Error("Payment verification failed on server");
+              }
+            } catch (err) {
+              console.error("Verification failed, attempting recovery...", err);
+              // Network timeout recovery — poll order status
+              const isRecovered = await pollOrderStatus(orderId);
+              toast.dismiss(verifToast);
+              
+              if (isRecovered) {
+                toast.success("Order payment confirmed!");
+                sessionStorage.removeItem("pending_checkout_idempotency_key");
+                router.push(`/orders/${orderId}`);
+              } else {
+                toast.warning("Payment verification is taking longer than expected. We will update the status once confirmed.");
+                router.push("/orders");
+              }
+            }
+          },
+          prefill: {
+            name: checkoutData.name,
+            email: checkoutData.email,
+          },
+          modal: {
+            ondismiss: async function () {
+              setIsSubmitting(false);
+              toast.info("Payment cancelled. You can complete this payment anytime from your orders list.");
+              try {
+                await reportPaymentFailure({
+                  orderId,
+                  error: { description: "Payment cancelled/dismissed by customer" }
+                });
+              } catch (err) {
+                console.error("Failed to report payment cancellation:", err);
+              }
+              // Redirect to order details so they can retry paying
+              router.push(`/orders/${orderId}`);
+            }
+          },
+          theme: { color: "#0f172a" },
+        };
+
+        const RazorpayConstructor = await loadRazorpay();
+        const rzp = new RazorpayConstructor(options);
+        
+        rzp.on("payment.failed", async function (response) {
+          setIsSubmitting(false);
+          toast.error(`Payment failed: ${response.error.description}`);
+          try {
+            await reportPaymentFailure({
+              orderId,
+              error: response.error
+            });
           } catch (err) {
-            toast.error("Payment succeeded but order creation failed.");
-            console.error(err);
+            console.error("Failed to report payment failure:", err);
           }
-        },
-        prefill: {
-          name: razorData.name,
-          email: razorData.email,
-        },
-        theme: { color: "#0f172a" },
-      };
+          router.push(`/orders/${orderId}`);
+        });
 
-      const RazorpayConstructor = await loadRazorpay();
-      const rzp = new RazorpayConstructor(options);
-      rzp.open();
+        rzp.open();
+      }
+    } catch (err) {
+      console.error(err);
+      setIsSubmitting(false);
+      toast.error(err.response?.data?.message || err.message || "Something went wrong during checkout");
     }
-  } catch (err) {
-    console.error(err);
-    toast.error(err.message || "Something went wrong during checkout");
-  }
-};
+  };
 
-   useEffect(() => {
-          if (!ready) return; // avoid flickering during hydration
-      
-          if (!isLoggedIn && !isAdmin) {
-            router.push('/login');
-          } 
-        }, [isLoggedIn, isAdmin, ready]);
-      
+  useEffect(() => {
+    if (!ready) return; // avoid flickering during hydration
+
+    if (!isLoggedIn && !isAdmin) {
+      router.push('/login');
+    } 
+  }, [isLoggedIn, isAdmin, ready]);
+
   if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
   if (!cart) return <div className='space-y-2'>
@@ -168,7 +257,6 @@ const loadRazorpay = () =>
     <Skeleton className="w-full h-40 rounded-xl" />
     <Skeleton className="w-full h-20 rounded-xl" />
   </div>;
-
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -183,11 +271,11 @@ const loadRazorpay = () =>
       <CouponBox onUpdated={fetchData} />
 
       <AddressSelector
-            addresses={addresses}
-            selected={watch("addressId")}
-            onSelect={(id) => setValue("addressId", id)}
-            onRefresh={fetchData}
-            />
+        addresses={addresses}
+        selected={watch("addressId")}
+        onSelect={(id) => setValue("addressId", id)}
+        onRefresh={fetchData}
+      />
       {errors.addressId && <p className="text-sm text-red-500">{errors.addressId.message}</p>}
  
       <DeliveryOptions
@@ -210,7 +298,7 @@ const loadRazorpay = () =>
       {errors.paymentMethod && <p className="text-sm text-red-500">{errors.paymentMethod.message}</p>}
 
       {/* Transportation charge notice & final summary */}
-      <div className="bg-gray-50 border rounded p-4 space-y-4 mt-4">
+      <div className="bg-gray-50 border rounded p-4 space-y-4 mt-4 text-black">
         <p className="text-yellow-700 text-sm">
           ⚠️ Transportation charges will be calculated by admin before confirming your order.
         </p>
@@ -234,8 +322,8 @@ const loadRazorpay = () =>
           </div>
         </div>
 
-        <Button onClick={handleSubmit(onSubmit)} className="w-full">
-          Place Order
+        <Button onClick={handleSubmit(onSubmit)} className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Processing..." : "Place Order"}
         </Button>
       </div>
     </div>
