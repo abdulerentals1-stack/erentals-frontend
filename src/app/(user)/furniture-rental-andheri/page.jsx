@@ -2,7 +2,7 @@ import ProductCard from "@/components/ui/ProductCard";
 
 import Script from "next/script";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600; // Revalidate every 10 minutes (ISR)
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
@@ -19,7 +19,7 @@ export default async function AndheriFurniturePage() {
   let products = [];
   try {
     const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/furniture`, {
-      cache: "no-store",
+      next: { revalidate: 600 },
     });
     const catData = await catRes.json();
     category = catData?.category;
@@ -27,7 +27,7 @@ export default async function AndheriFurniturePage() {
     if (category) {
       const productRes = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/products/search?categories=${category._id}&limit=12`,
-        { cache: "no-store" }
+        { next: { revalidate: 600 } }
       );
       const productData = await productRes.json();
       products = productData?.products || [];

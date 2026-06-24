@@ -12,9 +12,9 @@ export const calculatePrice = (data) => api.post("/products/calculate-price", da
 // ✅ Basic Gets
 export const getAllProducts = () => api.get("/products");
 
-export const getProductBySlug = async (slug) => {
+export const getProductBySlug = async (slug, options = { cache: "no-store" }) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`, {
-    cache: "no-store",  // ✅ Always fresh so pricing calculations are never out of sync
+    ...options
   });
 
   if (!res.ok) throw new Error(`Failed to fetch product with slug: ${slug}`);

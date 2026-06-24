@@ -1,6 +1,8 @@
 import { getPublicServiceBySlug, fetchPublicServicesISR } from '@/services/serviceService';
 import ServiceDetailClient from './ServiceDetailClient';
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 const ogImageUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : "https://e-rentals.in/og-image.jpg";
