@@ -75,7 +75,7 @@ export default function MyOrders() {
                   variant={
                     order.status === "confirmed" || order.status === "placed"
                       ? "secondary"
-                      : order.status === "delivered" || order.status === "in_use"
+                      : order.status === "delivered"
                       ? "success"
                       : order.status === "cancelled"
                       ? "destructive"
@@ -92,7 +92,7 @@ export default function MyOrders() {
                       ? "success"
                       : order.paymentStatus === "partial"
                       ? "warning"
-                      : order.paymentStatus === "failed" || order.paymentStatus === "expired"
+                      : order.paymentStatus === "failed"
                       ? "destructive"
                       : "default"
                   }
@@ -118,7 +118,7 @@ export default function MyOrders() {
                 View Details
               </Button>
 
-              {(order.status === "pending_payment" || order.status === "payment_failed") && order.paymentMethod === "razorpay" && (
+              {(order.status === "pending_payment") && order.paymentMethod === "razorpay" && (
                 <Button
                   size="sm"
                   className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs"
@@ -129,7 +129,7 @@ export default function MyOrders() {
                 </Button>
               )}
 
-              {order.invoiceUrl && ["delivered", "picked_up", "confirmed"].includes(order.status) && (
+              {order.invoiceUrl && ["delivered", "confirmed"].includes(order.status) && (
                 <InvoicePreviewAndDownload order={order} />
               )}
             </div>

@@ -324,7 +324,7 @@ export default function OrderDetailsPage() {
           </div>
           <div className="pb-1">
             <p className="font-semibold capitalize text-gray-800">
-              {h.from.replace(/_/g, ' ')} ➔ {h.to.replace(/_/g, ' ')}
+              {(h.from || "").replace(/_/g, ' ')} ➔ {(h.to || "").replace(/_/g, ' ')}
             </p>
             <p className="text-gray-500 text-[10px]">
               {new Date(h.timestamp).toLocaleString()} by {h.changedBy?.name || "System"} ({h.changedByRole})
@@ -592,11 +592,8 @@ export default function OrderDetailsPage() {
                 "confirmed",
                 "shipped",
                 "delivered",
-                "in_use",
-                "pickup_scheduled",
-                "picked_up",
-                "cancelled",
                 "returned",
+                "cancelled",
               ].map((s) => (
                 <SelectItem key={s} value={s}>
                   {s.replace("_", " ")}
