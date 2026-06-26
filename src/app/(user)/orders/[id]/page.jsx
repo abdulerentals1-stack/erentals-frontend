@@ -322,7 +322,7 @@ export default function OrderDetailsPage() {
                     {index < order.statusHistory.length - 1 && <div className="w-0.5 h-full bg-gray-200 absolute top-2.5"></div>}
                   </div>
                   <div className="pb-1">
-                    <p className="font-medium capitalize text-gray-800">{history.to.replace(/_/g, ' ')}</p>
+                    <p className="font-medium capitalize text-gray-800">{(history.to || "").replace(/_/g, ' ')}</p>
                     <p className="text-gray-500 text-xs">{new Date(history.timestamp).toLocaleString("en-IN")}</p>
                     <p className="text-gray-600 text-xs mt-0.5 italic">"{history.reason}"</p>
                   </div>
