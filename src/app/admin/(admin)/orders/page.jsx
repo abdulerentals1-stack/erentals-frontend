@@ -14,27 +14,19 @@ const statusOptions = [
   'all',
   'pending_payment',
   'placed',
-  'payment_failed',
   'confirmed',
   'shipped',
   'delivered',
-  'in_use',
-  'pickup_scheduled',
-  'picked_up',
-  'cancelled',
   'returned',
+  'cancelled',
 ];
 
 const paymentStatusOptions = [
   'all',
   'awaiting',
-  'not_required',
-  'authorized',
   'partial',
   'paid',
   'failed',
-  'expired',
-  'refund_initiated',
   'refunded',
 ];
 
@@ -188,7 +180,7 @@ export default function AdminOrdersPage() {
                           <span className={`px-2 py-1 text-[11px] font-semibold rounded capitalize ${
                             order.paymentStatus === 'paid' ? 'bg-green-50 text-green-800 border border-green-200' :
                             order.paymentStatus === 'partial' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
-                            order.paymentStatus === 'failed' || order.paymentStatus === 'expired' ? 'bg-red-50 text-red-800 border border-red-200' :
+                            order.paymentStatus === 'failed' ? 'bg-red-50 text-red-800 border border-red-200' :
                             order.paymentStatus === 'not_required' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
                             'bg-gray-50 text-gray-800 border border-gray-200'
                           }`}>
@@ -237,7 +229,7 @@ export default function AdminOrdersPage() {
                      <p className="text-xs">Payment status: <span className={`px-2 py-0.5 rounded capitalize font-semibold ${
                         order.paymentStatus === 'paid' ? 'bg-green-50 text-green-800 border border-green-200' :
                         order.paymentStatus === 'partial' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
-                        order.paymentStatus === 'failed' || order.paymentStatus === 'expired' ? 'bg-red-50 text-red-800 border border-red-200' :
+                        order.paymentStatus === 'failed' ? 'bg-red-50 text-red-800 border border-red-200' :
                         order.paymentStatus === 'not_required' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
                         'bg-gray-50 text-gray-800 border border-gray-200'
                       }`}>{order.paymentStatus === 'not_required' ? 'Pay on Delivery' : order.paymentStatus.replace(/_/g, ' ')}</span></p>

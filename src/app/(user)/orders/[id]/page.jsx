@@ -199,7 +199,7 @@ export default function OrderDetailsPage() {
         <div className="flex items-center gap-2">
           <Badge variant={
             order.status === "placed" || order.status === "confirmed" ? "secondary" : 
-            order.status === "delivered" || order.status === "in_use" ? "success" : 
+            order.status === "delivered" ? "success" : 
             order.status === "cancelled" ? "destructive" : "default"
           } className="capitalize">
             {order.status.replace(/_/g, ' ')}
@@ -208,7 +208,7 @@ export default function OrderDetailsPage() {
           <Badge variant={
             order.paymentStatus === "paid" ? "success" :
             order.paymentStatus === "partial" ? "warning" :
-            order.paymentStatus === "failed" || order.paymentStatus === "expired" ? "destructive" : "default"
+            order.paymentStatus === "failed" ? "destructive" : "default"
           } className="capitalize">
             Payment: {order.paymentStatus === "not_required" ? "Pay on Delivery" : order.paymentStatus.replace(/_/g, ' ')}
           </Badge>
@@ -229,7 +229,7 @@ export default function OrderDetailsPage() {
         </div>
       )}
 
-      {order.status === "payment_failed" && (
+      {order.status === "pending_payment" && order.paymentStatus === "failed" && (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r flex items-start gap-3">
           <ShieldAlert className="text-red-600 mt-0.5 shrink-0" />
           <div className="space-y-2">

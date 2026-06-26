@@ -104,7 +104,7 @@ export default function CheckoutPage() {
         try {
           const res = await api.get(`/orders/${orderId}`);
           const order = res.data?.order;
-          if (order && order.status !== "pending_payment" && order.status !== "payment_failed") {
+          if (order && order.status !== "pending_payment") {
             clearInterval(checkStatus);
             resolve(true);
             return;

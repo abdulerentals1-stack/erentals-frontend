@@ -592,11 +592,8 @@ export default function OrderDetailsPage() {
                 "confirmed",
                 "shipped",
                 "delivered",
-                "in_use",
-                "pickup_scheduled",
-                "picked_up",
-                "cancelled",
                 "returned",
+                "cancelled",
               ].map((s) => (
                 <SelectItem key={s} value={s}>
                   {s.replace("_", " ")}
