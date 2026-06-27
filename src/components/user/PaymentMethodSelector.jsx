@@ -27,7 +27,11 @@ export default function PaymentMethodSelector({ selected, onChange, advancePerce
 
       {selected === "razorpay" && (
         <p className="text-green-600 text-sm pt-1">
-          💸 You’ll only pay <strong>{advancePercentage}% in advance</strong>. The remaining amount will be requested after admin confirmation.
+          {advancePercentage === 100 ? (
+            <>💸 Pay <strong>100% of the equipment rental</strong> now to secure your booking.</>
+          ) : (
+            <>💸 Pay a <strong>{advancePercentage}% advance deposit</strong> now to secure your booking. The remaining balance will be requested after admin confirmation.</>
+          )}
         </p>
       )}
     </div>

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DownloadIcon, RefreshCw, AlertTriangle, CheckCircle, CreditCard, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import Script from "next/script";
+import OrderTracker from "@/components/user/OrderTracker";
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
@@ -216,7 +217,7 @@ export default function OrderDetailsPage() {
       </div>
 
       {/* Payment Recovery Banners */}
-      {order.status === "pending_payment" && order.paymentMethod === "razorpay" && (
+      {order.status === "pending_payment" && order.paymentMethod === "razorpay" && order.paymentStatus !== "failed" && (
         <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6 rounded-r flex items-start gap-3">
           <AlertTriangle className="text-yellow-600 mt-0.5 shrink-0" />
           <div className="space-y-2">
@@ -259,160 +260,155 @@ export default function OrderDetailsPage() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-gray-50 p-4 rounded-lg border">
-          <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Delivery Details</h2>
-          <p className="font-medium text-sm">{order.user?.name}</p>
-          <p className="text-gray-700 text-sm mt-1">{order.address?.addressLine || "No specific address line"}</p>
-          <p className="text-gray-700 text-sm">
-            {order.address?.city}, {order.address?.state} -{" "}
-            {order.address?.pincode}
-          </p>
-          <p className="text-gray-600 text-xs mt-2">Email: {order.user?.email}</p>
-          <p className="text-gray-600 text-xs">Phone: {order.address?.phone || order.user?.phone}</p>
+      {/* Row 1: Tracker & Metadata Grid */}
+      <div className="grid md:grid-cols-3 gap-6 mb-6">
+        <div className="md:col-span-2">
+          <OrderTracker order={order} />
         </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg border">
-          <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Rental Timeline</h2>
-          <div className="text-sm space-y-1.5">
-            <p><strong>Delivery Date:</strong> {new Date(order.deliveryDate).toLocaleDateString("en-IN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            <p><strong>Delivery Time Slot:</strong> {order.timeSlot}</p>
-            <p><strong>Payment Method:</strong> <span className="uppercase">{order.paymentMethod}</span></p>
+        <div className="space-y-4">
+          <div className="bg-gray-50 p-4 rounded-lg border text-sm">
+            <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Delivery Details</h2>
+            <p className="font-medium text-sm text-gray-950">{order.user?.name}</p>
+            <p className="text-gray-700 text-sm mt-1">{order.address?.addressLine || "No specific address line"}</p>
+            <p className="text-gray-700 text-sm">
+              {order.address?.city}, {order.address?.state} -{" "}
+              {order.address?.pincode}
+            </p>
+            <p className="text-gray-600 text-xs mt-2">Email: {order.user?.email}</p>
+            <p className="text-gray-600 text-xs">Phone: {order.address?.phone || order.user?.phone}</p>
           </div>
-        </div>
-      </div>
 
-      <h2 className="font-semibold mb-3 text-gray-950">Items Ordered</h2>
-      <div className="border rounded-lg p-4 mb-6 bg-white shadow-sm">
-        {order.items.map((item, i) => (
-          <div
-            key={i}
-            className="flex justify-between items-center py-3 border-b last:border-none"
-          >
-            <div>
-              <p className="font-medium text-sm text-gray-900">{item.product?.name || "Rental Product"}</p>
-              <p className="text-xs text-gray-500 mt-1">
-                {item.days} days | {item.quantity} units
-
-                {item.pricingType === "length_width" && item.length > 0 && (
-                  <> | {item.length} {item.unit || "ft"}</>
-                )}
-
-                {item.pricingType === "area" && item.length > 0 && item.width > 0 && (
-                  <> | {item.length}x{item.width} {item.unit || "sqft"}</>
-                )}
-
-                {" | " + (item.withService ? "With Service" : "Without Service")}
-              </p>
+          <div className="bg-gray-50 p-4 rounded-lg border text-sm">
+            <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Rental Timeline</h2>
+            <div className="text-sm space-y-1.5">
+              <p><strong>Delivery Date:</strong> {new Date(order.deliveryDate).toLocaleDateString("en-IN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p><strong>Delivery Time Slot:</strong> {order.timeSlot}</p>
+              <p><strong>Payment Method:</strong> <span className="uppercase">{order.paymentMethod}</span></p>
             </div>
-            <p className="font-medium text-sm">₹{item.finalPrice}</p>
           </div>
-        ))}
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <h2 className="font-semibold mb-3 text-gray-950">Status History Timeline</h2>
-          <div className="border rounded-lg p-4 bg-white text-sm space-y-4 max-h-[220px] overflow-y-auto">
-            {order.statusHistory && order.statusHistory.length > 0 ? (
-              order.statusHistory.map((history, index) => (
-                <div key={index} className="flex gap-2 relative">
-                  <div className="flex flex-col items-center">
-                    <div className="w-2.5 h-2.5 bg-gray-600 rounded-full z-10"></div>
-                    {index < order.statusHistory.length - 1 && <div className="w-0.5 h-full bg-gray-200 absolute top-2.5"></div>}
-                  </div>
-                  <div className="pb-1">
-                    <p className="font-medium capitalize text-gray-800">{(history.to || "").replace(/_/g, ' ')}</p>
-                    <p className="text-gray-500 text-xs">{new Date(history.timestamp).toLocaleString("en-IN")}</p>
-                    <p className="text-gray-600 text-xs mt-0.5 italic">"{history.reason}"</p>
-                  </div>
+      {/* Row 2: Items Ordered & Price Summary Grid */}
+      <div className="grid md:grid-cols-3 gap-6 mb-6 items-start">
+        <div className="md:col-span-2">
+          <h2 className="font-semibold mb-3 text-gray-950">Items Ordered</h2>
+          <div className="border rounded-lg p-4 bg-white shadow-sm divide-y">
+            {order.items.map((item, i) => (
+              <div
+                key={i}
+                className="flex justify-between items-center py-3 first:pt-0 last:pb-0"
+              >
+                <div>
+                  <p className="font-medium text-sm text-gray-900">{item.product?.name || "Rental Product"}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {item.days} days | {item.quantity} units
+
+                    {item.pricingType === "length_width" && item.length > 0 && (
+                      <> | {item.length} {item.unit || "ft"}</>
+                    )}
+
+                    {item.pricingType === "area" && item.length > 0 && item.width > 0 && (
+                      <> | {item.length}x{item.width} {item.unit || "sqft"}</>
+                    )}
+
+                    {" | " + (item.withService ? "With Service" : "Without Service")}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-xs">No status timeline available</p>
+                <p className="font-medium text-sm text-gray-900">₹{item.finalPrice}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-gray-50 p-4 rounded-lg border text-sm space-y-1.5 h-fit">
+            <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Price Summary</h2>
+            <div className="flex justify-between">
+              <span>Base Amount:</span>
+              <span>₹{order.totalAmount}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Transportation:</span>
+              <span>₹{order.transportationCharge || 0}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Labour Charge:</span>
+              <span>₹{order.labourCharge || 0}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>SGST (9%):</span>
+              <span>₹{order.sgst}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>CGST (9%):</span>
+              <span>₹{order.cgst}</span>
+            </div>
+            {order.discountAmount > 0 && (
+              <div className="flex justify-between text-green-700">
+                <span>Discount:</span>
+                <span>-₹{order.discountAmount}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
+              <span>Total:</span>
+              <span>₹{order.finalAmount}</span>
+            </div>
+            {order.paymentMethod !== "cod" && (
+              <div className="border-t pt-2 mt-2 space-y-1 bg-yellow-50/50 p-2 rounded">
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>Advance Paid:</span>
+                  <span>₹{order.advancePaid}</span>
+                </div>
+                <div className="flex justify-between text-xs text-green-700 font-medium">
+                  <span>Total Paid:</span>
+                  <span>₹{order.paidAmount}</span>
+                </div>
+                {order.finalAmount - order.paidAmount > 0 && (
+                  <div className="flex justify-between text-xs text-yellow-700 font-semibold">
+                    <span>Remaining Balance:</span>
+                    <span>₹{order.finalAmount - order.paidAmount}</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
-        </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg border text-sm space-y-1.5 h-fit">
-          <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Price Summary</h2>
-          <div className="flex justify-between">
-            <span>Base Amount:</span>
-            <span>₹{order.totalAmount}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Transportation:</span>
-            <span>₹{order.transportationCharge || 0}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Labour Charge:</span>
-            <span>₹{order.labourCharge || 0}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>SGST (9%):</span>
-            <span>₹{order.sgst}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>CGST (9%):</span>
-            <span>₹{order.cgst}</span>
-          </div>
-          {order.discountAmount > 0 && (
-            <div className="flex justify-between text-green-700">
-              <span>Discount:</span>
-              <span>-₹{order.discountAmount}</span>
-            </div>
-          )}
-          <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
-            <span>Total:</span>
-            <span>₹{order.finalAmount}</span>
-          </div>
-          {order.paymentMethod !== "cod" && (
-            <div className="border-t pt-2 mt-2 space-y-1 bg-yellow-50/50 p-2 rounded">
-              <div className="flex justify-between text-xs text-gray-600">
-                <span>Advance Paid:</span>
-                <span>₹{order.advancePaid}</span>
+          {/* Action Buttons inside Summary column */}
+          {((order.paymentMethod === "razorpay" &&
+            order.status === "confirmed" && 
+            order.paymentStatus !== "paid" &&
+            order.finalAmount - order.paidAmount > 0) || 
+            (order.invoiceUrl && order.status === "confirmed")) && (
+              <div className="flex flex-col gap-2 w-full">
+                {order.paymentMethod === "razorpay" &&
+                  order.status === "confirmed" && 
+                  order.paymentStatus !== "paid" &&
+                  order.finalAmount - order.paidAmount > 0 && (
+                    <Button
+                      onClick={handleRemainingPayment}
+                      className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-4 py-2 rounded text-xs w-full"
+                    >
+                      Pay Remaining Balance (₹{order.finalAmount - order.paidAmount})
+                    </Button>
+                  )}
+
+                {order.invoiceUrl && order.status === "confirmed" && (
+                  <Button onClick={() => window.open(order.invoiceUrl, "_blank")} className="bg-zinc-800 hover:bg-zinc-900 text-white flex items-center justify-center text-xs w-full py-2">
+                    <DownloadIcon className="w-4 h-4 mr-2" /> Download Invoice
+                  </Button>
+                )}
               </div>
-              <div className="flex justify-between text-xs text-green-700 font-medium">
-                <span>Total Paid:</span>
-                <span>₹{order.paidAmount}</span>
-              </div>
-              {order.finalAmount - order.paidAmount > 0 && (
-                <div className="flex justify-between text-xs text-yellow-700 font-semibold">
-                  <span>Remaining Balance:</span>
-                  <span>₹{order.finalAmount - order.paidAmount}</span>
-                </div>
-              )}
-            </div>
           )}
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 mt-6">
-        {order.paymentMethod === "razorpay" &&
-          order.status === "confirmed" && 
-          order.paymentStatus !== "paid" &&
-          order.finalAmount - order.paidAmount > 0 && (
-            <Button
-              onClick={handleRemainingPayment}
-              className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-6 py-2 rounded"
-            >
-              Pay Remaining Balance (₹{order.finalAmount - order.paidAmount})
-            </Button>
-          )}
-
-        {order.invoiceUrl && order.status === "confirmed" && (
-          <Button onClick={() => window.open(order.invoiceUrl, "_blank")} className="bg-zinc-800 hover:bg-zinc-900 text-white flex items-center">
-            <DownloadIcon className="w-4 h-4 mr-2" /> Download Invoice
-          </Button>
-        )}
       </div>
 
       {/* Payment History Log */}
       {order.paymentMethod !== "cod" && order.paymentHistory?.length > 0 && (
         <div className="mt-8 border-t pt-6">
           <h2 className="font-semibold mb-3 text-gray-950">Payment Transactions</h2>
-          <div className="border rounded-lg bg-white overflow-hidden shadow-sm">
+          {/* Desktop Table View */}
+          <div className="hidden sm:block border rounded-lg bg-white overflow-hidden shadow-sm overflow-x-auto">
             <table className="min-w-full text-xs text-left">
               <thead className="bg-gray-50 border-b text-gray-600">
                 <tr>
@@ -445,6 +441,38 @@ export default function OrderDetailsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="block sm:hidden space-y-3">
+            {order.paymentHistory.map((p, i) => (
+              <div key={i} className="border rounded-lg bg-white p-4 shadow-sm text-xs space-y-2.5">
+                <div className="flex justify-between items-center pb-2 border-b">
+                  <span className="font-semibold text-gray-600 capitalize text-sm">{p.type} Payment</span>
+                  <Badge variant={p.status === "success" ? "success" : p.status === "refunded" ? "destructive" : "default"} className="text-[10px]">
+                    {p.status}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-3 gap-1">
+                  <span className="text-gray-500 font-medium">Payment ID:</span>
+                  <span className="col-span-2 font-mono font-medium text-gray-900 break-all">{p.razorpay_payment_id || "N/A"}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1">
+                  <span className="text-gray-500 font-medium">Order ID:</span>
+                  <span className="col-span-2 font-mono text-gray-800 break-all">{p.razorpay_order_id || "N/A"}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1">
+                  <span className="text-gray-500 font-medium">Amount:</span>
+                  <span className={`col-span-2 font-semibold text-gray-950 ${p.amount < 0 ? "text-red-600" : ""}`}>
+                    ₹{p.amount}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1">
+                  <span className="text-gray-500 font-medium">Date:</span>
+                  <span className="col-span-2 text-gray-700">{new Date(p.paidAt).toLocaleString("en-IN")}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
