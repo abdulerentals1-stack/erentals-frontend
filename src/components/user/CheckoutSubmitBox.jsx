@@ -5,6 +5,7 @@ import { placeOrder } from '@/services/checkoutService';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import TransportationNotice from '@/components/user/TransportationNotice';
 
 export default function CheckoutSubmitBox({ cart, deliveryDetails }) {
   const router = useRouter();
@@ -36,9 +37,7 @@ export default function CheckoutSubmitBox({ cart, deliveryDetails }) {
 
   return (
     <div className="p-4 border rounded space-y-4 mt-4 bg-gray-50">
-      <p className="text-sm text-yellow-600">
-        ⚠️ Transportation charges will be calculated by admin before confirming your order.
-      </p>
+      <TransportationNotice advancePercentage={cart?.advancePercentage || 100} />
 
       <div className="flex justify-between font-medium text-sm">
         <span>Total Amount:</span>

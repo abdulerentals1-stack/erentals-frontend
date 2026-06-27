@@ -21,6 +21,7 @@ import AddressSelector from '@/components/user/AddressSelector';
 import CouponBox from '@/components/user/CouponBox';
 import DeliveryOptions from '@/components/user/DeliveryOptions';
 import PaymentMethodSelector from '@/components/user/PaymentMethodSelector';
+import TransportationNotice from '@/components/user/TransportationNotice';
 import { Button } from '@/components/ui/button';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -293,15 +294,13 @@ export default function CheckoutPage() {
       <PaymentMethodSelector
         selected={watch("paymentMethod")}
         onChange={(val) => setValue("paymentMethod", val)}
-        advancePercentage={cart?.advancePercentage || 20}
+        advancePercentage={cart?.advancePercentage || 100}
       />
       {errors.paymentMethod && <p className="text-sm text-red-500">{errors.paymentMethod.message}</p>}
 
       {/* Transportation charge notice & final summary */}
       <div className="bg-gray-50 border rounded p-4 space-y-4 mt-4 text-black">
-        <p className="text-yellow-700 text-sm">
-          ⚠️ Transportation charges will be calculated by admin before confirming your order.
-        </p>
+        <TransportationNotice advancePercentage={cart?.advancePercentage || 100} />
 
         <div className="text-sm space-y-1 text-gray-700">
           <div className="flex justify-between">

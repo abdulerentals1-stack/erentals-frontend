@@ -7,7 +7,7 @@ import {
 } from "@/services/orderService";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EyeIcon, CreditCard, RefreshCw } from "lucide-react";
+import { EyeIcon, CreditCard, RefreshCw, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStatus } from "@/utils/authUtils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,11 +66,12 @@ export default function MyOrders() {
         return (
           <div
             key={order._id}
-            className="border rounded-lg p-4 shadow-sm bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+            onClick={() => route.push(`/orders/${order._id}`)}
+            className="group border rounded-lg p-4 shadow-sm bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:border-gray-300 hover:shadow-md transition-all duration-200"
           >
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-gray-900">{orderNumberDisplay}</span>
+                <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">{orderNumberDisplay}</span>
                 <Badge
                   variant={
                     order.status === "confirmed" || order.status === "placed"
@@ -107,31 +108,31 @@ export default function MyOrders() {
               <p className="text-xs text-gray-600">Payment: <span className="uppercase">{order.paymentMethod}</span></p>
             </div>
 
-            <div className="flex flex-wrap gap-2 w-full md:w-auto">
-              <Button
-                size="sm"
-                variant="outline"
-                className="cursor-pointer text-xs"
-                onClick={() => route.push(`/orders/${order._id}`)}
-              >
-                <EyeIcon className="w-4 h-4 mr-1" />
-                View Details
-              </Button>
+            <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+              <div className="flex gap-2 w-full sm:w-auto">
+                {(order.status === "pending_payment") && order.paymentMethod === "razorpay" && (
+                  <Button
+                    size="sm"
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs w-full sm:w-auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      route.push(`/orders/${order._id}`);
+                    }}
+                  >
+                    <CreditCard className="w-4 h-4 mr-1" />
+                    Complete Payment
+                  </Button>
+                )}
 
-              {(order.status === "pending_payment") && order.paymentMethod === "razorpay" && (
-                <Button
-                  size="sm"
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs"
-                  onClick={() => route.push(`/orders/${order._id}`)}
-                >
-                  <CreditCard className="w-4 h-4 mr-1" />
-                  Complete Payment
-                </Button>
-              )}
+                {order.invoiceUrl && ["delivered", "confirmed"].includes(order.status) && (
+                  <div onClick={(e) => e.stopPropagation()} className="w-full sm:w-auto">
+                    <InvoicePreviewAndDownload order={order} />
+                  </div>
+                )}
+              </div>
 
-              {order.invoiceUrl && ["delivered", "confirmed"].includes(order.status) && (
-                <InvoicePreviewAndDownload order={order} />
-              )}
+              {/* Visual click affordance (Chevron) */}
+              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-all duration-200 group-hover:translate-x-1 hidden md:block shrink-0" />
             </div>
           </div>
         );
