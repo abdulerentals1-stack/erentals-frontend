@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
+export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request) {
+  const host = request.headers.get("host") || "e-rentals.in";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const BASE_URL = `${protocol}://${host}`;
+
   const robotsTxt = `User-agent: *
 Disallow: /admin/
 Disallow: /api/
