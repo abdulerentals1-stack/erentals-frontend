@@ -71,13 +71,19 @@ export default function ProductActionButtons({ product, formData }) {
     }
   };
 
+  const isInvalid = 
+    (Number(formData?.days) > 365) ||
+    (Number(formData?.quantity) > (product?.stock || 10000)) ||
+    (Number(formData?.length) > 10000) ||
+    (Number(formData?.width) > 10000);
+
   return (
     <div className="flex flex-col gap-3 mt-6">
       {/* Add to Rental Button - Primary Action */}
       <Button
         className="h-14 rounded-xl bg-[#003459] hover:bg-[#002240] cursor-pointer text-white flex items-center justify-center gap-2 w-full text-base font-bold shadow-md shadow-[#003459]/20 transition-all duration-300"
         onClick={() => handleAddToCart(true)}
-        disabled={loadingType !== null}
+        disabled={loadingType !== null || isInvalid}
       >
         {loadingType === "rental" ? (
           <>
@@ -97,7 +103,7 @@ export default function ProductActionButtons({ product, formData }) {
         <Button
           className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-1.5 font-semibold whitespace-normal px-2 transition-all duration-300 shadow-sm min-w-0"
           onClick={handleAddToQuote}
-          disabled={loadingType !== null}
+          disabled={loadingType !== null || isInvalid}
         >
           {loadingType === "quote" ? (
             <>
@@ -116,7 +122,7 @@ export default function ProductActionButtons({ product, formData }) {
         <Button
           className="h-12 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 cursor-pointer text-[#003459] flex items-center justify-center gap-1.5 font-semibold whitespace-normal px-2 transition-all duration-300 shadow-sm min-w-0"
           onClick={() => handleAddToCart(false)}
-          disabled={loadingType !== null}
+          disabled={loadingType !== null || isInvalid}
         >
           {loadingType === "cart" ? (
             <>

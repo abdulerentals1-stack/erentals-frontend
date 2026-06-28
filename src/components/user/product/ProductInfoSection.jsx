@@ -23,28 +23,28 @@ export default function ProductInfoSection({ product }) {
   const [priceData, setPriceData] = useState(null);
 
   useEffect(() => {
-   const fetchPrice = async () => {
-  try {
-    const payload = {
-      productId: product._id,
-      days: inputs.days,
-      includeServiceCharge: inputs.withService,
-      quantity: inputs.quantity, // ✅ always include
+    const fetchPrice = async () => {
+      try {
+        const payload = {
+          productId: product._id,
+          days: Number(inputs.days) || 1,
+          includeServiceCharge: inputs.withService,
+          quantity: Number(inputs.quantity) || 1, // ✅ always include
+        };
+
+        if (product.pricingType === 'length_width') {
+          payload.length = Number(inputs.length) || 1;
+        } else if (product.pricingType === 'area') {
+          payload.length = Number(inputs.length) || 1;
+          payload.width = Number(inputs.width) || 1;
+        }
+
+        const { data } = await calculatePrice(payload);
+        setPriceData(data);
+      } catch (err) {
+        setPriceData(null);
+      }
     };
-
-    if (product.pricingType === 'length_width') {
-      payload.length = inputs.length;
-    } else if (product.pricingType === 'area') {
-      payload.length = inputs.length;
-      payload.width = inputs.width;
-    }
-
-    const { data } = await calculatePrice(payload);
-    setPriceData(data);
-  } catch (err) {
-    setPriceData(null);
-  }
-};
 
     fetchPrice();
   }, [inputs]);
@@ -58,7 +58,7 @@ export default function ProductInfoSection({ product }) {
           {product.name}
         </h1>
         <ProductInputs
-            pricingType={product.pricingType}
+            product={product}
             formData={inputs}
             setFormData={setInputs}  
             unitinfo={unit}
