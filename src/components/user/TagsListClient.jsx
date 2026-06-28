@@ -13,7 +13,7 @@ export default function TagsListClient({ tags }) {
       flex items-center gap-3 
       px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28
       overflow-x-auto lg:overflow-x-visible 
-      scrollbar-hide justify-between">
+      no-scrollbar justify-between">
       {tags.map((tag) => {
         const isActive = pathname === `/tags/${tag.slug}`;
 
