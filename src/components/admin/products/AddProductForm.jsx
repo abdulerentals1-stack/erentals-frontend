@@ -258,7 +258,7 @@ export default function AddProductForm() {
       <div>
         <Label>Thresholds</Label>
         <p className="text-xs text-zinc-500 mb-3">
-          Example logic: If base price is 100, set 10 qty at 90, 20 qty at 80, etc.
+          Range-based pricing: If you define thresholds (e.g. 25 at ₹18, 50 at ₹15, 100 at ₹10) and Discount Price (₹9), the price will be: ₹18 for 1-24 qty, ₹15 for 25-49 qty, ₹10 for 50-99 qty, and ₹9 (Discount Price) for 100+ qty.
         </p>
         {fields.map((field, index) => (
           <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
