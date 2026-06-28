@@ -22,8 +22,21 @@ export default function PriceBox({ priceData, product, formData }) {
   const basePrice = priceData.basePrice;
   const currentQty = formData?.quantity || 1;
 
-  // Find the next tier the user hasn't unlocked yet
-  const nextTier = allThresholds.find((t) => currentQty < t.value);
+  // Find the next tier the user hasn't unlocked yet (under reversed volume discounts)
+  let nextTier = null;
+  const productDiscountPrice = product?.discountPrice || basePrice;
+  for (let i = 0; i < allThresholds.length; i++) {
+    if (currentQty < allThresholds[i].value) {
+      const nextPrice = allThresholds[i + 1]
+        ? allThresholds[i + 1].price
+        : productDiscountPrice;
+      nextTier = {
+        value: allThresholds[i].value,
+        price: nextPrice,
+      };
+      break;
+    }
+  }
 
   // Savings vs base
   const savedPerUnit = basePrice - activePrice;
