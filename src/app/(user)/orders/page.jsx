@@ -74,15 +74,17 @@ export default function MyOrders() {
                 <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">{orderNumberDisplay}</span>
                 <Badge
                   variant={
-                    order.status === "confirmed" || order.status === "placed"
+                    order.status === "placed"
                       ? "secondary"
+                      : order.status === "confirmed" || order.status === "shipped"
+                      ? "info"
                       : order.status === "delivered"
                       ? "success"
                       : order.status === "cancelled"
-                      ? "destructive"
+                      ? "error"
                       : "outline"
                   }
-                  className="capitalize text-xs"
+                  className="capitalize text-xs font-semibold"
                 >
                   {order.status.replace(/_/g, ' ')}
                 </Badge>
@@ -94,13 +96,20 @@ export default function MyOrders() {
                       : order.paymentStatus === "partial"
                       ? "warning"
                       : order.paymentStatus === "failed"
-                      ? "destructive"
-                      : "default"
+                      ? "error"
+                      : "secondary"
                   }
-                  className="capitalize text-xs"
+                  className="capitalize text-xs font-semibold"
                 >
                   Payment: {order.paymentStatus === "not_required" ? "Pay on Delivery" : order.paymentStatus.replace(/_/g, ' ')}
                 </Badge>
+
+                {order.status === "placed" && (
+                  <Badge variant="warning" className="capitalize text-xs font-semibold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                    Awaiting Admin Confirmation
+                  </Badge>
+                )}
               </div>
               <p className="text-xs text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString("en-IN")}</p>
               <p className="text-sm font-medium">Amount: ₹{order.finalAmount}</p>
