@@ -94,11 +94,6 @@ export default function PriceBox({ priceData, product, formData }) {
             )}
           </div>
           <div className="flex flex-col items-end text-right">
-            {formData?.withService && dailyServiceChargePerUnit > 0 && (
-              <span className="text-xs text-gray-500 font-medium mb-0.5">
-                ₹{formatPrice(unitRateBase)} + ₹{formatPrice(dailyServiceChargePerUnit)} <span className="text-[10px] text-gray-400 font-normal">(service)</span>
-              </span>
-            )}
             <span className="text-base font-bold text-gray-800">
               {formData?.withService && dailyServiceChargePerUnit > 0 ? (
                 <span>

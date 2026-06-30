@@ -86,7 +86,7 @@ export default function MyOrders() {
                 >
                   {order.status.replace(/_/g, ' ')}
                 </Badge>
-                
+
                 {order.paymentStatus === "paid" ? (
                   <Badge variant="success" className="capitalize text-xs font-semibold">
                     Payment: Paid
@@ -107,6 +107,12 @@ export default function MyOrders() {
                     className="capitalize text-xs font-semibold"
                   >
                     Payment: {order.paymentStatus.replace(/_/g, ' ')}
+                  </Badge>
+                )}
+
+                {order.status === "placed" && (
+                  <Badge variant="warning" className="capitalize text-xs font-semibold animate-pulse">
+                    Awaiting Admin Confirmation
                   </Badge>
                 )}
               </div>
@@ -132,7 +138,7 @@ export default function MyOrders() {
                   </Button>
                 )}
 
-                {order.paymentMethod === "razorpay" &&
+                 {order.paymentMethod === "razorpay" &&
                   ["placed", "confirmed"].includes(order.status) &&
                   order.paymentStatus !== "paid" &&
                   order.finalAmount - order.paidAmount > 0 && (
@@ -146,6 +152,23 @@ export default function MyOrders() {
                     >
                       <CreditCard className="w-4 h-4 mr-1" />
                       Pay Balance (₹{order.finalAmount - order.paidAmount})
+                    </Button>
+                )}
+
+                {order.paymentMethod === "cod" &&
+                  ["placed", "confirmed"].includes(order.status) &&
+                  order.paymentStatus !== "paid" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-600 text-blue-600 hover:bg-blue-50 text-xs w-full sm:w-auto flex items-center gap-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        route.push(`/orders/${order._id}`);
+                      }}
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      Pay Online (₹{order.finalAmount - order.paidAmount})
                     </Button>
                 )}
 

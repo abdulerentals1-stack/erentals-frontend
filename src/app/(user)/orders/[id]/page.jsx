@@ -231,6 +231,12 @@ export default function OrderDetailsPage() {
               Payment: {order.paymentStatus.replace(/_/g, ' ')}
             </Badge>
           )}
+
+          {order.status === "placed" && (
+            <Badge variant="warning" className="capitalize text-xs font-semibold animate-pulse">
+              Awaiting Admin Confirmation
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -393,12 +399,29 @@ export default function OrderDetailsPage() {
           </div>
 
           {/* Action Buttons inside Summary column */}
-          {((order.paymentMethod === "razorpay" &&
+          {((["razorpay", "cod"].includes(order.paymentMethod) &&
             ["confirmed", "placed"].includes(order.status) && 
             order.paymentStatus !== "paid" &&
             order.finalAmount - order.paidAmount > 0) || 
             (order.invoiceUrl && ["confirmed", "placed"].includes(order.status))) && (
               <div className="flex flex-col gap-2 w-full">
+                {order.paymentMethod === "cod" &&
+                  ["confirmed", "placed"].includes(order.status) &&
+                  order.paymentStatus !== "paid" && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800 mb-2">
+                      <p className="font-semibold mb-1">💡 Skip cash hassles!</p>
+                      <p className="mb-2 text-[11px] leading-relaxed text-blue-700">
+                        You can convert this order to online payment and pay securely right now via UPI, card, or NetBanking.
+                      </p>
+                      <Button
+                        onClick={handleRemainingPayment}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded text-[11px] w-full"
+                      >
+                        Pay Online Now (₹{order.finalAmount - order.paidAmount})
+                      </Button>
+                    </div>
+                  )}
+
                 {order.paymentMethod === "razorpay" &&
                   ["confirmed", "placed"].includes(order.status) && 
                   order.paymentStatus !== "paid" &&
