@@ -197,12 +197,18 @@ export default function OrderDetailsPage() {
           <h1 className="text-2xl font-bold">{orderNumberDisplay}</h1>
           <p className="text-gray-500 text-sm">Placed on {new Date(order.createdAt).toLocaleString()}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={
-            order.status === "placed" || order.status === "confirmed" ? "secondary" : 
-            order.status === "delivered" ? "success" : 
-            order.status === "cancelled" ? "destructive" : "default"
-          } className="capitalize">
+            order.status === "placed"
+              ? "secondary"
+              : order.status === "confirmed" || order.status === "shipped"
+              ? "info"
+              : order.status === "delivered"
+              ? "success"
+              : order.status === "cancelled"
+              ? "error"
+              : "outline"
+          } className="capitalize text-xs font-semibold">
             {order.status.replace(/_/g, ' ')}
           </Badge>
 
@@ -473,7 +479,7 @@ export default function OrderDetailsPage() {
                       </span>
                     </td>
                     <td className="p-3">
-                      <Badge variant={p.status === "success" ? "success" : p.status === "refunded" ? "destructive" : "default"} className="text-[10px]">
+                      <Badge variant={p.status === "success" ? "success" : p.status === "refunded" || p.status === "failed" ? "error" : "secondary"} className="text-[10px] font-semibold">
                         {p.status}
                       </Badge>
                     </td>
@@ -490,7 +496,7 @@ export default function OrderDetailsPage() {
               <div key={i} className="border rounded-lg bg-white p-4 shadow-sm text-xs space-y-2.5">
                 <div className="flex justify-between items-center pb-2 border-b">
                   <span className="font-semibold text-gray-600 capitalize text-sm">{p.type} Payment</span>
-                  <Badge variant={p.status === "success" ? "success" : p.status === "refunded" ? "destructive" : "default"} className="text-[10px]">
+                  <Badge variant={p.status === "success" ? "success" : p.status === "refunded" || p.status === "failed" ? "error" : "secondary"} className="text-[10px] font-semibold">
                     {p.status}
                   </Badge>
                 </div>

@@ -74,15 +74,17 @@ export default function MyOrders() {
                 <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">{orderNumberDisplay}</span>
                 <Badge
                   variant={
-                    order.status === "confirmed" || order.status === "placed"
+                    order.status === "placed"
                       ? "secondary"
+                      : order.status === "confirmed" || order.status === "shipped"
+                      ? "info"
                       : order.status === "delivered"
                       ? "success"
                       : order.status === "cancelled"
-                      ? "destructive"
+                      ? "error"
                       : "outline"
                   }
-                  className="capitalize text-xs"
+                  className="capitalize text-xs font-semibold"
                 >
                   {order.status.replace(/_/g, ' ')}
                 </Badge>
