@@ -502,7 +502,15 @@ export default function OrderDetailsPage() {
 
                 {/* Unit Price Display */}
                   <p className="text-sm">
-                    <strong>Unit Price:</strong> ₹{item.unitPrice || 0}
+                    <strong>Unit Price:</strong> ₹
+                    {item.withService && item.product?.serviceChargePercent
+                      ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                      : item.unitPrice || 0}
+                    {item.withService && item.product?.serviceChargePercent > 0 && (
+                      <span className="text-xs text-amber-600 font-medium ml-1.5">
+                        ({item.product.serviceChargePercent}% Service Included)
+                      </span>
+                    )}
                   </p>
 
                   {/* Custom Price Input */}
