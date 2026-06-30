@@ -126,17 +126,30 @@ const QuotationPDF = ({ quotation }) => {
               <Text style={styles.tableCell}>Total</Text>
             </View>
 
-            {items.map((item, i) => (
-              <View key={i} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{i + 1}</Text>
-                <Text style={styles.tableCell}>{item.product?.productCode || "N/A"}</Text>
-                <Text style={styles.tableCell}>{item.product?.name || "N/A"}</Text>
-                <Text style={styles.tableCell}>{item.unitPrice || 0}</Text>
-                <Text style={styles.tableCell}>{item.quantity || 0}</Text>
-                <Text style={styles.tableCell}>{item.days || 0}</Text>
-                <Text style={styles.tableCell}>{item.finalPrice || 0}</Text>
-              </View>
-            ))}
+            {items.map((item, i) => {
+              let particulars = item.product?.name || "";
+              if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
+                particulars += ` (${item.length}x${item.width} ft)`;
+              } else if (item.pricingType === "length_width" && item.length > 0) {
+                particulars += ` (${item.length} ft)`;
+              }
+
+              const unitRate = item.withService && item.product?.serviceChargePercent
+                ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                : (item.unitPrice || 0);
+
+              return (
+                <View key={i} style={styles.tableRow}>
+                  <Text style={styles.tableCell}>{i + 1}</Text>
+                  <Text style={styles.tableCell}>{item.product?.productCode || "N/A"}</Text>
+                  <Text style={styles.tableCell}>{particulars}</Text>
+                  <Text style={styles.tableCell}>{unitRate}</Text>
+                  <Text style={styles.tableCell}>{item.quantity || 0}</Text>
+                  <Text style={styles.tableCell}>{item.days || 0}</Text>
+                  <Text style={styles.tableCell}>{item.finalPrice || 0}</Text>
+                </View>
+              );
+            })}
 
             {/* Totals */}
             <View style={styles.tableRow}>

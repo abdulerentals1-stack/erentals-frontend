@@ -133,17 +133,30 @@ const InvoicePDF = ({ order, terms, persons }) => {
             <Text style={[styles.tableCell, { width: "12%" }]}>Total</Text>
           </View>
 
-          {order.items?.map((item, i) => (
-            <View key={i} style={styles.tableRow}>
-              <Text style={[styles.tableCell, { width: "8%" }]}>{i + 1}</Text>
-              <Text style={[styles.tableCell, { width: "12%" }]}>{item.product?.productCode || "-"}</Text>
-              <Text style={[styles.tableCell, { width: "40%" }]}>{item.product?.name}</Text>
-              <Text style={[styles.tableCell, { width: "10%" }]}>{item.unitPrice}</Text>
-              <Text style={[styles.tableCell, { width: "8%" }]}>{item.quantity}</Text>
-              <Text style={[styles.tableCell, { width: "10%" }]}>{item.rentalDays || 1}</Text>
-              <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice}</Text>
-            </View>
-          ))}
+          {order.items?.map((item, i) => {
+            let particulars = item.product?.name || "";
+            if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
+              particulars += ` (${item.length}x${item.width} ft)`;
+            } else if (item.pricingType === "length_width" && item.length > 0) {
+              particulars += ` (${item.length} ft)`;
+            }
+
+            const unitRate = item.withService && item.product?.serviceChargePercent
+              ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+              : (item.unitPrice || 0);
+
+            return (
+              <View key={i} style={styles.tableRow}>
+                <Text style={[styles.tableCell, { width: "8%" }]}>{i + 1}</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{item.product?.productCode || "-"}</Text>
+                <Text style={[styles.tableCell, { width: "40%" }]}>{particulars}</Text>
+                <Text style={[styles.tableCell, { width: "10%" }]}>{unitRate}</Text>
+                <Text style={[styles.tableCell, { width: "8%" }]}>{item.quantity}</Text>
+                <Text style={[styles.tableCell, { width: "10%" }]}>{item.rentalDays || 1}</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice}</Text>
+              </View>
+            );
+          })}
 
           {/* Totals */}
           <View style={styles.tableRow}>
