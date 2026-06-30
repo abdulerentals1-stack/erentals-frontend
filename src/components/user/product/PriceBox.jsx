@@ -20,13 +20,24 @@ export default function PriceBox({ priceData, product, formData }) {
   const isBulkApplied = priceData.isBulkApplied;
   const activePrice = priceData.discountPrice; // the unit price backend resolved
   const basePrice = priceData.basePrice;
-  const currentQty = formData?.quantity || 1;
+  // Calculate total metric value (e.g. total area, total length, or quantity) dynamically
+  const pricingType = product?.pricingType || 'quantity';
+  const qty = Number(formData?.quantity) || 1;
+  const len = Number(formData?.length) || 1;
+  const wid = Number(formData?.width) || 1;
+
+  let currentMetricValue = qty;
+  if (pricingType === 'area') {
+    currentMetricValue = len * wid * qty;
+  } else if (pricingType === 'length_width') {
+    currentMetricValue = len * qty;
+  }
 
   // Find the next tier the user hasn't unlocked yet (under reversed volume discounts)
   let nextTier = null;
   const productDiscountPrice = product?.discountPrice || basePrice;
   for (let i = 0; i < allThresholds.length; i++) {
-    if (currentQty < allThresholds[i].value) {
+    if (currentMetricValue < allThresholds[i].value) {
       const nextPrice = allThresholds[i + 1]
         ? allThresholds[i + 1].price
         : productDiscountPrice;
@@ -44,7 +55,7 @@ export default function PriceBox({ priceData, product, formData }) {
     ? Math.round((savedPerUnit / basePrice) * 100)
     : 0;
 
-  const userValue = priceData.userValue || currentQty;
+  const userValue = priceData.userValue || priceData.breakdown?.userValue || currentMetricValue;
   const finalDayPrice = priceData.finalDayPrice || activePrice;
   const serviceCharge = priceData.serviceCharge || 0;
   const finalPrice = priceData.finalPrice || (userValue * finalDayPrice + serviceCharge);
@@ -61,7 +72,7 @@ export default function PriceBox({ priceData, product, formData }) {
 
   const dailyTotalRate = formData?.withService ? (finalPrice / days) : (rentalPrice / days);
 
-  const unitPlural = priceData.unit || (product?.pricingType === 'area' ? 'sq.ft' : product?.pricingType === 'length_width' ? 'ft' : 'pcs');
+  const unitPlural = product?.pricingType === 'area' ? 'sq.ft' : product?.pricingType === 'length_width' ? 'ft' : (priceData.unit || 'pcs');
   const unitSingular = unitPlural === 'pcs' ? 'pc' : unitPlural;
 
   return (
@@ -72,7 +83,7 @@ export default function PriceBox({ priceData, product, formData }) {
       {nextTier && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentQty} more to unlock ₹{nextTier.price}/{unitSingular}</p>
+            <p className="text-amber-800 font-semibold text-sm">💡 Add {nextTier.value - currentMetricValue} {unitPlural} more to unlock ₹{nextTier.price}/{unitSingular}</p>
             <p className="text-amber-600 text-xs mt-0.5">
               Save {Math.round(((basePrice - nextTier.price) / basePrice) * 100)}% per {unitSingular === 'pc' ? 'piece' : unitSingular} at {nextTier.value}+ {unitPlural}
             </p>
