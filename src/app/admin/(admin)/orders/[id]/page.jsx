@@ -139,8 +139,19 @@ export default function OrderDetailsPage() {
     setUpdateorder(false)
     e.preventDefault();
     try {
+      const payloadItems = items.map((item) => ({
+        product: item.product?._id || item.product,
+        pricingType: item.pricingType,
+        quantity: item.quantity,
+        length: item.length,
+        width: item.width,
+        days: item.days,
+        withService: item.withService,
+        customPrice: item.customPrice,
+      }));
+
       const res = await adminUpdateOrder(id, {
-        items,
+        items: payloadItems,
         transportationCharge: Number(transportationCharge),
         labourCharge: Number(order.labourCharge || 0),
         couponCode: couponCode?.trim() || null,
@@ -276,6 +287,11 @@ export default function OrderDetailsPage() {
     <p className="mt-3 text-lg font-bold text-indigo-700">
       Final Amount: ₹{order?.finalAmount?.toFixed(2) || "0.00"}
     </p>
+    {order?.paymentMethod === "cod" && order?.paymentStatus !== "paid" && (
+      <div className="mt-3 bg-blue-50 border border-blue-200 text-blue-800 rounded p-2.5 text-xs">
+        💡 <strong>Cash on Delivery (COD):</strong> The customer can convert this to online payment and pay via their dashboard. Once paid, the status will automatically update to <strong>Paid (Razorpay)</strong>.
+      </div>
+    )}
   </div>
 
   {/* 🧾 Payment History */}
@@ -502,7 +518,15 @@ export default function OrderDetailsPage() {
 
                 {/* Unit Price Display */}
                   <p className="text-sm">
-                    <strong>Unit Price:</strong> ₹{item.unitPrice || 0}
+                    <strong>Unit Price:</strong> ₹
+                    {item.withService && item.product?.serviceChargePercent
+                      ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                      : item.unitPrice || 0}
+                    {item.withService && item.product?.serviceChargePercent > 0 && (
+                      <span className="text-xs text-amber-600 font-medium ml-1.5">
+                        ({item.product.serviceChargePercent}% Service Included)
+                      </span>
+                    )}
                   </p>
 
                   {/* Custom Price Input */}

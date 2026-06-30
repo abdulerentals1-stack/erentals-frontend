@@ -121,8 +121,19 @@ export default function OrderDetailsPage() {
     setUpdateorder(false)
     e.preventDefault();
     try {
+      const payloadItems = items.map((item) => ({
+        product: item.product?._id || item.product,
+        pricingType: item.pricingType,
+        quantity: item.quantity,
+        length: item.length,
+        width: item.width,
+        days: item.days,
+        withService: item.withService,
+        customPrice: item.customPrice,
+      }));
+
       const res = await adminUpdateQuotation(id, {
-        items,
+        items: payloadItems,
         transportationCharge: Number(transportationCharge),
         labourCharge: Number(order.labourCharge || 0),
         couponCode: couponCode?.trim() || null,
@@ -326,7 +337,15 @@ export default function OrderDetailsPage() {
 
                 {/* Unit Price Display */}
                   <p className="text-sm">
-                    <strong>Unit Price:</strong> ₹{item.unitPrice || 0}
+                    <strong>Unit Price:</strong> ₹
+                    {item.withService && item.product?.serviceChargePercent
+                      ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                      : item.unitPrice || 0}
+                    {item.withService && item.product?.serviceChargePercent > 0 && (
+                      <span className="text-xs text-amber-600 font-medium ml-1.5">
+                        ({item.product.serviceChargePercent}% Service Included)
+                      </span>
+                    )}
                   </p>
 
                   {/* Custom Price Input */}
