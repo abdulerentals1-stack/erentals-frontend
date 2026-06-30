@@ -206,13 +206,31 @@ export default function OrderDetailsPage() {
             {order.status.replace(/_/g, ' ')}
           </Badge>
 
-          <Badge variant={
-            order.paymentStatus === "paid" ? "success" :
-            order.paymentStatus === "partial" ? "warning" :
-            order.paymentStatus === "failed" ? "destructive" : "default"
-          } className="capitalize">
-            Payment: {order.paymentStatus === "not_required" ? "Pay on Delivery" : order.paymentStatus.replace(/_/g, ' ')}
-          </Badge>
+          {order.paymentStatus === "paid" ? (
+            <Badge variant="success" className="capitalize text-xs font-semibold">
+              Payment: Paid
+            </Badge>
+          ) : order.paymentMethod === "cod" ? (
+            <Badge variant="secondary" className="capitalize text-xs font-semibold">
+              Pay on Delivery
+            </Badge>
+          ) : (order.status === "confirmed" || order.status === "placed") ? (
+            <Badge
+              variant="warning"
+              className="capitalize text-xs font-semibold cursor-pointer hover:bg-amber-200 hover:text-amber-900 transition-all duration-205 flex items-center gap-1.5 active:scale-95 shadow-xs border border-amber-200"
+              onClick={handleRemainingPayment}
+            >
+              <CreditCard className="w-3.5 h-3.5 shrink-0 animate-pulse" />
+              Proceed for Payment (₹{(order.finalAmount - order.paidAmount).toFixed(2)})
+            </Badge>
+          ) : (
+            <Badge
+              variant={order.paymentStatus === "failed" ? "destructive" : "default"}
+              className="capitalize text-xs font-semibold"
+            >
+              Payment: {order.paymentStatus.replace(/_/g, ' ')}
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -376,13 +394,13 @@ export default function OrderDetailsPage() {
 
           {/* Action Buttons inside Summary column */}
           {((order.paymentMethod === "razorpay" &&
-            order.status === "confirmed" && 
+            ["confirmed", "placed"].includes(order.status) && 
             order.paymentStatus !== "paid" &&
             order.finalAmount - order.paidAmount > 0) || 
-            (order.invoiceUrl && order.status === "confirmed")) && (
+            (order.invoiceUrl && ["confirmed", "placed"].includes(order.status))) && (
               <div className="flex flex-col gap-2 w-full">
                 {order.paymentMethod === "razorpay" &&
-                  order.status === "confirmed" && 
+                  ["confirmed", "placed"].includes(order.status) && 
                   order.paymentStatus !== "paid" &&
                   order.finalAmount - order.paidAmount > 0 && (
                     <Button
@@ -393,7 +411,7 @@ export default function OrderDetailsPage() {
                     </Button>
                   )}
 
-                {order.invoiceUrl && order.status === "confirmed" && (
+                {order.invoiceUrl && ["confirmed", "placed"].includes(order.status) && (
                   <Button onClick={() => window.open(order.invoiceUrl, "_blank")} className="bg-zinc-800 hover:bg-zinc-900 text-white flex items-center justify-center text-xs w-full py-2">
                     <DownloadIcon className="w-4 h-4 mr-2" /> Download Invoice
                   </Button>

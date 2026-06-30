@@ -194,11 +194,21 @@ const InvoicePDF = ({ order, terms, persons }) => {
           </View>
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableCell, { width: "88%" }]}>Total Payable</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.finalAmount}</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.finalAmount || 0}</Text>
+          </View>
+          {order?.paymentMethod !== "cod" && (
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCell, { width: "88%" }]}>Advance Paid</Text>
+              <Text style={[styles.tableCell, { width: "12%" }]}>{order?.advancePaid || 0}</Text>
+            </View>
+          )}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Total Paid</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.paidAmount || 0}</Text>
           </View>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Advance paid</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{order?.paidAmount}</Text>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Balance Due</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{Math.max(0, (order?.finalAmount || 0) - (order?.paidAmount || 0))}</Text>
           </View>
         </View>
         {/* Terms & Conditions */}

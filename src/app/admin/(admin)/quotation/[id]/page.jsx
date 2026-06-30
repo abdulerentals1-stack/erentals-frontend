@@ -121,8 +121,19 @@ export default function OrderDetailsPage() {
     setUpdateorder(false)
     e.preventDefault();
     try {
+      const payloadItems = items.map((item) => ({
+        product: item.product?._id || item.product,
+        pricingType: item.pricingType,
+        quantity: item.quantity,
+        length: item.length,
+        width: item.width,
+        days: item.days,
+        withService: item.withService,
+        customPrice: item.customPrice,
+      }));
+
       const res = await adminUpdateQuotation(id, {
-        items,
+        items: payloadItems,
         transportationCharge: Number(transportationCharge),
         labourCharge: Number(order.labourCharge || 0),
         couponCode: couponCode?.trim() || null,

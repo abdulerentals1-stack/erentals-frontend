@@ -87,20 +87,28 @@ export default function MyOrders() {
                   {order.status.replace(/_/g, ' ')}
                 </Badge>
                 
-                <Badge
-                  variant={
-                    order.paymentStatus === "paid"
-                      ? "success"
-                      : order.paymentStatus === "partial"
-                      ? "warning"
-                      : order.paymentStatus === "failed"
-                      ? "destructive"
-                      : "default"
-                  }
-                  className="capitalize text-xs"
-                >
-                  Payment: {order.paymentStatus === "not_required" ? "Pay on Delivery" : order.paymentStatus.replace(/_/g, ' ')}
-                </Badge>
+                {order.paymentStatus === "paid" ? (
+                  <Badge variant="success" className="capitalize text-xs font-semibold">
+                    Payment: Paid
+                  </Badge>
+                ) : order.paymentMethod === "cod" ? (
+                  <Badge variant="secondary" className="capitalize text-xs font-semibold">
+                    Pay on Delivery
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant={
+                      order.paymentStatus === "partial"
+                        ? "warning"
+                        : order.paymentStatus === "failed"
+                        ? "destructive"
+                        : "default"
+                    }
+                    className="capitalize text-xs font-semibold"
+                  >
+                    Payment: {order.paymentStatus.replace(/_/g, ' ')}
+                  </Badge>
+                )}
               </div>
               <p className="text-xs text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString("en-IN")}</p>
               <p className="text-sm font-medium">Amount: ₹{order.finalAmount}</p>
@@ -124,7 +132,24 @@ export default function MyOrders() {
                   </Button>
                 )}
 
-                {order.invoiceUrl && ["delivered", "confirmed"].includes(order.status) && (
+                {order.paymentMethod === "razorpay" &&
+                  ["placed", "confirmed"].includes(order.status) &&
+                  order.paymentStatus !== "paid" &&
+                  order.finalAmount - order.paidAmount > 0 && (
+                    <Button
+                      size="sm"
+                      className="bg-amber-600 hover:bg-amber-700 text-white text-xs w-full sm:w-auto animate-pulse"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        route.push(`/orders/${order._id}`);
+                      }}
+                    >
+                      <CreditCard className="w-4 h-4 mr-1" />
+                      Pay Balance (₹{order.finalAmount - order.paidAmount})
+                    </Button>
+                )}
+
+                {order.invoiceUrl && ["delivered", "confirmed", "placed"].includes(order.status) && (
                   <div onClick={(e) => e.stopPropagation()} className="w-full sm:w-auto">
                     <InvoicePreviewAndDownload order={order} />
                   </div>
