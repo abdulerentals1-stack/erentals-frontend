@@ -25,7 +25,7 @@ import TransportationNotice from '@/components/user/TransportationNotice';
 import { Button } from '@/components/ui/button';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
-import Script from "next/script";
+import { loadRazorpay } from '@/utils/loadRazorpay';
 import api from '@/lib/axios';
 
 const schema = z.object({
@@ -77,18 +77,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const loadRazorpay = () =>
-    new Promise((resolve, reject) => {
-      if (typeof window !== "undefined" && window.Razorpay) {
-        return resolve(window.Razorpay);
-      }
 
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(window.Razorpay);
-      script.onerror = () => reject("Razorpay SDK failed to load");
-      document.body.appendChild(script);
-    });
 
   useEffect(() => {
     fetchData();
@@ -261,10 +250,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <Script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        strategy="beforeInteractive"
-      />
       <h1 className="text-2xl font-bold mb-4">Checkout</h1>
 
       <CheckoutProductList cart={cart} onUpdated={fetchData} />

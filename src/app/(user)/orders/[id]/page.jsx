@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, RefreshCw, AlertTriangle, CheckCircle, CreditCard, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
-import Script from "next/script";
+import { loadRazorpay } from "@/utils/loadRazorpay";
 import OrderTracker from "@/components/user/OrderTracker";
 
 export default function OrderDetailsPage() {
@@ -35,18 +35,7 @@ export default function OrderDetailsPage() {
     if (id) fetchOrder();
   }, [id]);
 
-  const loadRazorpay = () =>
-    new Promise((resolve, reject) => {
-      if (typeof window !== "undefined" && window.Razorpay) {
-        return resolve(window.Razorpay);
-      }
 
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(window.Razorpay);
-      script.onerror = () => reject("Razorpay SDK failed to load");
-      document.body.appendChild(script);
-    });
 
   const handleRetryAdvancePayment = async () => {
     if (paying) return;
@@ -175,7 +164,8 @@ export default function OrderDetailsPage() {
         theme: { color: "#0f172a" },
       };
 
-      const rzp = new window.Razorpay(options);
+      const RazorpayConstructor = await loadRazorpay();
+      const rzp = new RazorpayConstructor(options);
       rzp.open();
     } catch (err) {
       toast.error("Failed to initiate remaining payment");
@@ -190,7 +180,6 @@ export default function OrderDetailsPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-black">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
         <div>
