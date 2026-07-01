@@ -260,23 +260,57 @@ export default function AddProductForm() {
         <p className="text-xs text-zinc-500 mb-3">
           Range-based pricing: If you define thresholds (e.g. 25 at ₹18, 50 at ₹15, 100 at ₹10) and Discount Price (₹9), the price will be: ₹18 for 1-24 qty, ₹15 for 25-49 qty, ₹10 for 50-99 qty, and ₹9 (Discount Price) for 100+ qty.
         </p>
-        {fields.map((field, index) => (
-          <div key={field.id} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
-            <Input
-              type="number"
-              placeholder={`Threshold (${watch("pricingType") === "area" ? "sq.ft" : watch("pricingType") === "length_width" ? "ft" : "pcs"})`}
-              {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
-            />
-            <Input
-              type="number"
-              placeholder="Price per item"
-              {...register(`thresholds.${index}.price`, { valueAsNumber: true })}
-            />
-            <Button type="button" variant="destructive" onClick={() => remove(index)}>
-              Remove
-            </Button>
+        {fields.length > 0 && (
+          <div className="flex gap-4 mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            <div className="flex-1">Value / Qty Threshold</div>
+            <div className="flex-1">Threshold Price</div>
+            <div className="w-20"></div>
           </div>
-        ))}
+        )}
+        {fields.map((field, index) => {
+          const pricingType = watch("pricingType");
+          const valueUnit = pricingType === "area" ? "sq.ft" : pricingType === "length_width" ? "ft" : "pcs";
+          const priceUnit = pricingType === "area" ? "/ sq.ft" : pricingType === "length_width" ? "/ ft" : "/ pc";
+          
+          return (
+            <div key={field.id} className="flex gap-4 mb-3 items-center w-full">
+              <div className="flex-1">
+                <div className="flex h-9 w-full rounded-md border border-input bg-background shadow-xs focus-within:ring-[3px] focus-within:ring-ring/50 focus-within:border-ring">
+                  <input
+                    type="number"
+                    placeholder="e.g. 50"
+                    className="flex-1 bg-transparent px-3 py-1 text-sm outline-none w-full text-foreground"
+                    {...register(`thresholds.${index}.value`, { valueAsNumber: true })}
+                  />
+                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-l border-input px-3 flex items-center text-sm font-medium rounded-r-md select-none">
+                    {valueUnit}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <div className="flex h-9 w-full rounded-md border border-input bg-background shadow-xs focus-within:ring-[3px] focus-within:ring-ring/50 focus-within:border-ring">
+                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-r border-input px-3 flex items-center text-sm font-medium rounded-l-md select-none">
+                    ₹
+                  </span>
+                  <input
+                    type="number"
+                    placeholder="e.g. 150"
+                    className="flex-1 bg-transparent px-3 py-1 text-sm outline-none w-full text-foreground"
+                    {...register(`thresholds.${index}.price`, { valueAsNumber: true })}
+                  />
+                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-l border-input px-3 flex items-center text-xs font-medium rounded-r-md select-none">
+                    {priceUnit}
+                  </span>
+                </div>
+              </div>
+
+              <Button type="button" variant="destructive" className="h-9 w-20 flex-shrink-0 px-0" onClick={() => remove(index)}>
+                Remove
+              </Button>
+            </div>
+          );
+        })}
         <Button type="button" onClick={() => append({ value: 1, price: 0 })}>
           + Add Threshold
         </Button>
