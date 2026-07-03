@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
@@ -13,7 +13,7 @@ import { Phone, KeyRound, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
 import { requestLoginOtp, verifyLoginOtp, resendOTP } from '@/services/otpService';
 
-export default function OtpLoginPage() {
+function OtpLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoggedIn, ready } = useAuthStatus();
@@ -214,5 +214,13 @@ export default function OtpLoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function OtpLoginPage() {
+  return (
+    <Suspense fallback={<Skeleton className="w-full h-80 rounded-xl" />}>
+      <OtpLoginContent />
+    </Suspense>
   );
 }
