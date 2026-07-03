@@ -383,7 +383,7 @@ export default function OrderDetailsPage() {
                   <span>Total Paid:</span>
                   <span>₹{order.paidAmount}</span>
                 </div>
-                {order.finalAmount - order.paidAmount > 0 && (
+                {order.status !== "cancelled" && order.finalAmount - order.paidAmount > 0 && (
                   <div className="flex justify-between text-xs text-yellow-700 font-semibold">
                     <span>Remaining Balance:</span>
                     <span>₹{order.finalAmount - order.paidAmount}</span>

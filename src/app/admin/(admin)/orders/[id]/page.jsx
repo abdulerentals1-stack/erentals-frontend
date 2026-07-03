@@ -422,7 +422,7 @@ export default function OrderDetailsPage() {
   <div className="flex justify-between items-center p-4 bg-yellow-50 border rounded-md shadow-inner">
     <span className="font-medium text-gray-700 text-sm">🧮 Remaining Amount</span>
     <span className="text-lg font-semibold text-red-600">
-      ₹{Math.max((order?.finalAmount || 0) - (order?.paidAmount || 0), 0).toFixed(2)}
+      ₹{(order?.status === "cancelled" ? 0 : Math.max((order?.finalAmount || 0) - (order?.paidAmount || 0), 0)).toFixed(2)}
     </span>
   </div>
 
