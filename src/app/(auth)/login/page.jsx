@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { useAuthStatus } from '@/utils/authUtils';
@@ -15,6 +15,7 @@ import { requestLoginOtp, verifyLoginOtp, resendOTP } from '@/services/otpServic
 
 export default function OtpLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isLoggedIn, ready } = useAuthStatus();
   const { setAccessToken, setUser } = useAuth();
 
@@ -27,8 +28,11 @@ export default function OtpLoginPage() {
 
   // Auto redirect if already logged in
   useEffect(() => {
-    if (ready && isLoggedIn) router.push('/');
-  }, [ready, isLoggedIn]);
+    if (ready && isLoggedIn) {
+      const redirectParam = searchParams.get('redirect') || '/';
+      router.push(redirectParam);
+    }
+  }, [ready, isLoggedIn, searchParams]);
 
   // Countdown for resend
   useEffect(() => {
@@ -76,7 +80,9 @@ export default function OtpLoginPage() {
       setAccessToken(accessToken);
       setUser(user);
       toast.success('Login successful');
-      router.push(user?.role === 'admin' ? '/admin/dashboard' : '/');
+      const redirectParam = searchParams.get('redirect');
+      const fallbackRedirect = user?.role === 'admin' ? '/admin/dashboard' : '/';
+      router.push(redirectParam || fallbackRedirect);
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
     } finally {
