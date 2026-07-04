@@ -37,7 +37,7 @@ export default function CheckoutSubmitBox({ cart, deliveryDetails }) {
 
   return (
     <div className="p-4 border rounded space-y-4 mt-4 bg-gray-50">
-      <TransportationNotice advancePercentage={cart?.advancePercentage || 100} />
+      <TransportationNotice />
 
       <div className="flex justify-between font-medium text-sm">
         <span>Total Amount:</span>

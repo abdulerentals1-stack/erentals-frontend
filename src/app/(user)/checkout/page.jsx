@@ -279,13 +279,12 @@ export default function CheckoutPage() {
       <PaymentMethodSelector
         selected={watch("paymentMethod")}
         onChange={(val) => setValue("paymentMethod", val)}
-        advancePercentage={cart?.advancePercentage || 100}
       />
       {errors.paymentMethod && <p className="text-sm text-red-500">{errors.paymentMethod.message}</p>}
 
       {/* Transportation charge notice & final summary */}
       <div className="bg-gray-50 border rounded p-4 space-y-4 mt-4 text-black">
-        <TransportationNotice advancePercentage={cart?.advancePercentage || 100} />
+        <TransportationNotice />
 
         <div className="text-sm space-y-1 text-gray-700">
           <div className="flex justify-between">
