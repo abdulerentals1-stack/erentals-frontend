@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { AuthProvider } from "../../context/AuthContext";
@@ -159,7 +160,15 @@ export default function RootLayout({ children }) {
             {/* Navbar */}
             <Navbar />
             <TagsListWrapper>
-              <TagsList />
+              <Suspense fallback={
+                <div className="sticky top-16 md:top-[5.2rem] z-40 min-h-16 border-b w-full bg-white dark:bg-zinc-900 flex items-center gap-3 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 overflow-x-auto no-scrollbar justify-between animate-pulse">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <span key={i} className="h-9 w-24 rounded-full bg-gray-200 dark:bg-zinc-800 shrink-0" />
+                  ))}
+                </div>
+              }>
+                <TagsList />
+              </Suspense>
             </TagsListWrapper>
 
             {/* Main Content */}
