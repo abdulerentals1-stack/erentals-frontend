@@ -36,7 +36,25 @@ export default async function HomePage() {
   return (
     <main className="space-y-12 pb-16 bg-gray-50/50 dark:bg-zinc-950/50 animate-fade-in">
       <BannerCarousel initialBanners={initialBanners} />
-      <CategoriesPage />
+
+      {/* ⚡ Suspense: stream categories while banner is already visible */}
+      <Suspense fallback={
+        <section className="py-6">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="h-7 w-48 bg-gray-200 dark:bg-zinc-800 rounded mb-4 animate-pulse" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="rounded-lg bg-gray-200 dark:bg-zinc-800 animate-pulse">
+                  <div className="aspect-square" />
+                  <div className="p-2"><div className="h-4 w-3/4 mx-auto bg-gray-300 dark:bg-zinc-700 rounded" /></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      }>
+        <CategoriesPage />
+      </Suspense>
 
       {/* ✅ Visible, Premium SEO Compliant Hero Title Block placed below Cover Image */}
       <div className="max-w-7xl mx-auto px-4 pt-2 md:pt-4 text-center">
