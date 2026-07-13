@@ -56,6 +56,7 @@ Open **`http://localhost:3000`** in your browser to inspect and run the applicat
 *   **Inventory Management:** Create and edit products with highly configurable volume pricing matrices.
 *   **Order & Quotation Tracking:** Process incoming orders, update statuses, and instantly preview and download beautifully styled PDF Quotations and Invoices without needing backend rendering.
 *   **Live Metrics:** Chart.js powered visualization of rental analytics.
+*   **System Settings:** Dedicated settings panel within the admin sidebar enables viewing, dynamic rotation, and management of the sandbox bypass OTP settings.
 
 ### 3. Technical SEO Framework (Premium Design)
 *   **Hybrid Server-Client Routing:** Utilizes Server Components for data fetching and Next.js `generateMetadata()` for dynamic SEO tags, paired with Client Components for rich interactivity.
