@@ -5,8 +5,6 @@ import PaginationControls from "@/components/user/PaginationControls";
 
 import Script from "next/script";
 
-export const dynamic = "force-dynamic"; // Always fresh SSR
-
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
 export async function generateStaticParams() {
