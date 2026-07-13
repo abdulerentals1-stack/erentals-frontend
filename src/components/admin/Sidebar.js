@@ -101,6 +101,7 @@ export default function Sidebar() {
               </AccordionItem>
             </Accordion>
 
+            <Link href="/admin/settings" className={navItemClass}>⚙️ Settings</Link>
             <button onClick={logout} className={navItemClass}>🚪 Logout</button>
           </nav>
         </div>

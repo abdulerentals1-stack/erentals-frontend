@@ -57,13 +57,6 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-[#1e4c75] mt-8">
-        <Image 
-          src="/Erental_Footer.png" 
-          alt="Footer Stripe" 
-          width={1920} 
-          height={100} 
-          className="w-full h-auto object-cover"
-        />
         <div className="text-center py-4 text-sm text-gray-400">
           © {new Date().getFullYear()} Erentals. All rights reserved.
         </div>
