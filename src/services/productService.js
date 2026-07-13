@@ -28,7 +28,7 @@ export const getFlaggedProducts = async (type) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/flagged?type=${type}`, {
       method: "GET",
-      cache: "no-store", // Always fetch fresh to avoid pricing mismatches
+      next: { revalidate: 300 }, // ISR: revalidate every 5 minutes
       headers: {
         "Content-Type": "application/json",
       },

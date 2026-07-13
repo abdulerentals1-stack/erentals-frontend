@@ -1,9 +1,28 @@
+import { Suspense } from 'react';
 import BannerCarousel from '../user/Banner';
 import HotDealsPage from '../user/HotDeals';
 import Services from '../user/Services';
 import CategoriesPage from '../user/Categories';
 import { fetchBannersISR } from '@/services/banner';
-import Link from 'next/link';
+
+function HotDealsSkeleton() {
+  return (
+    <div className="space-y-12 animate-pulse">
+      {[1, 2, 3].map((i) => (
+        <section key={i} className="py-6">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="h-7 w-56 bg-gray-200 dark:bg-zinc-800 rounded mb-6" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[1, 2, 3, 4, 5].map((j) => (
+                <div key={j} className="rounded-xl bg-gray-200 dark:bg-zinc-800 h-52" />
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
 
 export default async function HomePage() {
   let initialBanners = [];
@@ -29,10 +48,12 @@ export default async function HomePage() {
         </p>
       </div>
 
-
       <Services />
 
-      <HotDealsPage />
+      {/* ⚡ Suspense boundary: streams product sections progressively after above-the-fold content */}
+      <Suspense fallback={<HotDealsSkeleton />}>
+        <HotDealsPage />
+      </Suspense>
     </main>
   );
 }
