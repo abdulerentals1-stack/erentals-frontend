@@ -5,11 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { toast } from 'sonner';
 import Link from 'next/link';
 import { useAuthStatus } from '@/utils/authUtils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Phone, KeyRound, RotateCcw } from 'lucide-react';
+import { Phone, KeyRound, RotateCcw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
 import { requestLoginOtp, verifyLoginOtp, resendOTP } from '@/services/otpService';
 
@@ -25,6 +24,7 @@ function OtpLoginContent() {
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [otpSent, setOtpSent] = useState(false);
+  const [status, setStatus] = useState({ type: '', text: '' });
 
   // Auto redirect if already logged in
   useEffect(() => {
@@ -50,18 +50,25 @@ function OtpLoginContent() {
   // Request Login OTP
   // -----------------------------
   const handleRequestOtp = async () => {
-    if (!phone.trim()) return toast.error('Please enter your phone number');
-    if (!/^\d{10}$/.test(phone)) return toast.error('Enter a valid 10-digit phone number');
+    if (!phone.trim()) {
+      setStatus({ type: 'error', text: 'Please enter your phone number' });
+      return;
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      setStatus({ type: 'error', text: 'Enter a valid 10-digit phone number' });
+      return;
+    }
 
     setLoading(true);
+    setStatus({ type: '', text: '' });
     try {
       await requestLoginOtp({ phone });
-      toast.success('OTP sent successfully');
+      setStatus({ type: 'success', text: 'OTP sent successfully to your phone!' });
       setStep('otp');
       setOtpSent(true);
       setResendTimer(60);
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setStatus({ type: 'error', text: err.response?.data?.message || err.message || 'Something went wrong' });
     } finally {
       setLoading(false);
     }
@@ -71,20 +78,28 @@ function OtpLoginContent() {
   // Verify Login OTP
   // -----------------------------
   const handleVerify = async () => {
-    if (!otp.trim()) return toast.error('Please enter the OTP');
-    if (!/^\d{6}$/.test(otp)) return toast.error('OTP must be 6 digits');
+    if (!otp.trim()) {
+      setStatus({ type: 'error', text: 'Please enter the OTP' });
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      setStatus({ type: 'error', text: 'OTP must be 6 digits' });
+      return;
+    }
 
     setLoading(true);
+    setStatus({ type: '', text: '' });
     try {
-      const { accessToken, user } = await verifyLoginOtp({ phone, otp });
+      const { data } = await verifyLoginOtp({ phone, otp });
+      const { accessToken, user } = data;
       setAccessToken(accessToken);
       setUser(user);
-      toast.success('Login successful');
+      setStatus({ type: 'success', text: 'Login successful! Redirecting...' });
       const redirectParam = searchParams.get('redirect');
       const fallbackRedirect = user?.role === 'admin' ? '/admin/dashboard' : '/';
       router.push(redirectParam || fallbackRedirect);
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setStatus({ type: 'error', text: err.response?.data?.message || err.message || 'Something went wrong' });
     } finally {
       setLoading(false);
     }
@@ -95,12 +110,13 @@ function OtpLoginContent() {
   // -----------------------------
   const handleResend = async () => {
     if (resendTimer > 0) return;
+    setStatus({ type: '', text: '' });
     try {
       await resendOTP({ phone });
-      toast.success('OTP resent successfully');
+      setStatus({ type: 'success', text: 'OTP resent successfully!' });
       setResendTimer(60);
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setStatus({ type: 'error', text: err.response?.data?.message || err.message || 'Something went wrong' });
     }
   };
 
@@ -131,6 +147,21 @@ function OtpLoginContent() {
           />
         </Link>
 
+        {status.text && (
+          <div className={`p-3 rounded-lg border flex items-start gap-2 animate-pulse ${
+            status.type === 'error' 
+              ? 'bg-red-50 text-red-700 border-red-200' 
+              : 'bg-green-50 text-green-700 border-green-200'
+          }`}>
+            {status.type === 'error' ? (
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+            )}
+            <span className="text-xs">{status.text}</span>
+          </div>
+        )}
+
         {step === 'phone' && (
           <div className="space-y-4">
             <div className="relative">
@@ -139,7 +170,10 @@ function OtpLoginContent() {
                 name="phone"
                 placeholder="Enter phone number"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setStatus({ type: '', text: '' });
+                }}
                 onKeyDown={handleKeyDown}
                 className="pl-10 h-10"
                 disabled={loading}
@@ -163,7 +197,10 @@ function OtpLoginContent() {
                 name="otp"
                 placeholder="Enter 6-digit OTP"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value)}
+                onChange={(e) => {
+                  setOtp(e.target.value);
+                  setStatus({ type: '', text: '' });
+                }}
                 onKeyDown={handleKeyDown}
                 className="pl-10 h-10 tracking-widest"
                 disabled={loading}
@@ -197,7 +234,10 @@ function OtpLoginContent() {
 
             <button
               type="button"
-              onClick={() => setStep('phone')}
+              onClick={() => {
+                setStep('phone');
+                setStatus({ type: '', text: '' });
+              }}
               className="text-sm text-gray-500 hover:underline mt-2"
               disabled={loading}
             >
@@ -208,7 +248,7 @@ function OtpLoginContent() {
 
         <div className="text-center text-sm text-gray-600">
           New user?{' '}
-          <Link href="/register" className="text-blue-600 hover:underline">
+          <Link href="/register" className="text-blue-600 hover:underline" onClick={() => setStatus({ type: '', text: '' })}>
             Create Account
           </Link>
         </div>

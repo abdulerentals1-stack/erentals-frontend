@@ -5,8 +5,13 @@ import { Store } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function ProductSection({ title, type }) {
-  const data = await getFlaggedProducts(type);
-  const products = data?.products?.slice(0, 10) || [];
+  let products = [];
+  try {
+    const data = await getFlaggedProducts(type);
+    products = data?.products?.slice(0, 10) || [];
+  } catch (err) {
+    console.error(`⚠️ Failed to fetch flagged products for type: ${type}`, err.message);
+  }
 
   if (!products.length) return null;
 

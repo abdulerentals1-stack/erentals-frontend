@@ -5,10 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Phone, KeyRound, UserPlus, RotateCcw } from 'lucide-react';
+import { Phone, KeyRound, UserPlus, RotateCcw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import Image from 'next/image';
 import {
   requestSignupOtp,
@@ -27,6 +26,7 @@ export default function OtpSignupPage() {
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [status, setStatus] = useState({ type: '', text: '' });
 
   useEffect(() => {
     if (resendTimer <= 0) return;
@@ -38,18 +38,28 @@ export default function OtpSignupPage() {
   // Signup / Request OTP
   // -----------------------------
   const handleSignup = async () => {
-    if (!name.trim()) return toast.error('Name is required');
-    if (!phone.trim()) return toast.error('Phone number is required');
-    if (!/^\d{10}$/.test(phone)) return toast.error('Enter a valid 10-digit phone number');
+    if (!name.trim()) {
+      setStatus({ type: 'error', text: 'Name is required' });
+      return;
+    }
+    if (!phone.trim()) {
+      setStatus({ type: 'error', text: 'Phone number is required' });
+      return;
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      setStatus({ type: 'error', text: 'Enter a valid 10-digit phone number' });
+      return;
+    }
 
     setLoading(true);
+    setStatus({ type: '', text: '' });
     try {
       await requestSignupOtp({ name, phone, whatsappConsent });
-      toast.success('OTP sent successfully');
+      setStatus({ type: 'success', text: 'OTP sent successfully to your phone!' });
       setStep('otp');
       setResendTimer(60); // 1 min cooldown
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setStatus({ type: 'error', text: err.response?.data?.message || err.message || 'Something went wrong' });
     } finally {
       setLoading(false);
     }
@@ -59,18 +69,26 @@ export default function OtpSignupPage() {
   // Verify OTP
   // -----------------------------
   const handleVerify = async () => {
-    if (!otp.trim()) return toast.error('Enter the OTP');
-    if (!/^\d{6}$/.test(otp)) return toast.error('OTP must be 6 digits');
+    if (!otp.trim()) {
+      setStatus({ type: 'error', text: 'Enter the OTP' });
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      setStatus({ type: 'error', text: 'OTP must be 6 digits' });
+      return;
+    }
 
     setLoading(true);
+    setStatus({ type: '', text: '' });
     try {
-      const { accessToken, user } = await verifySignupOtp({ phone, otp, name });
+      const { data } = await verifySignupOtp({ phone, otp, name });
+      const { accessToken, user } = data;
       setAccessToken(accessToken);
       setUser(user);
-      toast.success('Signup successful');
+      setStatus({ type: 'success', text: 'Signup successful! Redirecting...' });
       router.push(user?.role === 'admin' ? '/admin/dashboard' : '/');
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setStatus({ type: 'error', text: err.response?.data?.message || err.message || 'Something went wrong' });
     } finally {
       setLoading(false);
     }
@@ -82,12 +100,13 @@ export default function OtpSignupPage() {
   const handleResend = async () => {
     if (resendTimer > 0) return;
     setLoading(true);
+    setStatus({ type: '', text: '' });
     try {
       await resendOTP({ phone });
-      toast.success('OTP resent successfully');
+      setStatus({ type: 'success', text: 'OTP resent successfully!' });
       setResendTimer(60); // reset cooldown
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message);
+      setStatus({ type: 'error', text: err.response?.data?.message || err.message || 'Something went wrong' });
     } finally {
       setLoading(false);
     }
@@ -118,6 +137,21 @@ export default function OtpSignupPage() {
           />
         </Link>
 
+        {status.text && (
+          <div className={`p-3 rounded-lg border flex items-start gap-2 animate-pulse ${
+            status.type === 'error' 
+              ? 'bg-red-50 text-red-700 border-red-200' 
+              : 'bg-green-50 text-green-700 border-green-200'
+          }`}>
+            {status.type === 'error' ? (
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+            )}
+            <span className="text-xs">{status.text}</span>
+          </div>
+        )}
+
         {step === 'details' && (
           <div className="space-y-4">
             <div className="relative">
@@ -126,7 +160,10 @@ export default function OtpSignupPage() {
                 name="name"
                 placeholder="Enter your name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setStatus({ type: '', text: '' });
+                }}
                 onKeyDown={handleKeyDown}
                 className="pl-10 h-10"
                 disabled={loading}
@@ -139,7 +176,10 @@ export default function OtpSignupPage() {
                 name="phone"
                 placeholder="Enter phone number"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setStatus({ type: '', text: '' });
+                }}
                 onKeyDown={handleKeyDown}
                 className="pl-10 h-10"
                 disabled={loading}
@@ -176,7 +216,10 @@ export default function OtpSignupPage() {
                 name="otp"
                 placeholder="Enter 6-digit OTP"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value)}
+                onChange={(e) => {
+                  setOtp(e.target.value);
+                  setStatus({ type: '', text: '' });
+                }}
                 onKeyDown={handleKeyDown}
                 className="pl-10 h-10 tracking-widest"
                 disabled={loading}
@@ -208,7 +251,10 @@ export default function OtpSignupPage() {
 
             <button
               type="button"
-              onClick={() => setStep('details')}
+              onClick={() => {
+                setStep('details');
+                setStatus({ type: '', text: '' });
+              }}
               className="text-sm text-gray-500 hover:underline mt-2"
               disabled={loading}
             >
@@ -219,7 +265,7 @@ export default function OtpSignupPage() {
 
         <div className="text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline" onClick={() => setStatus({ type: '', text: '' })}>
             Login
           </Link>
         </div>

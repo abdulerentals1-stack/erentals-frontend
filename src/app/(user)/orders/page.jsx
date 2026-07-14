@@ -47,7 +47,32 @@ export default function MyOrders() {
 
   if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
 
-  if (loading) return <div className="p-4 flex justify-center items-center min-h-[200px]"><RefreshCw className="animate-spin mr-2" /> Loading orders...</div>;
+  if (loading) {
+    return (
+      <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black">
+        <h2 className="text-xl font-bold">My Orders</h2>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 animate-pulse">
+            <div className="space-y-2 w-full md:w-2/3">
+              <div className="flex gap-2">
+                <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded w-48" />
+                <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded w-20" />
+                <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded w-28" />
+              </div>
+              <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded w-32" />
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-24" />
+              <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded w-36" />
+              <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded w-28" />
+            </div>
+            <div className="flex items-center gap-4 w-full md:w-auto justify-end">
+              <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded w-36 shrink-0" />
+              <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded-full w-5 shrink-0 hidden md:block" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (!orders.length)
     return (

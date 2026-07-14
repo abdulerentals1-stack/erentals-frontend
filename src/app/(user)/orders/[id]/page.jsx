@@ -11,6 +11,52 @@ import { DownloadIcon, RefreshCw, AlertTriangle, CheckCircle, CreditCard, Shield
 import { toast } from "sonner";
 import { loadRazorpay } from "@/utils/loadRazorpay";
 import OrderTracker from "@/components/user/OrderTracker";
+import { Skeleton } from "@/components/ui/skeleton";
+import InvoicePreviewAndDownload from "@/components/admin/InvoicePreviewAndDownload";
+
+function DetailPageSkeleton({ title }) {
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-6 text-black animate-pulse">
+      {/* Header Skeleton */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
+        <div className="space-y-2 w-full md:w-1/3">
+          <div className="h-7 bg-gray-200 dark:bg-zinc-800 rounded w-3/4" />
+          <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/2" />
+        </div>
+        <div className="h-6 bg-gray-200 dark:bg-zinc-800 rounded w-20" />
+      </div>
+
+      {/* Grid Row 1: Details Cards */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 h-36 bg-gray-100 dark:bg-zinc-900 rounded-lg border border-gray-200/60" />
+        <div className="space-y-4">
+          <div className="h-36 bg-gray-100 dark:bg-zinc-900 rounded-lg border border-gray-200/60" />
+        </div>
+      </div>
+
+      {/* Grid Row 2: Items & Pricing */}
+      <div className="grid md:grid-cols-3 gap-6 items-start">
+        <div className="md:col-span-2 space-y-3">
+          <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded w-1/4" />
+          <div className="border border-gray-200/60 rounded-lg p-4 bg-white dark:bg-zinc-900 space-y-4">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="flex justify-between items-center py-2 border-b last:border-none">
+                <div className="space-y-2 w-1/2">
+                  <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-3/4" />
+                  <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded w-1/2" />
+                </div>
+                <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-16" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-4">
+          <div className="h-64 bg-gray-100 dark:bg-zinc-900 rounded-lg border border-gray-200/60" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
@@ -173,7 +219,7 @@ export default function OrderDetailsPage() {
     }
   };
 
-  if (loading) return <div className="p-4 flex items-center justify-center min-h-[300px]"><RefreshCw className="animate-spin mr-2" /> Loading order details...</div>;
+  if (loading) return <DetailPageSkeleton title="Order" />;
   if (!order) return <div className="p-4 text-red-500">Order not found.</div>;
 
   const orderNumberDisplay = order.orderNumber || `Order #${order._id.slice(-6).toUpperCase()}`;
@@ -429,10 +475,11 @@ export default function OrderDetailsPage() {
                     </Button>
                   )}
 
-                {order.invoiceUrl && ["confirmed", "placed"].includes(order.status) && (
-                  <Button onClick={() => window.open(order.invoiceUrl, "_blank")} className="bg-zinc-800 hover:bg-zinc-900 text-white flex items-center justify-center text-xs w-full py-2">
-                    <DownloadIcon className="w-4 h-4 mr-2" /> Download Invoice
-                  </Button>
+                {order.invoiceUrl && ["confirmed", "placed", "delivered"].includes(order.status) && (
+                  <InvoicePreviewAndDownload
+                    order={order}
+                    className="bg-zinc-800 hover:bg-zinc-900 text-white flex items-center justify-center text-xs w-full py-2"
+                  />
                 )}
               </div>
           )}
