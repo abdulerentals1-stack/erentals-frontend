@@ -13,7 +13,7 @@ export const getQuotationById = async (quotationId) => {
 };
 
 // 🔒 Admin: Get all quotations (with optional status filter)
-export const getAllQuotations = async (status = "pending") => {
+export const getAllQuotations = async (status = "all") => {
   const res = await api.get(`/quotation-order?status=${status}`);
   return res.data;
 };

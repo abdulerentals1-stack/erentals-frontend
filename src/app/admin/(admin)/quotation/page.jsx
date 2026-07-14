@@ -8,12 +8,12 @@ import { useRouter } from 'next/navigation';
 import { format } from "date-fns";
 
 const statusOptions = [
- "pending", "responded", "cancelled"
+  "all", "pending", "responded", "cancelled"
 ];
 
 export default function AdminQuotationsPage() {
   const [quotations, setQuotations] = useState([]);
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('all');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

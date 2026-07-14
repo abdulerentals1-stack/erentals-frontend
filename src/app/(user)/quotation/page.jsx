@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getMyQuotations } from "@/services/quotationOrderService"; // ✅ your new service
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DownloadIcon, EyeIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthStatus } from "@/utils/authUtils";
@@ -60,7 +60,8 @@ export default function MyQuotations() {
       {quotations.map((quote) => (
         <div
           key={quote._id}
-          className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+          className="border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-900 transition-all duration-200 cursor-pointer flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group"
+          onClick={() => route.push(`/quotation/${quote._id}`)}
         >
           <div className="space-y-1">
             <p className="text-sm font-medium">
@@ -86,22 +87,16 @@ export default function MyQuotations() {
             </Badge>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="cursor-pointer"
-              onClick={() => route.push(`/quotation/${quote._id}`)}
-            >
-              <EyeIcon className="w-4 h-4 mr-1" />
-              View Details
-            </Button>
-              {/* Show Preview & Download only when status is "responded" */}
+          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+            {/* Show Preview & Download only when status is "responded" */}
             {quote.status === "responded" && (
-              <QuotationPreviewAndPrint quotation={quote} />
+              <div onClick={(e) => e.stopPropagation()}>
+                <QuotationPreviewAndPrint quotation={quote} />
+              </div>
             )}
-
-            {/* {quote.status === "approved" && } */}
+            
+            {/* Visual click affordance (Chevron) */}
+            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-all duration-200 group-hover:translate-x-1 hidden md:block shrink-0" />
           </div>
         </div>
       ))}
