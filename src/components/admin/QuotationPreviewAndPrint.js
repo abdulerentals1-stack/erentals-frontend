@@ -213,7 +213,7 @@ const QuotationPDF = ({ quotation }) => {
             style={styles.headerImage}
           />
           <View style={styles.headerTextContainer}>
-            <Text style={styles.invoiceNumber}>QUOTATION NO: {q._id ? q._id.slice(-6).toUpperCase() : "DRAFT"}</Text>
+            <Text style={styles.invoiceNumber}>PI/QUOTATION NO: {q._id ? q._id.slice(-6).toUpperCase() : "DRAFT"}</Text>
             <Text style={styles.invoiceDate}>{createdAt}</Text>
           </View>
         </View>
@@ -273,13 +273,13 @@ const QuotationPDF = ({ quotation }) => {
           {/* Table */}
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={styles.tableHeaderCell}>S.No</Text>
-              <Text style={styles.tableHeaderCell}>Code</Text>
-              <Text style={styles.tableHeaderCell}>Particulars</Text>
-              <Text style={styles.tableHeaderCell}>Unit Rate</Text>
-              <Text style={styles.tableHeaderCell}>Qty</Text>
-              <Text style={styles.tableHeaderCell}>Days</Text>
-              <Text style={styles.tableHeaderCell}>Total</Text>
+              <Text style={[styles.tableHeaderCell, { width: "8%" }]}>S.No</Text>
+              <Text style={[styles.tableHeaderCell, { width: "12%" }]}>Code</Text>
+              <Text style={[styles.tableHeaderCell, { width: "40%" }]}>Particulars</Text>
+              <Text style={[styles.tableHeaderCell, { width: "10%" }]}>Unit Rate</Text>
+              <Text style={[styles.tableHeaderCell, { width: "8%" }]}>Qty</Text>
+              <Text style={[styles.tableHeaderCell, { width: "10%" }]}>Days</Text>
+              <Text style={[styles.tableHeaderCell, { width: "12%" }]}>Total</Text>
             </View>
 
             {items.map((item, i) => {
@@ -302,47 +302,47 @@ const QuotationPDF = ({ quotation }) => {
 
               return (
                 <View key={i} style={styles.tableRow}>
-                  <Text style={styles.tableCell}>{i + 1}</Text>
-                  <Text style={styles.tableCell}>{item.product?.productCode || "N/A"}</Text>
-                  <Text style={styles.tableCell}>{particulars}</Text>
-                  <Text style={styles.tableCell}>{displayRate.toFixed(2)}</Text>
-                  <Text style={styles.tableCell}>{qtyDisplay}</Text>
-                  <Text style={styles.tableCell}>{item.days || 0}</Text>
-                  <Text style={styles.tableCell}>{item.finalPrice || 0}</Text>
+                  <Text style={[styles.tableCell, { width: "8%" }]}>{i + 1}</Text>
+                  <Text style={[styles.tableCell, { width: "12%" }]}>{item.product?.productCode || "N/A"}</Text>
+                  <Text style={[styles.tableCell, { width: "40%" }]}>{particulars}</Text>
+                  <Text style={[styles.tableCell, { width: "10%" }]}>{displayRate.toFixed(2)}</Text>
+                  <Text style={[styles.tableCell, { width: "8%" }]}>{qtyDisplay}</Text>
+                  <Text style={[styles.tableCell, { width: "10%" }]}>{item.days || 0}</Text>
+                  <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice || 0}</Text>
                 </View>
               );
             })}
 
             {/* Totals */}
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>Sub Total</Text>
-              <Text style={styles.tableCell}>{q.totalAmount || 0}</Text>
+              <Text style={[styles.tableCell, { width: "88%" }]}>Sub Total</Text>
+              <Text style={[styles.tableCell, { width: "12%" }]}>{(q.totalAmount || 0).toFixed(2)}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>Transportation</Text>
-              <Text style={styles.tableCell}>{q.transportationCharge || 0}</Text>
+              <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+              <Text style={[styles.tableCell, { width: "12%" }]}>{(q.transportationCharge || 0).toFixed(2)}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>Labour Charges</Text>
-              <Text style={styles.tableCell}>{q.labourCharge || 0}</Text>
+              <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+              <Text style={[styles.tableCell, { width: "12%" }]}>{(q.labourCharge || 0).toFixed(2)}</Text>
             </View>
             {q.discountAmount > 0 && (
-                <View style={styles.tableRow}>
-                  <Text style={[styles.tableCell, { flex: 6 }]}>Discount</Text>
-                  <Text style={styles.tableCell}>-{q.discountAmount}</Text>
-                </View>
-              )}
+              <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, { width: "88%" }]}>Discount</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>-{Number(q.discountAmount).toFixed(2)}</Text>
+              </View>
+            )}
             <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={[styles.tableHeaderCell, { flex: 6 }]}>Total Before Tax</Text>
-              <Text style={styles.tableHeaderCell}>{q.priceBeforeTax || 0}</Text>
+              <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Before Tax</Text>
+              <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{(q.priceBeforeTax || 0).toFixed(2)}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>GST @18%</Text>
-              <Text style={styles.tableCell}>{(q.cgst || 0) + (q.sgst || 0)}</Text>
+              <Text style={[styles.tableCell, { width: "88%" }]}>GST @18%</Text>
+              <Text style={[styles.tableCell, { width: "12%" }]}>{((q.cgst || 0) + (q.sgst || 0)).toFixed(2)}</Text>
             </View>
             <View style={[styles.tableRow, styles.tableFooter]}>
-              <Text style={[styles.tableHeaderCell, { flex: 6 }]}>Total Payable</Text>
-              <Text style={styles.tableHeaderCell}>{q.finalAmount || 0}</Text>
+              <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
+              <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{(q.finalAmount || 0).toFixed(2)}</Text>
             </View>
           </View>
 
