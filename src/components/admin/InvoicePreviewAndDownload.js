@@ -245,8 +245,10 @@ const InvoicePDF = ({ order, terms, persons }) => {
             src="/Erental_Invoice_Header.png"
             style={{ width: "100%", marginBottom: 10 }}
           />
-          <Text style={styles.invoiceNumber}>TAX INVOICE: {order.orderNumber || order._id.slice(-6)}</Text>
-          <Text style={styles.invoiceDate}>{createdAt}</Text>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.invoiceNumber}>TAX INVOICE: {order.orderNumber || order._id.slice(-6)}</Text>
+            <Text style={styles.invoiceDate}>{createdAt}</Text>
+          </View>
         </View>
 
         {/* Company / Bill / Ship Info */}
@@ -603,20 +605,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderColor: "#002060",
   },
-  invoiceNumber: {
+  headerTextContainer: {
     position: "absolute",
-    top: 20,
-    right: 40,
+    top: 15,
+    right: 25,
+    alignItems: "flex-end",
+  },
+  invoiceNumber: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 10.5,
+    marginBottom: 2,
+    textAlign: "right",
   },
   invoiceDate: {
-    position: "absolute",
-    top: 40,
-    right: 40,
     color: "white",
-    fontSize: 10,
+    fontSize: 9,
+    textAlign: "right",
   },
   termsTitle: {
     fontWeight: "bold",

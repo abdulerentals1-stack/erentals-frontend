@@ -207,10 +207,16 @@ const QuotationPDF = ({ quotation }) => {
       <Page size="A4" style={styles.page} wrap>
 
         {/* Header Banner */}
-        <Image
-          src="/Erental_Quotation_Header.png"
-          style={styles.headerImage}
-        />
+        <View style={{ position: "relative" }}>
+          <Image
+            src="/Erental_Quotation_Header.png"
+            style={styles.headerImage}
+          />
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.invoiceNumber}>QUOTATION NO: {q._id ? q._id.slice(-6).toUpperCase() : "DRAFT"}</Text>
+            <Text style={styles.invoiceDate}>{createdAt}</Text>
+          </View>
+        </View>
 
         {/* Content Wrapper */}
         <View style={styles.contentWrapper}>
@@ -406,10 +412,25 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: "100%",
+    marginBottom: 10,
+  },
+  headerTextContainer: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    height: 60,
+    top: 15,
+    right: 25,
+    alignItems: "flex-end",
+  },
+  invoiceNumber: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 10.5,
+    marginBottom: 2,
+    textAlign: "right",
+  },
+  invoiceDate: {
+    color: "white",
+    fontSize: 9,
+    textAlign: "right",
   },
   footerImage: {
     width: "100%",
@@ -419,7 +440,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   contentWrapper: {
-    paddingTop: 70,
+    paddingTop: 0,
     paddingBottom: 30,
     paddingHorizontal: 20,
   },
