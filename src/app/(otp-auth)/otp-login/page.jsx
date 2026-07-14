@@ -90,7 +90,8 @@ function OtpLoginContent() {
     setLoading(true);
     setStatus({ type: '', text: '' });
     try {
-      const { accessToken, user } = await verifyLoginOtp({ phone, otp });
+      const { data } = await verifyLoginOtp({ phone, otp });
+      const { accessToken, user } = data;
       setAccessToken(accessToken);
       setUser(user);
       setStatus({ type: 'success', text: 'Login successful! Redirecting...' });
