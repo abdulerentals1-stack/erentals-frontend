@@ -278,28 +278,28 @@ const QuotationPDF = ({ quotation }) => {
 
             {items.map((item, i) => {
               let particulars = item.product?.name || "";
-              let qtyDisplay = item.quantity || 0;
+              let qtyDisplay = `${item.quantity || 0} pcs`;
+
+              const baseRate = item.withService && item.product?.serviceChargePercent
+                ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                : (item.unitPrice || 0);
+
+              let displayRate = baseRate;
 
               if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
                 particulars += ` (${item.length}x${item.width} ft)`;
-                qtyDisplay = `${item.length * item.width * item.quantity} sq.ft`;
+                displayRate = baseRate * item.length * item.width;
               } else if (item.pricingType === "length_width" && item.length > 0) {
                 particulars += ` (${item.length} ft)`;
-                qtyDisplay = `${item.length * item.quantity} ft`;
-              } else {
-                qtyDisplay = `${item.quantity} pcs`;
+                displayRate = baseRate * item.length;
               }
-
-              const unitRate = item.withService && item.product?.serviceChargePercent
-                ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
-                : (item.unitPrice || 0);
 
               return (
                 <View key={i} style={styles.tableRow}>
                   <Text style={styles.tableCell}>{i + 1}</Text>
                   <Text style={styles.tableCell}>{item.product?.productCode || "N/A"}</Text>
                   <Text style={styles.tableCell}>{particulars}</Text>
-                  <Text style={styles.tableCell}>{unitRate}</Text>
+                  <Text style={styles.tableCell}>{displayRate.toFixed(2)}</Text>
                   <Text style={styles.tableCell}>{qtyDisplay}</Text>
                   <Text style={styles.tableCell}>{item.days || 0}</Text>
                   <Text style={styles.tableCell}>{item.finalPrice || 0}</Text>
