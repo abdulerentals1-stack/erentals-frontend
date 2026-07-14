@@ -42,7 +42,24 @@ export default function MyQuotations() {
   }, [isLoggedIn, isAdmin, ready]);
 
   if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
-  if (loading) return <div className="p-4">Loading quotations...</div>;
+  if (loading) {
+    return (
+      <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28">
+        <h2 className="text-xl font-bold">My Quotations</h2>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="border rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 animate-pulse">
+            <div className="space-y-2 w-full md:w-2/3">
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-2/3" />
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/2" />
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/3" />
+              <div className="h-6 bg-gray-200 dark:bg-zinc-800 rounded w-20" />
+            </div>
+            <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded w-36 shrink-0 self-end md:self-center" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (!quotations.length) {
     return (
