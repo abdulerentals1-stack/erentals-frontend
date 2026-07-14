@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon } from "lucide-react";
 import { useParams } from "next/navigation";
+import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
 
 export default function QuotationDetailsPage() {
    const { id } = useParams();
@@ -113,13 +114,10 @@ export default function QuotationDetailsPage() {
         <p className="font-bold text-lg">Total: ₹{quotation.finalAmount}</p>
       </div>
 
-      {/* ✅ Download Invoice */}
-      {quotation.status === "responded" && quotation.invoiceUrl && (
+      {/* Show Preview & Download only when status is "responded" */}
+      {quotation.status === "responded" && (
         <div className="mt-6">
-          <Button onClick={() => window.open(quotation.invoiceUrl, "_blank")}>
-            <DownloadIcon className="w-4 h-4 mr-2" />
-            Download Invoice
-          </Button>
+          <QuotationPreviewAndPrint quotation={quotation} />
         </div>
       )}
     </div>
