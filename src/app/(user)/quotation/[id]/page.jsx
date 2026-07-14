@@ -107,11 +107,15 @@ export default function QuotationDetailsPage() {
 
       <h2 className="font-semibold mb-3">Charges</h2>
       <div className="text-sm space-y-1 mb-6">
-        <p>Base Amount: ₹{quotation.totalAmount}</p>
+        <p>Sub Total: ₹{quotation.totalAmount}</p>
         <p>Transportation: ₹{quotation.transportationCharge || 0}</p>
         <p>Labour Charge: ₹{quotation.labourCharge || 0}</p>
-        <p>Discount: ₹{quotation.discountAmount}</p>
-        <p className="font-bold text-lg">Total: ₹{quotation.finalAmount}</p>
+        {quotation.discountAmount > 0 && (
+          <p>Discount: -₹{quotation.discountAmount}</p>
+        )}
+        <p>Total Before Tax: ₹{quotation.priceBeforeTax}</p>
+        <p>GST (18%): ₹{(quotation.cgst || 0) + (quotation.sgst || 0)}</p>
+        <p className="font-bold text-lg">Total Payable: ₹{quotation.finalAmount}</p>
       </div>
 
       {/* Show Preview & Download only when status is "responded" */}
