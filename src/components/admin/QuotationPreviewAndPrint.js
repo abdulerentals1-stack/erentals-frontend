@@ -182,18 +182,14 @@ const QuotationPDF = ({ quotation }) => {
               <Text style={[styles.tableCell, { flex: 6 }]}>Total Payable</Text>
               <Text style={styles.tableCell}>{q.finalAmount || 0}</Text>
             </View>
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>Advance @50%</Text>
-              <Text style={styles.tableCell}>{Math.round((q.finalAmount || 0) / 2)}</Text>
-            </View>
           </View>
 
           {/* Terms & Conditions */}
           <View style={styles.section}>
             <Text style={styles.termsTitle}>Terms & Conditions:</Text>
             {[
-              "50% of the payment needs to be cleared for order confirmation and the rest of the payment at the time of delivery at your place including GST amount.",
-              "If payment is to be made by cheque, 10% of the bill amount needs to be paid as advance for booking confirmation. The cheque is to be provided at the time of delivery of items.",
+              "100% of the payment needs to be cleared for order confirmation before delivery.",
+              "If payment is to be made by cheque, booking is confirmed only after cheque clearance. The cheque must be cleared prior to delivery of items.",
               "Customer will ensure quality and quantity of items at the time of delivery.",
               "For the safety of the items, there is provision of refundable security deposit to be paid by customer in advance.",
               "The refund amount will be credited back within 24-48 hours of return of items in sound conditions.",
