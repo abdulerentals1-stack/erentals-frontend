@@ -206,7 +206,7 @@ export default function InvoicePreviewAndPrint({ order, className }) {
 
           <PDFDownloadLink
             document={<InvoicePDF order={order} terms={terms} persons={personsInvolved} />}
-            fileName={`Invoice-${order._id.slice(-6)}.pdf`}
+            fileName={`Invoice-${order.orderNumber || order._id.slice(-6)}.pdf`}
           >
             {({ loading }) => (
               <Button className="bg-green-600 text-white mt-4 hover:bg-green-700">
@@ -245,8 +245,8 @@ const InvoicePDF = ({ order, terms, persons }) => {
             src="/Erental_Invoice_Header.png"
             style={{ width: "100%", marginBottom: 10 }}
           />
-          <Text style={styles.invoiceNumber}>TAX INVOICE: {order._id.slice(-6)}</Text>
-          <Text style={styles.invoiceDate}>{deliveryDate}</Text>
+          <Text style={styles.invoiceNumber}>TAX INVOICE: {order.orderNumber || order._id.slice(-6)}</Text>
+          <Text style={styles.invoiceDate}>{createdAt}</Text>
         </View>
 
         {/* Company / Bill / Ship Info */}
