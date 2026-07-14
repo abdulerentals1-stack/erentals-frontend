@@ -44,17 +44,23 @@ export default function MyQuotations() {
   if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
   if (loading) {
     return (
-      <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28">
+      <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black">
         <h2 className="text-xl font-bold">My Quotations</h2>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="border rounded-xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 animate-pulse">
+          <div key={i} className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 animate-pulse">
             <div className="space-y-2 w-full md:w-2/3">
-              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-2/3" />
-              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/2" />
-              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/3" />
-              <div className="h-6 bg-gray-200 dark:bg-zinc-800 rounded w-20" />
+              <div className="flex gap-2">
+                <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded w-48" />
+                <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded w-20" />
+              </div>
+              <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded w-32" />
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-24" />
+              <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded w-36" />
             </div>
-            <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded w-36 shrink-0 self-end md:self-center" />
+            <div className="flex items-center gap-4 w-full md:w-auto justify-end">
+              <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded w-36 shrink-0" />
+              <div className="h-5 bg-gray-200 dark:bg-zinc-800 rounded-full w-5 shrink-0 hidden md:block" />
+            </div>
           </div>
         ))}
       </div>
@@ -63,45 +69,44 @@ export default function MyQuotations() {
 
   if (!quotations.length) {
     return (
-      <div className="p-4">
-        <h2 className="text-lg font-semibold">My Quotations</h2>
-        <p className="text-muted-foreground">No quotations found.</p>
+      <div className="p-6 max-w-4xl mx-auto text-black">
+        <h2 className="text-xl font-bold">My Quotations</h2>
+        <p className="text-gray-500 mt-2">No quotations found.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28">
+    <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black">
       <h2 className="text-xl font-bold">My Quotations</h2>
 
       {quotations.map((quote) => (
         <div
           key={quote._id}
-          className="border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-900 transition-all duration-200 cursor-pointer flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group"
+          className="group border rounded-lg p-4 shadow-sm bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:border-gray-300 hover:shadow-md transition-all duration-200"
           onClick={() => route.push(`/quotation/${quote._id}`)}
         >
           <div className="space-y-1">
-            <p className="text-sm font-medium">
-              Quotation ID: <span className="font-mono">{quote._id}</span>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Date: {new Date(quote.createdAt).toLocaleDateString()}
-            </p>
-            <p className="text-sm">Amount: ₹{quote.finalAmount}</p>
-            <p className="text-sm">
-              Delivery: {new Date(quote.deliveryDate).toLocaleDateString()}
-            </p>
-            <Badge
-              variant={
-                quote.status === "responded"
-                  ? "default"
-                  : quote.status === "cancelled"
-                  ? "destructive"
-                  : "outline"
-              }
-            >
-              {quote.status}
-            </Badge>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">
+                Quotation #{quote._id.slice(-6).toUpperCase()}
+              </span>
+              <Badge
+                variant={
+                  quote.status === "responded"
+                    ? "success"
+                    : quote.status === "cancelled"
+                    ? "error"
+                    : "warning"
+                }
+                className="capitalize text-xs font-semibold"
+              >
+                {quote.status}
+              </Badge>
+            </div>
+            <p className="text-xs text-gray-500">Date: {new Date(quote.createdAt).toLocaleDateString("en-IN")}</p>
+            <p className="text-sm font-medium">Amount: ₹{quote.finalAmount}</p>
+            <p className="text-xs text-gray-600">Delivery Date: {new Date(quote.deliveryDate).toLocaleDateString("en-IN")}</p>
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">

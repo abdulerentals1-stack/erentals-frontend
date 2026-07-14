@@ -17,9 +17,135 @@ import {
   PDFViewer,
   Image,
   PDFDownloadLink,
+  Svg,
+  Path,
+  Circle,
 } from "@react-pdf/renderer";
 
-export default function QuotationPreviewAndPrint({ quotation }) {
+// Reusable SVG Vector Icons for maximum PDF compatibility
+const UserIcon = () => (
+  <Svg width="9" height="9" viewBox="0 0 24 24" style={{ marginRight: 4, marginTop: 1.5 }}>
+    <Path
+      d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Circle
+      cx="12"
+      cy="7"
+      r="4"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+);
+
+const MapPinIcon = () => (
+  <Svg width="9" height="9" viewBox="0 0 24 24" style={{ marginRight: 4, marginTop: 1.5 }}>
+    <Path
+      d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Circle
+      cx="12"
+      cy="10"
+      r="3"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+);
+
+const PhoneIcon = () => (
+  <Svg width="9" height="9" viewBox="0 0 24 24" style={{ marginRight: 4, marginTop: 1.5 }}>
+    <Path
+      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+);
+
+const MailIcon = () => (
+  <Svg width="9" height="9" viewBox="0 0 24 24" style={{ marginRight: 4, marginTop: 1.5 }}>
+    <Path
+      d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M22 6l-10 7L2 6"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+);
+
+const TaxIcon = () => (
+  <Svg width="9" height="9" viewBox="0 0 24 24" style={{ marginRight: 4, marginTop: 1.5 }}>
+    <Path
+      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M14 2v6h6M16 13H8M16 17H8M10 9H8"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+);
+
+const CalendarIcon = () => (
+  <Svg width="9" height="9" viewBox="0 0 24 24" style={{ marginRight: 4, marginTop: 1.5 }}>
+    <Path
+      d="M19 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M16 2v4M8 2v4M3 10h18"
+      stroke="#475569"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+);
+
+export default function QuotationPreviewAndPrint({ quotation, className }) {
   const [open, setOpen] = useState(false);
 
   // fallback-safe destructuring
@@ -30,22 +156,20 @@ export default function QuotationPreviewAndPrint({ quotation }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="bg-[#144169] text-white">
+      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"}>
         🧾 Download Quotation
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-6xl w-full h-[90vh]">
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Quotation Preview</DialogTitle>
           </DialogHeader>
 
           {/* PDF Preview */}
-          <div className="w-full h-[65vh] border rounded-md overflow-hidden">
-            <PDFViewer width="100%" height="100%">
-              <QuotationPDF quotation={q} />
-            </PDFViewer>
-          </div>
+          <PDFViewer className="flex-1 w-full border rounded-lg">
+            <QuotationPDF quotation={q} />
+          </PDFViewer>
 
           {/* Download Link */}
           <PDFDownloadLink
@@ -53,7 +177,7 @@ export default function QuotationPreviewAndPrint({ quotation }) {
             fileName={`Quotation-${q?._id || "draft"}.pdf`}
           >
             {({ loading }) => (
-              <Button className="bg-green-600 text-white mt-4 hover:bg-green-700">
+              <Button className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full">
                 {loading ? "Preparing PDF..." : "⬇️ Download Quotation"}
               </Button>
             )}
@@ -99,13 +223,39 @@ const QuotationPDF = ({ quotation }) => {
             <View style={styles.rowBetween}>
               <View>
                 <Text style={styles.textBold}>To,</Text>
-                <Text>{address.name || "N/A"}</Text>
-                <Text>{address?.addressLine}, {address?.city}, {address?.state}, {address?.pincode}</Text>
-                <Text>Phone: {address.phone || "N/A"}</Text>
-                <Text>Email: {address.email || "N/A"}</Text>
-                 {address?.gstin && <Text>GSTN: {address.gstin}</Text>}
+                
+                <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
+                  <UserIcon />
+                  <Text style={[styles.bodyText, { flex: 1 }]}>{address.name || "N/A"}</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
+                  <MapPinIcon />
+                  <Text style={[styles.bodyText, { flex: 1 }]}>{address?.addressLine}, {address?.city}, {address?.state}, {address?.pincode}</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
+                  <PhoneIcon />
+                  <Text style={[styles.bodyText, { flex: 1 }]}>Phone: {address.phone || "N/A"}</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
+                  <MailIcon />
+                  <Text style={[styles.bodyText, { flex: 1 }]}>Email: {address.email || "N/A"}</Text>
+                </View>
+
+                {address?.gstin && (
+                  <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
+                    <TaxIcon />
+                    <Text style={[styles.bodyText, { flex: 1 }]}>GSTN: {address.gstin}</Text>
+                  </View>
+                )}
               </View>
-              <Text style={styles.dateText}>{createdAt}</Text>
+
+              <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                <CalendarIcon />
+                <Text style={styles.dateText}>Date: {createdAt}</Text>
+              </View>
             </View>
 
             <Text style={styles.desc}>
@@ -117,13 +267,13 @@ const QuotationPDF = ({ quotation }) => {
           {/* Table */}
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={styles.tableCell}>S.No</Text>
-              <Text style={styles.tableCell}>Code</Text>
-              <Text style={styles.tableCell}>Particulars</Text>
-              <Text style={styles.tableCell}>Unit Rate</Text>
-              <Text style={styles.tableCell}>Qty</Text>
-              <Text style={styles.tableCell}>Days</Text>
-              <Text style={styles.tableCell}>Total</Text>
+              <Text style={styles.tableHeaderCell}>S.No</Text>
+              <Text style={styles.tableHeaderCell}>Code</Text>
+              <Text style={styles.tableHeaderCell}>Particulars</Text>
+              <Text style={styles.tableHeaderCell}>Unit Rate</Text>
+              <Text style={styles.tableHeaderCell}>Qty</Text>
+              <Text style={styles.tableHeaderCell}>Days</Text>
+              <Text style={styles.tableHeaderCell}>Total</Text>
             </View>
 
             {items.map((item, i) => {
@@ -176,17 +326,17 @@ const QuotationPDF = ({ quotation }) => {
                   <Text style={styles.tableCell}>-{q.discountAmount}</Text>
                 </View>
               )}
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>Total Before Tax</Text>
-              <Text style={styles.tableCell}>{q.priceBeforeTax || 0}</Text>
+            <View style={[styles.tableRow, styles.tableHeader]}>
+              <Text style={[styles.tableHeaderCell, { flex: 6 }]}>Total Before Tax</Text>
+              <Text style={styles.tableHeaderCell}>{q.priceBeforeTax || 0}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, { flex: 6 }]}>GST @18%</Text>
               <Text style={styles.tableCell}>{(q.cgst || 0) + (q.sgst || 0)}</Text>
             </View>
             <View style={[styles.tableRow, styles.tableFooter]}>
-              <Text style={[styles.tableCell, { flex: 6 }]}>Total Payable</Text>
-              <Text style={styles.tableCell}>{q.finalAmount || 0}</Text>
+              <Text style={[styles.tableHeaderCell, { flex: 6 }]}>Total Payable</Text>
+              <Text style={styles.tableHeaderCell}>{q.finalAmount || 0}</Text>
             </View>
           </View>
 
@@ -250,8 +400,9 @@ const QuotationPDF = ({ quotation }) => {
 // Styles
 const styles = StyleSheet.create({
   page: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: "Helvetica",
+    color: "#334155",
   },
   headerImage: {
     width: "100%",
@@ -283,12 +434,21 @@ const styles = StyleSheet.create({
   textBold: {
     fontWeight: "bold",
   },
+  bodyText: {
+    color: "#475569",
+    fontSize: 9,
+    lineHeight: 1.25,
+  },
   dateText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "bold",
+    color: "#475569",
   },
   desc: {
-    marginTop: 0,
+    marginTop: 5,
+    fontSize: 9.5,
+    color: "#334155",
+    lineHeight: 1.3,
   },
   table: {
     display: "table",
@@ -302,46 +462,62 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     borderWidth: 0.5,
-    borderColor: "#000",
-    padding: 4,
+    borderColor: "#cbd5e1",
+    padding: 5,
+    fontSize: 9,
+    color: "#334155",
+  },
+  tableHeaderCell: {
+    flex: 1,
+    borderWidth: 0.5,
+    borderColor: "#002060",
+    padding: 5,
+    fontSize: 9,
+    fontWeight: "bold",
+    color: "#ffffff",
+    backgroundColor: "#002060",
   },
   tableHeader: {
     backgroundColor: "#002060",
     color: "#fff",
     fontWeight: "bold",
+    borderColor: "#002060",
   },
   tableFooter: {
     backgroundColor: "#002060",
     color: "#fff",
+    borderColor: "#002060",
   },
   termsTitle: {
     fontWeight: "bold",
-    fontSize: 13,
+    fontSize: 11,
     color: "tomato",
     marginBottom: 4,
   },
   termText: {
     marginLeft: 10,
     marginBottom: 3,
-    fontSize: 10,
+    fontSize: 9,
     lineHeight: 1.4,
+    color: "#475569",
   },
   subTermText: {
     marginLeft: 20,
     marginBottom: 2,
-    fontSize: 10,
+    fontSize: 8.5,
     lineHeight: 1.4,
     textAlign: "justify",
+    color: "#64748b",
   },
   noteTitle: {
     fontWeight: "bold",
-    fontSize: 13,
+    fontSize: 11,
     color: "tomato",
     marginBottom: 4,
   },
   noteText: {
-    fontSize: 10,
-    color: "#000000",
+    fontSize: 9,
+    color: "#475569",
     marginBottom: 2,
     lineHeight: 1.4,
   },

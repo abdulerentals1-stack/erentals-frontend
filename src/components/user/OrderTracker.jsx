@@ -60,9 +60,9 @@ export default function OrderTracker({ order }) {
   return (
     <div>
       <h2 className="font-semibold mb-3 text-gray-950">Order Tracker</h2>
-      <div className="border rounded-lg p-5 bg-white text-sm space-y-6">
+      <div className="border rounded-lg p-5 bg-white text-sm">
         {steps.map((step, index, arr) => (
-          <div key={index} className="flex gap-4 relative">
+          <div key={index} className={`flex gap-4 relative ${index < arr.length - 1 ? "pb-6" : ""}`}>
             <div className="flex flex-col items-center">
               <div className={`w-3.5 h-3.5 rounded-full z-10 border-2 ${
                 step.isCancelled 
@@ -79,7 +79,7 @@ export default function OrderTracker({ order }) {
                 }`}></div>
               )}
             </div>
-            <div className="pb-2">
+            <div>
               <p className={`font-semibold ${step.isCancelled ? "text-red-600" : step.completed ? "text-gray-900" : "text-gray-400"}`}>
                 {step.label}
               </p>
