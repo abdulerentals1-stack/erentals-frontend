@@ -128,10 +128,16 @@ const QuotationPDF = ({ quotation }) => {
 
             {items.map((item, i) => {
               let particulars = item.product?.name || "";
+              let qtyDisplay = item.quantity || 0;
+
               if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
                 particulars += ` (${item.length}x${item.width} ft)`;
+                qtyDisplay = `${item.length * item.width * item.quantity} sq.ft`;
               } else if (item.pricingType === "length_width" && item.length > 0) {
                 particulars += ` (${item.length} ft)`;
+                qtyDisplay = `${item.length * item.quantity} ft`;
+              } else {
+                qtyDisplay = `${item.quantity} pcs`;
               }
 
               const unitRate = item.withService && item.product?.serviceChargePercent
@@ -144,7 +150,7 @@ const QuotationPDF = ({ quotation }) => {
                   <Text style={styles.tableCell}>{item.product?.productCode || "N/A"}</Text>
                   <Text style={styles.tableCell}>{particulars}</Text>
                   <Text style={styles.tableCell}>{unitRate}</Text>
-                  <Text style={styles.tableCell}>{item.quantity || 0}</Text>
+                  <Text style={styles.tableCell}>{qtyDisplay}</Text>
                   <Text style={styles.tableCell}>{item.days || 0}</Text>
                   <Text style={styles.tableCell}>{item.finalPrice || 0}</Text>
                 </View>

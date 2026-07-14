@@ -135,10 +135,16 @@ const InvoicePDF = ({ order, terms, persons }) => {
 
           {order.items?.map((item, i) => {
             let particulars = item.product?.name || "";
+            let qtyDisplay = item.quantity || 0;
+
             if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
               particulars += ` (${item.length}x${item.width} ft)`;
+              qtyDisplay = `${item.length * item.width * item.quantity} sq.ft`;
             } else if (item.pricingType === "length_width" && item.length > 0) {
               particulars += ` (${item.length} ft)`;
+              qtyDisplay = `${item.length * item.quantity} ft`;
+            } else {
+              qtyDisplay = `${item.quantity} pcs`;
             }
 
             const unitRate = item.withService && item.product?.serviceChargePercent
@@ -151,7 +157,7 @@ const InvoicePDF = ({ order, terms, persons }) => {
                 <Text style={[styles.tableCell, { width: "12%" }]}>{item.product?.productCode || "-"}</Text>
                 <Text style={[styles.tableCell, { width: "40%" }]}>{particulars}</Text>
                 <Text style={[styles.tableCell, { width: "10%" }]}>{unitRate}</Text>
-                <Text style={[styles.tableCell, { width: "8%" }]}>{item.quantity}</Text>
+                <Text style={[styles.tableCell, { width: "8%" }]}>{qtyDisplay}</Text>
                 <Text style={[styles.tableCell, { width: "10%" }]}>{item.rentalDays || 1}</Text>
                 <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice}</Text>
               </View>
