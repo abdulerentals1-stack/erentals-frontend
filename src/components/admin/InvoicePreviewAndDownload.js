@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
+import { getAccessToken } from "@/lib/tokenManager";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Page,
@@ -9,13 +11,22 @@ import {
   View,
   Document,
   StyleSheet,
-  PDFViewer,
   Image,
-  PDFDownloadLink,
   Svg,
   Path,
   Circle,
 } from "@react-pdf/renderer";
+import dynamic from "next/dynamic";
+
+const PDFViewer = dynamic(
+  () => import("@react-pdf/renderer").then((m) => m.PDFViewer || m.default?.PDFViewer),
+  { ssr: false }
+);
+
+const PDFDownloadLink = dynamic(
+  () => import("@react-pdf/renderer").then((m) => m.PDFDownloadLink || m.default?.PDFDownloadLink),
+  { ssr: false }
+);
 
 // Reusable SVG Vector Icons for maximum PDF compatibility
 const UserIcon = () => (
@@ -163,8 +174,40 @@ const CalendarIcon = () => (
   </Svg>
 );
 
+const fallbackSettings = {
+  COMPANY_NAME: "ERENTALS HND PVT LTD",
+  COMPANY_ADDRESS: "G-304, 4th Floor, G Wing, Kailash Industrial Complex, Park site Rd, HMPL Surya Nagar, Vikhroli West, Mumbai, Maharashtra, Pin- 400079",
+  COMPANY_PHONE: "9867348165 / 8652348165",
+  COMPANY_EMAIL: "admin@e-rentals.in",
+  COMPANY_WEBSITE: "www.e-rentals.in",
+  COMPANY_GSTN: "27AAGCE8977P1ZJ",
+  COMPANY_UDYAM: "UDYAM-MH-19-0133725",
+  COMPANY_SAC: "998596",
+  BANK_NAME: "IndusInd Bank",
+  BANK_ACCOUNT_NAME: "ERENTALS HND PVT LTD",
+  BANK_ACCOUNT_TYPE: "CURRENT",
+  BANK_BRANCH: "Saki Naka",
+  BANK_IFSC: "INDB0001075",
+  BANK_ACCOUNT_NO: "259867348165"
+};
+
 export default function InvoicePreviewAndPrint({ order, className }) {
   const [open, setOpen] = useState(false);
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    if (open) {
+      api.get("/system-config/public")
+        .then(res => {
+          if (res.data?.success && res.data.data) {
+            setSettings(res.data.data);
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load company config:", err);
+        });
+    }
+  }, [open]);
 
   // Terms Array
   const terms = [
@@ -186,41 +229,105 @@ export default function InvoicePreviewAndPrint({ order, className }) {
     { name: "Hasnu (1000D)", role: "Person at Warehouse" },
   ];
 
+  const activeSettings = settings || fallbackSettings;
+
+  // Parse dynamic terms
+  let activeTerms = terms;
+  try {
+    if (activeSettings.TERMS_AND_CONDITIONS) {
+      activeTerms = JSON.parse(activeSettings.TERMS_AND_CONDITIONS);
+    }
+  } catch (err) {
+    console.error("Failed to parse dynamic terms:", err);
+  }
+
+  // Parse dynamic persons
+  let activePersons = personsInvolved;
+  try {
+    if (activeSettings.DEFAULT_PERSONS) {
+      activePersons = JSON.parse(activeSettings.DEFAULT_PERSONS);
+    }
+  } catch (err) {
+    console.error("Failed to parse dynamic persons:", err);
+  }
+
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  useEffect(() => {
+    let activeUrl = null;
+    if (open && order._id) {
+      setPdfLoading(true);
+      import("@react-pdf/renderer")
+        .then(async (module) => {
+          const pdfFn = module.pdf || module.default?.pdf;
+          if (pdfFn) {
+            const blob = await pdfFn(
+              <InvoicePDF order={order} terms={activeTerms} persons={activePersons} settings={activeSettings} />
+            ).toBlob();
+            activeUrl = URL.createObjectURL(blob);
+            setPdfUrl(activeUrl);
+          }
+          setPdfLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to generate client PDF blob:", err);
+          setPdfLoading(false);
+        });
+    }
+    return () => {
+      if (activeUrl) {
+        URL.revokeObjectURL(activeUrl);
+      }
+      setPdfUrl(null);
+    };
+  }, [open, order._id, settings]);
+
   return (
     <>
       <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"}>
-        {order.invoiceUrl && ["confirmed", "placed", "delivered"].includes(order.status)
-          ? "📄 View & Download Invoice"
-          : "⬇️ Download Invoice"}
+        {pdfUrl ? "📄 View & Download Invoice" : "⬇️ Download Invoice"}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col text-black">
           <DialogHeader>
             <DialogTitle>Invoice Preview</DialogTitle>
           </DialogHeader>
 
-          <PDFViewer className="flex-1 w-full border rounded-lg">
-            <InvoicePDF order={order} terms={terms} persons={personsInvolved} />
-          </PDFViewer>
+          {/* PDF Preview */}
+          {pdfLoading ? (
+            <div className="flex-1 w-full border rounded-lg flex items-center justify-center bg-gray-50 text-gray-500">
+              Compiling invoice preview...
+            </div>
+          ) : pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              className="flex-1 w-full border rounded-lg"
+              style={{ minHeight: "60vh" }}
+              title="Invoice PDF"
+            />
+          ) : (
+            <div className="flex-1 w-full border rounded-lg flex items-center justify-center bg-gray-50 text-gray-500">
+              No invoice preview available.
+            </div>
+          )}
 
-          <PDFDownloadLink
-            document={<InvoicePDF order={order} terms={terms} persons={personsInvolved} />}
-            fileName={`Invoice-${order.orderNumber || order._id.slice(-6)}.pdf`}
+          {/* Download Link */}
+          <Button
+            onClick={() => window.open(pdfUrl || "#", "_blank")}
+            className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full"
+            disabled={!pdfUrl || pdfLoading}
           >
-            {({ loading }) => (
-              <Button className="bg-green-600 text-white mt-4 hover:bg-green-700">
-                {loading ? "Preparing PDF..." : "⬇️ Download Invoice"}
-              </Button>
-            )}
-          </PDFDownloadLink>
+            ⬇️ Download Invoice
+          </Button>
         </DialogContent>
       </Dialog>
     </>
   );
 }
 
-const InvoicePDF = ({ order, terms, persons }) => {
+const InvoicePDF = ({ order, terms, persons, settings }) => {
   const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "—";
   const deliveryDate = order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "—";
 
@@ -229,8 +336,11 @@ const InvoicePDF = ({ order, terms, persons }) => {
   const labourCharge = Number(order.labourCharge || 0);
   const discountAmount = Number(order.discountAmount || 0);
   const priceBeforeTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (totalAmount - discountAmount));
-  const cgst = Number(order.cgst !== undefined ? order.cgst : (priceBeforeTax * 0.09));
-  const sgst = Number(order.sgst !== undefined ? order.sgst : (priceBeforeTax * 0.09));
+  
+  const gstRate = parseFloat(settings.GST_RATE || 18);
+  const halfGst = gstRate / 2;
+  const cgst = Number(order.cgst !== undefined ? order.cgst : (priceBeforeTax * (halfGst / 100)));
+  const sgst = Number(order.sgst !== undefined ? order.sgst : (priceBeforeTax * (halfGst / 100)));
   const finalAmount = Number(order.finalAmount || (priceBeforeTax + cgst + sgst + transportationCharge + labourCharge));
   const advancePaid = Number(order.advancePaid || 0);
   const paidAmount = Number(order.paidAmount || 0);
@@ -245,9 +355,19 @@ const InvoicePDF = ({ order, terms, persons }) => {
             src="/Erental_Invoice_Header.png"
             style={{ width: "100%", marginBottom: 10 }}
           />
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.invoiceNumber}>TAX INVOICE: {order.orderNumber || order._id.slice(-6)}</Text>
-            <Text style={styles.invoiceDate}>{createdAt}</Text>
+          <View style={{
+            position: "absolute",
+            right: 25,
+            top: 20,
+            alignItems: "flex-end",
+            justifyContent: "center",
+          }}>
+            <Text style={{ fontSize: 10, color: "#FFFFFF", fontWeight: "bold", fontFamily: "Helvetica-Bold" }}>
+              TAX INVOICE: {order.orderNumber || order._id.slice(-6).toUpperCase()}
+            </Text>
+            <Text style={{ fontSize: 9, color: "#FFFFFF", marginTop: 3 }}>
+              Date: {createdAt}
+            </Text>
           </View>
         </View>
 
@@ -256,37 +376,44 @@ const InvoicePDF = ({ order, terms, persons }) => {
           <View style={styles.row}>
             {/* Company */}
             <View style={styles.col}>
-              <Text style={styles.title}>ERENTALS HND PVT LTD</Text>
+              <Text style={styles.title}>{settings.COMPANY_NAME}</Text>
               
               <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
                 <MapPinIcon />
-                <Text style={[styles.bodyText, { flex: 1 }]}>Shop No. 234, City Centre Mall, SV Road, Goregaon West, Mumbai, Maharashtra, 400104, India</Text>
+                <Text style={[styles.bodyText, { flex: 1 }]}>{settings.COMPANY_ADDRESS}</Text>
               </View>
               
               <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
                 <PhoneIcon />
-                <Text style={[styles.bodyText, { flex: 1 }]}>Phone: 9867348165 / 8652348165</Text>
+                <Text style={[styles.bodyText, { flex: 1 }]}>Phone: {settings.COMPANY_PHONE}</Text>
               </View>
 
               <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
                 <MailIcon />
-                <Text style={[styles.bodyText, { flex: 1 }]}>Email: info@erentals.in</Text>
+                <Text style={[styles.bodyText, { flex: 1 }]}>Email: {settings.COMPANY_EMAIL}</Text>
               </View>
 
               <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
                 <GlobeIcon />
-                <Text style={[styles.bodyText, { flex: 1 }]}>Website: www.erentals.in</Text>
+                <Text style={[styles.bodyText, { flex: 1 }]}>Website: {settings.COMPANY_WEBSITE}</Text>
               </View>
 
               <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
                 <TaxIcon />
-                <Text style={[styles.bodyText, { flex: 1 }]}>GSTN: 27AAGCE8977P1ZJ</Text>
+                <Text style={[styles.bodyText, { flex: 1 }]}>GSTN: {settings.COMPANY_GSTN}</Text>
               </View>
 
               <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
                 <TaxIcon />
-                <Text style={[styles.bodyText, { flex: 1 }]}>HSN/SAC: 998596</Text>
+                <Text style={[styles.bodyText, { flex: 1 }]}>HSN/SAC: {settings.COMPANY_SAC}</Text>
               </View>
+
+              {settings.COMPANY_UDYAM && (
+                <View style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 3 }}>
+                  <TaxIcon />
+                  <Text style={[styles.bodyText, { flex: 1 }]}>UDYAM: {settings.COMPANY_UDYAM}</Text>
+                </View>
+              )}
             </View>
 
             {/* Bill To */}
@@ -410,11 +537,11 @@ const InvoicePDF = ({ order, terms, persons }) => {
           </View>
           
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>CGST @9%</Text>
+            <Text style={[styles.tableCell, { width: "88%" }]}>CGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{cgst.toFixed(2)}</Text>
           </View>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>SGST @9%</Text>
+            <Text style={[styles.tableCell, { width: "88%" }]}>SGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
           </View>
 
@@ -528,13 +655,41 @@ const InvoicePDF = ({ order, terms, persons }) => {
         {/* Bank Note */}
         <View style={styles.section} wrap={false}>
           <Text style={styles.noteTitle}>Note:</Text>
-          <Text style={styles.noteText}>Bank Details:</Text>
-          <Text style={styles.noteText}>Bank Name: IndusInd Bank</Text>
-          <Text style={styles.noteText}>Account Name: ERENTALS HND PVT LTD</Text>
-          <Text style={styles.noteText}>Type of Account: CURRENT</Text>
-          <Text style={styles.noteText}>Branch Name: Saki Naka</Text>
-          <Text style={styles.noteText}>IFSC Code: INDB0001075</Text>
-          <Text style={styles.noteText}>Account No.: 259867348165</Text>
+          {(() => {
+            let accounts = [];
+            try {
+              if (settings.BANK_ACCOUNTS) {
+                accounts = JSON.parse(settings.BANK_ACCOUNTS);
+              }
+            } catch (err) {
+              console.error("Failed to parse bank accounts:", err);
+            }
+            
+            if (!Array.isArray(accounts) || accounts.length === 0) {
+              accounts = [{
+                bankName: settings.BANK_NAME,
+                accountName: settings.BANK_ACCOUNT_NAME,
+                accountType: settings.BANK_ACCOUNT_TYPE,
+                branchName: settings.BANK_BRANCH,
+                ifscCode: settings.BANK_IFSC,
+                accountNumber: settings.BANK_ACCOUNT_NO,
+                upiId: settings.BANK_UPI
+              }];
+            }
+
+            return accounts.map((acc, idx) => (
+              <View key={idx} style={{ marginBottom: idx < accounts.length - 1 ? 6 : 0 }}>
+                <Text style={styles.noteText}>Bank Details {accounts.length > 1 ? `#${idx + 1}` : ""}:</Text>
+                <Text style={styles.noteText}>Bank Name: {acc.bankName || "—"}</Text>
+                <Text style={styles.noteText}>Account Name: {acc.accountName || "—"}</Text>
+                <Text style={styles.noteText}>Type of Account: {acc.accountType || "—"}</Text>
+                <Text style={styles.noteText}>Branch Name: {acc.branchName || "—"}</Text>
+                <Text style={styles.noteText}>IFSC Code: {acc.ifscCode || "—"}</Text>
+                <Text style={styles.noteText}>Account No.: {acc.accountNumber || "—"}</Text>
+                {acc.upiId && <Text style={styles.noteText}>UPI ID: {acc.upiId}</Text>}
+              </View>
+            ));
+          })()}
         </View>
 
         {/* Footer Image */}

@@ -69,7 +69,7 @@ export default function AdminQuotationsPage() {
             <tbody>
               {quotations.map((q) => (
                 <tr key={q._id} className="border-t">
-                  <td className="p-3">{q._id.slice(-6)}</td>
+                  <td className="p-3">{q.quotationNumber || q._id.slice(-6).toUpperCase()}</td>
                   <td className="p-3">{q.user?.name}</td>
                   <td className="p-3">{q.timeSlot || 'N/A'}</td>
                   <td className="p-3 font-medium">₹{q.finalAmount}</td>
@@ -99,7 +99,7 @@ export default function AdminQuotationsPage() {
         {quotations.map((q) => (
           <Card key={q._id}>
             <CardContent className="p-4 space-y-2">
-              <p className="text-sm text-gray-500">#{q._id.slice(-6)}</p>
+              <p className="text-sm text-gray-500">#{q.quotationNumber || q._id.slice(-6).toUpperCase()}</p>
               <p className="font-medium">{q.user?.name} ({q.timeSlot || 'N/A'})</p>
               <p>Status: <span className="capitalize">{q.status}</span></p>
               <p>Amount: ₹{q.finalAmount}</p>

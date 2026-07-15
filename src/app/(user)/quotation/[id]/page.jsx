@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button";
 import { DownloadIcon, RefreshCw, AlertTriangle, CheckCircle, ShieldAlert } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
+import dynamic from "next/dynamic";
+
+const QuotationPreviewAndPrint = dynamic(
+  () => import("@/components/admin/QuotationPreviewAndPrint"),
+  { ssr: false }
+);
 
 function DetailPageSkeleton({ title }) {
   return (
@@ -76,7 +81,7 @@ export default function QuotationDetailsPage() {
   if (loading) return <DetailPageSkeleton title="Quotation" />;
   if (!quotation) return <div className="p-4 text-red-500">Quotation not found.</div>;
 
-  const quotationNumberDisplay = `Quotation #${quotation._id.slice(-6).toUpperCase()}`;
+  const quotationNumberDisplay = `Quotation #${quotation.quotationNumber || quotation._id.slice(-6).toUpperCase()}`;
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-black">
@@ -212,14 +217,23 @@ export default function QuotationDetailsPage() {
               <span>Total payable before taxes:</span>
               <span>₹{Number(quotation.priceBeforeTax !== undefined ? quotation.priceBeforeTax : (quotation.totalAmount - quotation.discountAmount)).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-gray-600">
-              <span>CGST (9%):</span>
-              <span>₹{Number(quotation.cgst || 0).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>SGST (9%):</span>
-              <span>₹{Number(quotation.sgst || 0).toFixed(2)}</span>
-            </div>
+            {(() => {
+              const subTotalForTax = Number(quotation.priceBeforeTax !== undefined ? quotation.priceBeforeTax : (quotation.totalAmount - quotation.discountAmount));
+              const cgstRatePercent = subTotalForTax > 0 ? Math.round((quotation.cgst / subTotalForTax) * 100) : 9;
+              const sgstRatePercent = subTotalForTax > 0 ? Math.round((quotation.sgst / subTotalForTax) * 100) : 9;
+              return (
+                <>
+                  <div className="flex justify-between text-gray-600">
+                    <span>CGST ({cgstRatePercent}%):</span>
+                    <span>₹{Number(quotation.cgst || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>SGST ({sgstRatePercent}%):</span>
+                    <span>₹{Number(quotation.sgst || 0).toFixed(2)}</span>
+                  </div>
+                </>
+              );
+            })()}
             <div className="flex justify-between text-gray-600">
               <span>Transportation:</span>
               <span>₹{Number(quotation.transportationCharge || 0).toFixed(2)}</span>

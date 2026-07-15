@@ -45,6 +45,19 @@ export default function ProductInputs({ product, formData, setFormData, unitinfo
 
   const [warnings, setWarnings] = useState({});
 
+  // Dynamically resolve linear unit (ft/m) based on price unit or fallback to 'ft' for area/length_width pricing
+  const getLinearUnit = () => {
+    const rawUnit = (unitinfo || '').toLowerCase();
+    if (rawUnit.includes('sq.ft') || rawUnit.includes('ft') || rawUnit.includes('feet')) {
+      return 'ft';
+    }
+    if (rawUnit.includes('sq.m') || rawUnit.includes('m') || rawUnit.includes('meter')) {
+      return 'm';
+    }
+    return 'ft';
+  };
+  const linearUnit = getLinearUnit();
+
   const update = (field, value) => {
     if (value === '') {
       setFormData((prev) => ({ ...prev, [field]: '' }));
@@ -128,7 +141,7 @@ export default function ProductInputs({ product, formData, setFormData, unitinfo
           max={10000}
           warning={warnings.length}
           onUpdate={update}
-          unit={unitinfo}
+          unit={linearUnit}
         />
       )}
 
@@ -140,7 +153,7 @@ export default function ProductInputs({ product, formData, setFormData, unitinfo
           max={10000}
           warning={warnings.width}
           onUpdate={update}
-          unit={unitinfo}
+          unit={linearUnit}
         />
       )}
 

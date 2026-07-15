@@ -12,7 +12,12 @@ import { toast } from "sonner";
 import { loadRazorpay } from "@/utils/loadRazorpay";
 import OrderTracker from "@/components/user/OrderTracker";
 import { Skeleton } from "@/components/ui/skeleton";
-import InvoicePreviewAndDownload from "@/components/admin/InvoicePreviewAndDownload";
+import dynamic from "next/dynamic";
+
+const InvoicePreviewAndDownload = dynamic(
+  () => import("@/components/admin/InvoicePreviewAndDownload"),
+  { ssr: false }
+);
 
 function DetailPageSkeleton({ title }) {
   return (
@@ -403,14 +408,23 @@ export default function OrderDetailsPage() {
               <span>Total payable before taxes:</span>
               <span>₹{Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount)).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-gray-600">
-              <span>CGST (9%):</span>
-              <span>₹{Number(order.cgst || 0).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>SGST (9%):</span>
-              <span>₹{Number(order.sgst || 0).toFixed(2)}</span>
-            </div>
+            {(() => {
+              const subTotalForTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount));
+              const cgstRatePercent = subTotalForTax > 0 ? Math.round((order.cgst / subTotalForTax) * 100) : 9;
+              const sgstRatePercent = subTotalForTax > 0 ? Math.round((order.sgst / subTotalForTax) * 100) : 9;
+              return (
+                <>
+                  <div className="flex justify-between text-gray-600">
+                    <span>CGST ({cgstRatePercent}%):</span>
+                    <span>₹{Number(order.cgst || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>SGST ({sgstRatePercent}%):</span>
+                    <span>₹{Number(order.sgst || 0).toFixed(2)}</span>
+                  </div>
+                </>
+              );
+            })()}
             <div className="flex justify-between text-gray-600">
               <span>Transportation:</span>
               <span>₹{Number(order.transportationCharge || 0).toFixed(2)}</span>

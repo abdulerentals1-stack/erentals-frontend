@@ -8,7 +8,12 @@ import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthStatus } from "@/utils/authUtils";
-import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
+import dynamic from "next/dynamic";
+
+const QuotationPreviewAndPrint = dynamic(
+  () => import("@/components/admin/QuotationPreviewAndPrint"),
+  { ssr: false }
+);
 
 export default function MyQuotations() {
   const [quotations, setQuotations] = useState([]);
@@ -89,7 +94,7 @@ export default function MyQuotations() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">
-                Quotation #{quote._id.slice(-6).toUpperCase()}
+                Quotation #{quote.quotationNumber || quote._id.slice(-6).toUpperCase()}
               </span>
               <Badge
                 variant={
