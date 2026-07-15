@@ -531,19 +531,14 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             </View>
           )}
 
-          {/* Render Transportation and Labour above taxes ONLY if they are included in the taxable base */}
-          {Math.round(priceBeforeTax) > Math.round(totalAmount - discountAmount) && (
-            <>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
-              </View>
-            </>
-          )}
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
+          </View>
 
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total payable before taxes</Text>
@@ -558,20 +553,6 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             <Text style={[styles.tableCell, { width: "88%" }]}>SGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
           </View>
-
-          {/* Render Transportation and Labour below taxes ONLY if they are NOT included in the taxable base */}
-          {Math.round(priceBeforeTax) <= Math.round(totalAmount - discountAmount) && (
-            <>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
-              </View>
-            </>
-          )}
 
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
