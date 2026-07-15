@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
+import { getAccessToken } from "@/lib/tokenManager";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +16,22 @@ import {
   View,
   Document,
   StyleSheet,
-  PDFViewer,
   Image,
-  PDFDownloadLink,
   Svg,
   Path,
   Circle,
 } from "@react-pdf/renderer";
+import dynamic from "next/dynamic";
+
+const PDFViewer = dynamic(
+  () => import("@react-pdf/renderer").then((m) => m.PDFViewer || m.default?.PDFViewer),
+  { ssr: false }
+);
+
+const PDFDownloadLink = dynamic(
+  () => import("@react-pdf/renderer").then((m) => m.PDFDownloadLink || m.default?.PDFDownloadLink),
+  { ssr: false }
+);
 
 // Reusable SVG Vector Icons for maximum PDF compatibility
 const UserIcon = () => (
@@ -168,11 +179,76 @@ const CalendarIcon = () => (
   </Svg>
 );
 
+const fallbackSettings = {
+  COMPANY_NAME: "ERENTALS HND PVT LTD",
+  COMPANY_ADDRESS: "G-304, 4th Floor, G Wing, Kailash Industrial Complex, Park site Rd, HMPL Surya Nagar, Vikhroli West, Mumbai, Maharashtra, Pin- 400079",
+  COMPANY_PHONE: "9867348165 / 8652348165",
+  COMPANY_EMAIL: "admin@e-rentals.in",
+  COMPANY_WEBSITE: "www.e-rentals.in",
+  COMPANY_GSTN: "27AAGCE8977P1ZJ",
+  COMPANY_UDYAM: "UDYAM-MH-19-0133725",
+  COMPANY_SAC: "998596",
+  BANK_NAME: "IndusInd Bank",
+  BANK_ACCOUNT_NAME: "ERENTALS HND PVT LTD",
+  BANK_ACCOUNT_TYPE: "CURRENT",
+  BANK_BRANCH: "Saki Naka",
+  BANK_IFSC: "INDB0001075",
+  BANK_ACCOUNT_NO: "259867348165"
+};
+
 export default function QuotationPreviewAndPrint({ quotation, className }) {
   const [open, setOpen] = useState(false);
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    if (open) {
+      api.get("/system-config/public")
+        .then(res => {
+          if (res.data?.success && res.data.data) {
+            setSettings(res.data.data);
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load company config:", err);
+        });
+    }
+  }, [open]);
 
   // fallback-safe destructuring
   const q = quotation || {};
+  const activeSettings = settings || fallbackSettings;
+
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  useEffect(() => {
+    let activeUrl = null;
+    if (open && q._id) {
+      setPdfLoading(true);
+      import("@react-pdf/renderer")
+        .then(async (module) => {
+          const pdfFn = module.pdf || module.default?.pdf;
+          if (pdfFn) {
+            const blob = await pdfFn(
+              <QuotationPDF quotation={q} settings={activeSettings} />
+            ).toBlob();
+            activeUrl = URL.createObjectURL(blob);
+            setPdfUrl(activeUrl);
+          }
+          setPdfLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to generate client PDF blob:", err);
+          setPdfLoading(false);
+        });
+    }
+    return () => {
+      if (activeUrl) {
+        URL.revokeObjectURL(activeUrl);
+      }
+      setPdfUrl(null);
+    };
+  }, [open, q._id, settings]);
 
   return (
     <>
@@ -181,27 +257,37 @@ export default function QuotationPreviewAndPrint({ quotation, className }) {
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col text-black">
           <DialogHeader>
             <DialogTitle>Quotation Preview</DialogTitle>
           </DialogHeader>
 
           {/* PDF Preview */}
-          <PDFViewer className="flex-1 w-full border rounded-lg">
-            <QuotationPDF quotation={q} />
-          </PDFViewer>
+          {pdfLoading ? (
+            <div className="flex-1 w-full border rounded-lg flex items-center justify-center bg-gray-50 text-gray-500">
+              Compiling quotation preview...
+            </div>
+          ) : pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              className="flex-1 w-full border rounded-lg"
+              style={{ minHeight: "60vh" }}
+              title="Quotation PDF"
+            />
+          ) : (
+            <div className="flex-1 w-full border rounded-lg flex items-center justify-center bg-gray-50 text-gray-500">
+              No quotation preview available.
+            </div>
+          )}
 
           {/* Download Link */}
-          <PDFDownloadLink
-            document={<QuotationPDF quotation={q} />}
-            fileName={`Quotation-${q?._id || "draft"}.pdf`}
+          <Button
+            onClick={() => window.open(pdfUrl || "#", "_blank")}
+            className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full"
+            disabled={!pdfUrl || pdfLoading}
           >
-            {({ loading }) => (
-              <Button className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full">
-                {loading ? "Preparing PDF..." : "⬇️ Download Quotation"}
-              </Button>
-            )}
-          </PDFDownloadLink>
+            ⬇️ Download Quotation
+          </Button>
         </DialogContent>
       </Dialog>
     </>
@@ -209,7 +295,7 @@ export default function QuotationPreviewAndPrint({ quotation, className }) {
 }
 
 // Quotation PDF Layout
-const QuotationPDF = ({ quotation }) => {
+const QuotationPDF = ({ quotation, settings }) => {
   const q = quotation || {};
   const items = q.items || [];
   const address = q.address || {};
@@ -225,24 +311,33 @@ const QuotationPDF = ({ quotation }) => {
   const transportationCharge = Number(q.transportationCharge || 0);
   const labourCharge = Number(q.labourCharge || 0);
   const discountAmount = Number(q.discountAmount || 0);
-  const priceBeforeTax = Number(q.priceBeforeTax || (totalAmount + transportationCharge + labourCharge - discountAmount));
-  const cgst = Number(q.cgst || (priceBeforeTax * 0.09));
-  const sgst = Number(q.sgst || (priceBeforeTax * 0.09));
-  const finalAmount = Number(q.finalAmount || (priceBeforeTax + cgst + sgst));
+  const priceBeforeTax = Number(q.priceBeforeTax !== undefined ? q.priceBeforeTax : (totalAmount - discountAmount));
+  
+  const gstRate = parseFloat(settings.GST_RATE || 18);
+  const halfGst = gstRate / 2;
+  const cgst = Number(q.cgst !== undefined ? q.cgst : (priceBeforeTax * (halfGst / 100)));
+  const sgst = Number(q.sgst !== undefined ? q.sgst : (priceBeforeTax * (halfGst / 100)));
+  const finalAmount = Number(q.finalAmount || (priceBeforeTax + cgst + sgst + transportationCharge + labourCharge));
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header Banner */}
-        <View style={{ position: "relative" }}>
+        <View>
           <Image
             src="/Erental_Quotation_Header.png"
             style={styles.headerImage}
           />
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.invoiceNumber}>PI/QUOTATION NO: {q._id ? q._id.slice(-6).toUpperCase() : "DRAFT"}</Text>
-            <Text style={styles.invoiceDate}>{createdAt}</Text>
-          </View>
+        </View>
+
+        {/* Quotation Metadata Row */}
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 20, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e2e8f0" }}>
+          <Text style={{ fontSize: 10, fontWeight: "bold", color: "#144169", fontFamily: "Helvetica-Bold" }}>
+            PI/QUOTATION NO: {q.quotationNumber || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT")}
+          </Text>
+          <Text style={{ fontSize: 9, fontWeight: "bold", color: "#475569" }}>
+            Date: {createdAt}
+          </Text>
         </View>
 
         {/* Customer / Date Info */}
@@ -259,10 +354,6 @@ const QuotationPDF = ({ quotation }) => {
               {address.gstin && (
                 <Text style={styles.bodyText}>GSTN: {address.gstin}</Text>
               )}
-            </View>
-
-            <View style={{ width: "25%", alignItems: "flex-end" }}>
-              <Text style={styles.dateText}>{createdAt}</Text>
             </View>
           </View>
           <Text style={styles.desc}>
@@ -314,7 +405,7 @@ const QuotationPDF = ({ quotation }) => {
                 <Text style={[styles.tableCell, { width: "10%" }]}>{displayRate.toFixed(2)}</Text>
                 <Text style={[styles.tableCell, { width: "8%" }]}>{qtyDisplay}</Text>
                 <Text style={[styles.tableCell, { width: "10%" }]}>{item.days || 1}</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice}</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{parseFloat(item.finalPrice || 0).toFixed(2)}</Text>
               </View>
             );
           })}
@@ -323,14 +414,6 @@ const QuotationPDF = ({ quotation }) => {
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>Sub Total</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{totalAmount.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
           </View>
 
           {discountAmount > 0 && (
@@ -346,13 +429,23 @@ const QuotationPDF = ({ quotation }) => {
           </View>
           
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>CGST @9%</Text>
+            <Text style={[styles.tableCell, { width: "88%" }]}>CGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{cgst.toFixed(2)}</Text>
           </View>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>SGST @9%</Text>
+            <Text style={[styles.tableCell, { width: "88%" }]}>SGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
           </View>
+
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
+          </View>
+
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{finalAmount.toFixed(2)}</Text>
@@ -362,47 +455,88 @@ const QuotationPDF = ({ quotation }) => {
         {/* Terms & Conditions */}
         <View style={styles.section}>
           <Text style={styles.termsTitle}>Terms & Conditions:</Text>
-          {[
-            "100% of the payment needs to be cleared for order confirmation before delivery.",
-            "If payment is to be made by cheque, booking is confirmed only after cheque clearance. The cheque must be cleared prior to delivery of items.",
-            "Customer will ensure quality and quantity of items at the time of delivery.",
-            "For the safety of the items, there is provision of refundable security deposit to be paid by customer in advance.",
-            "The refund amount will be credited back within 24-48 hours of return of items in sound conditions.",
-            "If there is any damage, a proportionate amount will be charged to the customers.",
-            "All legal disputes under Mumbai jurisdiction only.",
-            {
-              main: "If a confirmed order is cancelled due to some reasons, the paid amount will be refunded in the following ways:",
-              sub: [
-                "If cancellation is 24 hours prior to the event, a 100% refund will be made.",
-                "If cancellation is 24–12 hours prior to the event, 50% refund will be done.",
-                "If cancellation is less than 12 hours prior to the event, 10% refund will be done.",
-              ],
-            },
-            "GSTR1 shall not be filed unless we receive the payment.",
-          ].map((term, i) =>
-            typeof term === "string" ? (
-              <Text key={i} style={styles.termText}>{`${i + 1}. ${term}`}</Text>
-            ) : (
-              <View key={i} style={{ marginBottom: 3 }}>
-                <Text style={styles.termText}>{`${i + 1}. ${term.main}`}</Text>
-                {term.sub.map((subItem, j) => (
-                  <Text key={j} style={styles.subTermText}>{`  ${j + 1}. ${subItem}`}</Text>
-                ))}
-              </View>
-            )
-          )}
+          {(() => {
+            let activeTerms = [];
+            try {
+              if (settings.TERMS_AND_CONDITIONS) {
+                activeTerms = JSON.parse(settings.TERMS_AND_CONDITIONS);
+              }
+            } catch (err) {
+              console.error("Failed to parse terms from settings", err);
+            }
+            if (!activeTerms || activeTerms.length === 0) {
+              activeTerms = [
+                "100% of the payment needs to be cleared for order confirmation before delivery.",
+                "If payment is to be made by cheque, booking is confirmed only after cheque clearance. The cheque must be cleared prior to delivery of items.",
+                "Customer will ensure quality and quantity of items at the time of delivery.",
+                "For the safety of the items, there is provision of refundable security deposit to be paid by customer in advance.",
+                "The refund amount will be credited back within 24-48 hours of return of items in sound conditions.",
+                "If there is any damage, a proportionate amount will be charged to the customers.",
+                "All legal disputes under Mumbai jurisdiction only.",
+                {
+                  main: "If a confirmed order is cancelled due to some reasons, the paid amount will be refunded in the following ways:",
+                  sub: [
+                    "If cancellation is 24 hours prior to the event, a 100% refund will be made.",
+                    "If cancellation is 24–12 hours prior to the event, 50% refund will be done.",
+                    "If cancellation is less than 12 hours prior to the event, 10% refund will be done.",
+                  ],
+                },
+                "GSTR1 shall not be filed unless we receive the payment.",
+              ];
+            }
+            return activeTerms.map((term, i) =>
+              typeof term === "string" ? (
+                <Text key={i} style={styles.termText}>{`${i + 1}. ${term}`}</Text>
+              ) : (
+                <View key={i} style={{ marginBottom: 3 }}>
+                  <Text style={styles.termText}>{`${i + 1}. ${term.main}`}</Text>
+                  {term?.sub?.map((subItem, j) => (
+                    <Text key={j} style={styles.subTermText}>{`  ${j + 1}. ${subItem}`}</Text>
+                  ))}
+                </View>
+              )
+            );
+          })()}
         </View>
 
         {/* Note / Bank Details */}
         <View style={styles.section} wrap={false}>
           <Text style={styles.noteTitle}>Note:</Text>
-          <Text style={styles.noteText}>Bank Details:</Text>
-          <Text style={styles.noteText}>Bank Name: IndusInd Bank</Text>
-          <Text style={styles.noteText}>Account Name: ERENTALS HND PVT LTD</Text>
-          <Text style={styles.noteText}>Type of Account: CURRENT</Text>
-          <Text style={styles.noteText}>Branch Name: Saki Naka</Text>
-          <Text style={styles.noteText}>IFSC Code: INDB0001075</Text>
-          <Text style={styles.noteText}>Account No.: 259867348165</Text>
+          {(() => {
+            let accounts = [];
+            try {
+              if (settings.BANK_ACCOUNTS) {
+                accounts = JSON.parse(settings.BANK_ACCOUNTS);
+              }
+            } catch (err) {
+              console.error("Failed to parse bank accounts:", err);
+            }
+            
+            if (!Array.isArray(accounts) || accounts.length === 0) {
+              accounts = [{
+                bankName: settings.BANK_NAME,
+                accountName: settings.BANK_ACCOUNT_NAME,
+                accountType: settings.BANK_ACCOUNT_TYPE,
+                branchName: settings.BANK_BRANCH,
+                ifscCode: settings.BANK_IFSC,
+                accountNumber: settings.BANK_ACCOUNT_NO,
+                upiId: settings.BANK_UPI
+              }];
+            }
+
+            return accounts.map((acc, idx) => (
+              <View key={idx} style={{ marginBottom: idx < accounts.length - 1 ? 6 : 0 }}>
+                <Text style={styles.noteText}>Bank Details {accounts.length > 1 ? `#${idx + 1}` : ""}:</Text>
+                <Text style={styles.noteText}>Bank Name: {acc.bankName || "—"}</Text>
+                <Text style={styles.noteText}>Account Name: {acc.accountName || "—"}</Text>
+                <Text style={styles.noteText}>Type of Account: {acc.accountType || "—"}</Text>
+                <Text style={styles.noteText}>Branch Name: {acc.branchName || "—"}</Text>
+                <Text style={styles.noteText}>IFSC Code: {acc.ifscCode || "—"}</Text>
+                <Text style={styles.noteText}>Account No.: {acc.accountNumber || "—"}</Text>
+                {acc.upiId && <Text style={styles.noteText}>UPI ID: {acc.upiId}</Text>}
+              </View>
+            ));
+          })()}
         </View>
 
         {/* Footer Banner */}

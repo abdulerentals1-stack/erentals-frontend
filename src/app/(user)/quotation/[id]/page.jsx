@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button";
 import { DownloadIcon, RefreshCw, AlertTriangle, CheckCircle, ShieldAlert } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
+import dynamic from "next/dynamic";
+
+const QuotationPreviewAndPrint = dynamic(
+  () => import("@/components/admin/QuotationPreviewAndPrint"),
+  { ssr: false }
+);
 
 function DetailPageSkeleton({ title }) {
   return (
@@ -76,7 +81,7 @@ export default function QuotationDetailsPage() {
   if (loading) return <DetailPageSkeleton title="Quotation" />;
   if (!quotation) return <div className="p-4 text-red-500">Quotation not found.</div>;
 
-  const quotationNumberDisplay = `Quotation #${quotation._id.slice(-6).toUpperCase()}`;
+  const quotationNumberDisplay = `Quotation #${quotation.quotationNumber || quotation._id.slice(-6).toUpperCase()}`;
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-black">
@@ -199,34 +204,47 @@ export default function QuotationDetailsPage() {
           <div className="bg-gray-50 p-4 rounded-lg border text-sm space-y-1.5 h-fit">
             <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Price Summary</h2>
             <div className="flex justify-between">
-              <span>Base Amount:</span>
-              <span>₹{quotation.totalAmount}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Transportation:</span>
-              <span>₹{quotation.transportationCharge || 0}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Labour Charge:</span>
-              <span>₹{quotation.labourCharge || 0}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>SGST (9%):</span>
-              <span>₹{quotation.sgst || 0}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>CGST (9%):</span>
-              <span>₹{quotation.cgst || 0}</span>
+              <span>Sub Total:</span>
+              <span>₹{Number(quotation.totalAmount || 0).toFixed(2)}</span>
             </div>
             {quotation.discountAmount > 0 && (
               <div className="flex justify-between text-green-700">
                 <span>Discount:</span>
-                <span>-₹{quotation.discountAmount}</span>
+                <span>-₹{Number(quotation.discountAmount || 0).toFixed(2)}</span>
               </div>
             )}
+            <div className="flex justify-between text-gray-700 font-medium">
+              <span>Total payable before taxes:</span>
+              <span>₹{Number(quotation.priceBeforeTax !== undefined ? quotation.priceBeforeTax : (quotation.totalAmount - quotation.discountAmount)).toFixed(2)}</span>
+            </div>
+            {(() => {
+              const subTotalForTax = Number(quotation.priceBeforeTax !== undefined ? quotation.priceBeforeTax : (quotation.totalAmount - quotation.discountAmount));
+              const cgstRatePercent = subTotalForTax > 0 ? Math.round((quotation.cgst / subTotalForTax) * 100) : 9;
+              const sgstRatePercent = subTotalForTax > 0 ? Math.round((quotation.sgst / subTotalForTax) * 100) : 9;
+              return (
+                <>
+                  <div className="flex justify-between text-gray-600">
+                    <span>CGST ({cgstRatePercent}%):</span>
+                    <span>₹{Number(quotation.cgst || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>SGST ({sgstRatePercent}%):</span>
+                    <span>₹{Number(quotation.sgst || 0).toFixed(2)}</span>
+                  </div>
+                </>
+              );
+            })()}
+            <div className="flex justify-between text-gray-600">
+              <span>Transportation:</span>
+              <span>₹{Number(quotation.transportationCharge || 0).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Labour Charge:</span>
+              <span>₹{Number(quotation.labourCharge || 0).toFixed(2)}</span>
+            </div>
             <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
               <span>Total Payable:</span>
-              <span>₹{quotation.finalAmount}</span>
+              <span>₹{Number(quotation.finalAmount || 0).toFixed(2)}</span>
             </div>
 
             {/* Action Buttons: download button inside summary column matching order style */}

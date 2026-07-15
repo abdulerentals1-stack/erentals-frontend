@@ -12,7 +12,12 @@ import { toast } from "sonner";
 import { loadRazorpay } from "@/utils/loadRazorpay";
 import OrderTracker from "@/components/user/OrderTracker";
 import { Skeleton } from "@/components/ui/skeleton";
-import InvoicePreviewAndDownload from "@/components/admin/InvoicePreviewAndDownload";
+import dynamic from "next/dynamic";
+
+const InvoicePreviewAndDownload = dynamic(
+  () => import("@/components/admin/InvoicePreviewAndDownload"),
+  { ssr: false }
+);
 
 function DetailPageSkeleton({ title }) {
   return (
@@ -390,49 +395,62 @@ export default function OrderDetailsPage() {
           <div className="bg-gray-50 p-4 rounded-lg border text-sm space-y-1.5 h-fit">
             <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Price Summary</h2>
             <div className="flex justify-between">
-              <span>Base Amount:</span>
-              <span>₹{order.totalAmount}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Transportation:</span>
-              <span>₹{order.transportationCharge || 0}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Labour Charge:</span>
-              <span>₹{order.labourCharge || 0}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>SGST (9%):</span>
-              <span>₹{order.sgst}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>CGST (9%):</span>
-              <span>₹{order.cgst}</span>
+              <span>Sub Total:</span>
+              <span>₹{Number(order.totalAmount || 0).toFixed(2)}</span>
             </div>
             {order.discountAmount > 0 && (
               <div className="flex justify-between text-green-700">
                 <span>Discount:</span>
-                <span>-₹{order.discountAmount}</span>
+                <span>-₹{Number(order.discountAmount || 0).toFixed(2)}</span>
               </div>
             )}
+            <div className="flex justify-between text-gray-700 font-medium">
+              <span>Total payable before taxes:</span>
+              <span>₹{Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount)).toFixed(2)}</span>
+            </div>
+            {(() => {
+              const subTotalForTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount));
+              const cgstRatePercent = subTotalForTax > 0 ? Math.round((order.cgst / subTotalForTax) * 100) : 9;
+              const sgstRatePercent = subTotalForTax > 0 ? Math.round((order.sgst / subTotalForTax) * 100) : 9;
+              return (
+                <>
+                  <div className="flex justify-between text-gray-600">
+                    <span>CGST ({cgstRatePercent}%):</span>
+                    <span>₹{Number(order.cgst || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>SGST ({sgstRatePercent}%):</span>
+                    <span>₹{Number(order.sgst || 0).toFixed(2)}</span>
+                  </div>
+                </>
+              );
+            })()}
+            <div className="flex justify-between text-gray-600">
+              <span>Transportation:</span>
+              <span>₹{Number(order.transportationCharge || 0).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Labour Charge:</span>
+              <span>₹{Number(order.labourCharge || 0).toFixed(2)}</span>
+            </div>
             <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
-              <span>Total:</span>
-              <span>₹{order.finalAmount}</span>
+              <span>Total Payable:</span>
+              <span>₹{Number(order.finalAmount || 0).toFixed(2)}</span>
             </div>
             {order.paymentMethod !== "cod" && (
               <div className="border-t pt-2 mt-2 space-y-1 bg-yellow-50/50 p-2 rounded">
                 <div className="flex justify-between text-xs text-gray-600">
                   <span>Advance Paid:</span>
-                  <span>₹{order.advancePaid}</span>
+                  <span>₹{Number(order.advancePaid || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-green-700 font-medium">
                   <span>Total Paid:</span>
-                  <span>₹{order.paidAmount}</span>
+                  <span>₹{Number(order.paidAmount || 0).toFixed(2)}</span>
                 </div>
                 {order.status !== "cancelled" && order.finalAmount - order.paidAmount > 0 && (
                   <div className="flex justify-between text-xs text-yellow-700 font-semibold">
                     <span>Remaining Balance:</span>
-                    <span>₹{order.finalAmount - order.paidAmount}</span>
+                    <span>₹{Number(order.finalAmount - order.paidAmount).toFixed(2)}</span>
                   </div>
                 )}
               </div>

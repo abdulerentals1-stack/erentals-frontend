@@ -11,7 +11,12 @@ import { EyeIcon, CreditCard, RefreshCw, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStatus } from "@/utils/authUtils";
 import { Skeleton } from "@/components/ui/skeleton";
-import InvoicePreviewAndDownload from '../../../components/admin/InvoicePreviewAndDownload'
+import dynamic from "next/dynamic";
+
+const InvoicePreviewAndDownload = dynamic(
+  () => import("../../../components/admin/InvoicePreviewAndDownload"),
+  { ssr: false }
+);
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);

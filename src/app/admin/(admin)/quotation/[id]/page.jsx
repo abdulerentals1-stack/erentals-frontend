@@ -17,7 +17,12 @@ import { format } from "date-fns";
 import { getAllProducts, calculatePrice } from "@/services/productService";
 import { getQuotationById, adminUpdateQuotation, updateQuotationStatus } from "@/services/quotationOrderService";
 import { getAllCoupons } from "@/services/couponService";
-import QuotationPreviewAndPrint from "@/components/admin/QuotationPreviewAndPrint";
+import dynamic from "next/dynamic";
+
+const QuotationPreviewAndPrint = dynamic(
+  () => import("@/components/admin/QuotationPreviewAndPrint"),
+  { ssr: false }
+);
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
@@ -179,7 +184,7 @@ export default function OrderDetailsPage() {
     <div className="p-4 mt-12 md:mt-0 max-w-4xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Quotation #{order._id.slice(-6)}</CardTitle>
+          <CardTitle>Quotation #{order.quotationNumber || order._id.slice(-6).toUpperCase()}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-gray-700">
 
