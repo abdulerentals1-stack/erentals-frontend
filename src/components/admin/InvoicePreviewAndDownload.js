@@ -339,8 +339,8 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
   
   const gstRate = parseFloat(settings.GST_RATE || 18);
   const halfGst = gstRate / 2;
-  const cgst = Math.round(priceBeforeTax * (halfGst / 100));
-  const sgst = Math.round(priceBeforeTax * (halfGst / 100));
+  const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+  const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
   const finalAmount = priceBeforeTax + cgst + sgst;
   const advancePaid = Number(order.advancePaid || 0);
   const paidAmount = Number(order.paidAmount || 0);

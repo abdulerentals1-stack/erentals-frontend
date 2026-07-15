@@ -374,8 +374,8 @@ export default function OrderDetailsPage() {
         
         const priceBeforeTax = totalAmount - discountAmount + transportationCharge + labourCharge;
         const halfGst = 9;
-        const cgst = Math.round(priceBeforeTax * (halfGst / 100));
-        const sgst = Math.round(priceBeforeTax * (halfGst / 100));
+        const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+        const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
         const finalAmount = priceBeforeTax + cgst + sgst;
 
         return (
