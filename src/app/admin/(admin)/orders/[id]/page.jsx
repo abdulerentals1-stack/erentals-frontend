@@ -392,6 +392,7 @@ export default function OrderDetailsPage() {
           </>
         );
       })()}
+    </div>
     {order?.paymentMethod === "cod" && order?.paymentStatus !== "paid" && (
       <div className="mt-3 bg-blue-50 border border-blue-200 text-blue-800 rounded p-2.5 text-xs">
         💡 <strong>Cash on Delivery (COD):</strong> The customer can convert this to online payment and pay via their dashboard. Once paid, the status will automatically update to <strong>Paid (Razorpay)</strong>.
