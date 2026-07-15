@@ -241,7 +241,6 @@ const QuotationPDF = ({ quotation }) => {
           />
           <View style={styles.headerTextContainer}>
             <Text style={styles.invoiceNumber}>PI/QUOTATION NO: {q._id ? q._id.slice(-6).toUpperCase() : "DRAFT"}</Text>
-            <Text style={styles.invoiceDate}>{createdAt}</Text>
           </View>
         </View>
 
