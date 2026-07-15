@@ -396,7 +396,10 @@ export default function OrderDetailsPage() {
             <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Price Summary</h2>
             <div className="flex justify-between">
               <span>Sub Total:</span>
-              <span>₹{Number(order.totalAmount || 0).toFixed(2)}</span>
+              <span>₹{(() => {
+                const s = (order.items || []).reduce((sum, i) => sum + Number(i.finalPrice || 0), 0);
+                return (s > 0 ? Math.round(s * 100) / 100 : Number(order.totalAmount || 0)).toFixed(2);
+              })()}</span>
             </div>
             {order.discountAmount > 0 && (
               <div className="flex justify-between text-green-700">
@@ -414,16 +417,18 @@ export default function OrderDetailsPage() {
             </div>
 
             {(() => {
-              const totalAmount = Number(order.totalAmount || 0);
+              // Recalculate from items to avoid double-counting transportation in old orders
+              const itemsSubTotal = (order.items || []).reduce((sum, item) => sum + Number(item.finalPrice || 0), 0);
+              const totalAmount = itemsSubTotal > 0 ? Math.round(itemsSubTotal * 100) / 100 : Number(order.totalAmount || 0);
               const transportationCharge = Number(order.transportationCharge || 0);
               const labourCharge = Number(order.labourCharge || 0);
               const discountAmount = Number(order.discountAmount || 0);
               
-              const priceBeforeTax = totalAmount - discountAmount + transportationCharge + labourCharge;
+              const priceBeforeTax = Math.round((totalAmount - discountAmount + transportationCharge + labourCharge) * 100) / 100;
               const halfGst = 9;
               const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
               const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
-              const finalAmount = priceBeforeTax + cgst + sgst;
+              const finalAmount = Math.round((priceBeforeTax + cgst + sgst) * 100) / 100;
 
               return (
                 <>

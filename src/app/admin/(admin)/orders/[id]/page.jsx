@@ -367,19 +367,22 @@ export default function OrderDetailsPage() {
         </span>
       </p>
       {(() => {
-        const totalAmount = Number(order?.totalAmount || 0);
+        // Recalculate from items to avoid double-counting transportation in old orders
+        const itemsSubTotal = (order?.items || []).reduce((sum, item) => sum + Number(item.finalPrice || 0), 0);
+        const totalAmount = itemsSubTotal > 0 ? Math.round(itemsSubTotal * 100) / 100 : Number(order?.totalAmount || 0);
         const transportationCharge = Number(order?.transportationCharge || 0);
         const labourCharge = Number(order?.labourCharge || 0);
         const discountAmount = Number(order?.discountAmount || 0);
         
-        const priceBeforeTax = totalAmount - discountAmount + transportationCharge + labourCharge;
+        const priceBeforeTax = Math.round((totalAmount - discountAmount + transportationCharge + labourCharge) * 100) / 100;
         const halfGst = 9;
         const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
         const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
-        const finalAmount = priceBeforeTax + cgst + sgst;
+        const finalAmount = Math.round((priceBeforeTax + cgst + sgst) * 100) / 100;
 
         return (
           <>
+            <p><strong>Sub Total:</strong> ₹{totalAmount.toFixed(2)}</p>
             <p><strong>Price Before Tax:</strong> ₹{priceBeforeTax.toFixed(2)}</p>
             <p><strong>Discount:</strong> ₹{discountAmount.toFixed(2)}</p>
             <p><strong>Transportation:</strong> ₹{transportationCharge.toFixed(2)}</p>

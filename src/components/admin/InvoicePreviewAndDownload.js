@@ -331,20 +331,26 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
   const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "—";
   const deliveryDate = order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "—";
 
-  const totalAmount = Number(order.totalAmount || 0);
+  // Recalculate totalAmount as sum of items (avoids double-counting for old orders
+  // where transportation/labour may have been incorrectly baked into totalAmount)
+  const itemsSubTotal = (order.items || []).reduce(
+    (sum, item) => sum + Number(item.finalPrice || 0), 0
+  );
+  // Use the recalculated items sum; fall back to stored totalAmount if no items
+  const totalAmount = itemsSubTotal > 0 ? Math.round(itemsSubTotal * 100) / 100 : Number(order.totalAmount || 0);
   const transportationCharge = Number(order.transportationCharge || 0);
   const labourCharge = Number(order.labourCharge || 0);
   const discountAmount = Number(order.discountAmount || 0);
-  const priceBeforeTax = totalAmount - discountAmount + transportationCharge + labourCharge;
+  const priceBeforeTax = Math.round((totalAmount - discountAmount + transportationCharge + labourCharge) * 100) / 100;
   
   const gstRate = parseFloat(settings.GST_RATE || 18);
   const halfGst = gstRate / 2;
   const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
   const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
-  const finalAmount = priceBeforeTax + cgst + sgst;
+  const finalAmount = Math.round((priceBeforeTax + cgst + sgst) * 100) / 100;
   const advancePaid = Number(order.advancePaid || 0);
   const paidAmount = Number(order.paidAmount || 0);
-  const balanceDue = Math.max(0, finalAmount - paidAmount);
+  const balanceDue = Math.max(0, Math.round((finalAmount - paidAmount) * 100) / 100);
 
   return (
     <Document>
