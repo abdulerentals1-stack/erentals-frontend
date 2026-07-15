@@ -228,10 +228,10 @@ const InvoicePDF = ({ order, terms, persons }) => {
   const transportationCharge = Number(order.transportationCharge || 0);
   const labourCharge = Number(order.labourCharge || 0);
   const discountAmount = Number(order.discountAmount || 0);
-  const priceBeforeTax = Number(order.priceBeforeTax || (totalAmount + transportationCharge + labourCharge - discountAmount));
-  const cgst = Number(order.cgst || (priceBeforeTax * 0.09));
-  const sgst = Number(order.sgst || (priceBeforeTax * 0.09));
-  const finalAmount = Number(order.finalAmount || (priceBeforeTax + cgst + sgst));
+  const priceBeforeTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (totalAmount - discountAmount));
+  const cgst = Number(order.cgst !== undefined ? order.cgst : (priceBeforeTax * 0.09));
+  const sgst = Number(order.sgst !== undefined ? order.sgst : (priceBeforeTax * 0.09));
+  const finalAmount = Number(order.finalAmount || (priceBeforeTax + cgst + sgst + transportationCharge + labourCharge));
   const advancePaid = Number(order.advancePaid || 0);
   const paidAmount = Number(order.paidAmount || 0);
   const balanceDue = Math.max(0, finalAmount - paidAmount);
@@ -386,7 +386,7 @@ const InvoicePDF = ({ order, terms, persons }) => {
                 <Text style={[styles.tableCell, { width: "10%" }]}>{displayRate.toFixed(2)}</Text>
                 <Text style={[styles.tableCell, { width: "8%" }]}>{qtyDisplay}</Text>
                 <Text style={[styles.tableCell, { width: "10%" }]}>{item.days || 1}</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice}</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{parseFloat(item.finalPrice || 0).toFixed(2)}</Text>
               </View>
             );
           })}
@@ -396,21 +396,13 @@ const InvoicePDF = ({ order, terms, persons }) => {
             <Text style={[styles.tableCell, { width: "88%" }]}>Sub Total</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{totalAmount.toFixed(2)}</Text>
           </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
-          </View>
 
           {discountAmount > 0 && (
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Discount</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>-{discountAmount.toFixed(2)}</Text>
-          </View>
-           )}
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCell, { width: "88%" }]}>Discount</Text>
+              <Text style={[styles.tableCell, { width: "12%" }]}>-{discountAmount.toFixed(2)}</Text>
+            </View>
+          )}
 
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total payable before taxes</Text>
@@ -425,6 +417,16 @@ const InvoicePDF = ({ order, terms, persons }) => {
             <Text style={[styles.tableCell, { width: "88%" }]}>SGST @9%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
           </View>
+
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
+          </View>
+
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{finalAmount.toFixed(2)}</Text>

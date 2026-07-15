@@ -225,10 +225,10 @@ const QuotationPDF = ({ quotation }) => {
   const transportationCharge = Number(q.transportationCharge || 0);
   const labourCharge = Number(q.labourCharge || 0);
   const discountAmount = Number(q.discountAmount || 0);
-  const priceBeforeTax = Number(q.priceBeforeTax || (totalAmount + transportationCharge + labourCharge - discountAmount));
-  const cgst = Number(q.cgst || (priceBeforeTax * 0.09));
-  const sgst = Number(q.sgst || (priceBeforeTax * 0.09));
-  const finalAmount = Number(q.finalAmount || (priceBeforeTax + cgst + sgst));
+  const priceBeforeTax = Number(q.priceBeforeTax !== undefined ? q.priceBeforeTax : (totalAmount - discountAmount));
+  const cgst = Number(q.cgst !== undefined ? q.cgst : (priceBeforeTax * 0.09));
+  const sgst = Number(q.sgst !== undefined ? q.sgst : (priceBeforeTax * 0.09));
+  const finalAmount = Number(q.finalAmount || (priceBeforeTax + cgst + sgst + transportationCharge + labourCharge));
 
   return (
     <Document>
@@ -313,7 +313,7 @@ const QuotationPDF = ({ quotation }) => {
                 <Text style={[styles.tableCell, { width: "10%" }]}>{displayRate.toFixed(2)}</Text>
                 <Text style={[styles.tableCell, { width: "8%" }]}>{qtyDisplay}</Text>
                 <Text style={[styles.tableCell, { width: "10%" }]}>{item.days || 1}</Text>
-                <Text style={[styles.tableCell, { width: "12%" }]}>{item.finalPrice}</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{parseFloat(item.finalPrice || 0).toFixed(2)}</Text>
               </View>
             );
           })}
@@ -322,14 +322,6 @@ const QuotationPDF = ({ quotation }) => {
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>Sub Total</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{totalAmount.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
           </View>
 
           {discountAmount > 0 && (
@@ -352,6 +344,16 @@ const QuotationPDF = ({ quotation }) => {
             <Text style={[styles.tableCell, { width: "88%" }]}>SGST @9%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
           </View>
+
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
+          </View>
+
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{finalAmount.toFixed(2)}</Text>
