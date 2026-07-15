@@ -404,6 +404,27 @@ export default function OrderDetailsPage() {
                 <span>-₹{Number(order.discountAmount || 0).toFixed(2)}</span>
               </div>
             )}
+            {/* Render Transportation and Labour above taxes ONLY if they are included in the taxable base */}
+            {(() => {
+              const currentPriceBeforeTax = order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount);
+              const baseAmount = order.totalAmount - order.discountAmount;
+              if (Math.round(currentPriceBeforeTax) > Math.round(baseAmount)) {
+                return (
+                  <>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Transportation:</span>
+                      <span>₹{Number(order.transportationCharge || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Labour Charge:</span>
+                      <span>₹{Number(order.labourCharge || 0).toFixed(2)}</span>
+                    </div>
+                  </>
+                );
+              }
+              return null;
+            })()}
+
             <div className="flex justify-between text-gray-700 font-medium">
               <span>Total payable before taxes:</span>
               <span>₹{Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount)).toFixed(2)}</span>
@@ -425,14 +446,28 @@ export default function OrderDetailsPage() {
                 </>
               );
             })()}
-            <div className="flex justify-between text-gray-600">
-              <span>Transportation:</span>
-              <span>₹{Number(order.transportationCharge || 0).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Labour Charge:</span>
-              <span>₹{Number(order.labourCharge || 0).toFixed(2)}</span>
-            </div>
+
+            {/* Render Transportation and Labour below taxes ONLY if they are NOT included in the taxable base */}
+            {(() => {
+              const currentPriceBeforeTax = order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount);
+              const baseAmount = order.totalAmount - order.discountAmount;
+              if (Math.round(currentPriceBeforeTax) <= Math.round(baseAmount)) {
+                return (
+                  <>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Transportation:</span>
+                      <span>₹{Number(order.transportationCharge || 0).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Labour Charge:</span>
+                      <span>₹{Number(order.labourCharge || 0).toFixed(2)}</span>
+                    </div>
+                  </>
+                );
+              }
+              return null;
+            })()}
+
             <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
               <span>Total Payable:</span>
               <span>₹{Number(order.finalAmount || 0).toFixed(2)}</span>
