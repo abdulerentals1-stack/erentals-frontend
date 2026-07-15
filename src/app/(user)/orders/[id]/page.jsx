@@ -396,7 +396,10 @@ export default function OrderDetailsPage() {
             <h2 className="font-semibold mb-2 text-gray-900 border-b pb-1">Price Summary</h2>
             <div className="flex justify-between">
               <span>Sub Total:</span>
-              <span>₹{Number(order.totalAmount || 0).toFixed(2)}</span>
+              <span>₹{(() => {
+                const s = (order.items || []).reduce((sum, i) => sum + Number(i.finalPrice || 0), 0);
+                return (s > 0 ? Math.round(s * 100) / 100 : Number(order.totalAmount || 0)).toFixed(2);
+              })()}</span>
             </div>
             {order.discountAmount > 0 && (
               <div className="flex justify-between text-green-700">
@@ -404,27 +407,6 @@ export default function OrderDetailsPage() {
                 <span>-₹{Number(order.discountAmount || 0).toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between text-gray-700 font-medium">
-              <span>Total payable before taxes:</span>
-              <span>₹{Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount)).toFixed(2)}</span>
-            </div>
-            {(() => {
-              const subTotalForTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (order.totalAmount - order.discountAmount));
-              const cgstRatePercent = subTotalForTax > 0 ? Math.round((order.cgst / subTotalForTax) * 100) : 9;
-              const sgstRatePercent = subTotalForTax > 0 ? Math.round((order.sgst / subTotalForTax) * 100) : 9;
-              return (
-                <>
-                  <div className="flex justify-between text-gray-600">
-                    <span>CGST ({cgstRatePercent}%):</span>
-                    <span>₹{Number(order.cgst || 0).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>SGST ({sgstRatePercent}%):</span>
-                    <span>₹{Number(order.sgst || 0).toFixed(2)}</span>
-                  </div>
-                </>
-              );
-            })()}
             <div className="flex justify-between text-gray-600">
               <span>Transportation:</span>
               <span>₹{Number(order.transportationCharge || 0).toFixed(2)}</span>
@@ -433,10 +415,42 @@ export default function OrderDetailsPage() {
               <span>Labour Charge:</span>
               <span>₹{Number(order.labourCharge || 0).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
-              <span>Total Payable:</span>
-              <span>₹{Number(order.finalAmount || 0).toFixed(2)}</span>
-            </div>
+
+            {(() => {
+              // Recalculate from items to avoid double-counting transportation in old orders
+              const itemsSubTotal = (order.items || []).reduce((sum, item) => sum + Number(item.finalPrice || 0), 0);
+              const totalAmount = itemsSubTotal > 0 ? Math.round(itemsSubTotal * 100) / 100 : Number(order.totalAmount || 0);
+              const transportationCharge = Number(order.transportationCharge || 0);
+              const labourCharge = Number(order.labourCharge || 0);
+              const discountAmount = Number(order.discountAmount || 0);
+              
+              const priceBeforeTax = Math.round((totalAmount - discountAmount + transportationCharge + labourCharge) * 100) / 100;
+              const halfGst = 9;
+              const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+              const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+              const finalAmount = Math.round((priceBeforeTax + cgst + sgst) * 100) / 100;
+
+              return (
+                <>
+                  <div className="flex justify-between text-gray-700 font-medium">
+                    <span>Total payable before taxes:</span>
+                    <span>₹{priceBeforeTax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>CGST ({halfGst}%):</span>
+                    <span>₹{cgst.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>SGST ({halfGst}%):</span>
+                    <span>₹{sgst.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-base border-t pt-1 mt-1 text-gray-900">
+                    <span>Total Payable:</span>
+                    <span>₹{finalAmount.toFixed(2)}</span>
+                  </div>
+                </>
+              );
+            })()}
             {order.paymentMethod !== "cod" && (
               <div className="border-t pt-2 mt-2 space-y-1 bg-yellow-50/50 p-2 rounded">
                 <div className="flex justify-between text-xs text-gray-600">

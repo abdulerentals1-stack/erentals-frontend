@@ -423,6 +423,15 @@ const QuotationPDF = ({ quotation, settings }) => {
             </View>
           )}
 
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
+          </View>
+
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total payable before taxes</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{priceBeforeTax.toFixed(2)}</Text>
@@ -435,15 +444,6 @@ const QuotationPDF = ({ quotation, settings }) => {
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>SGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
-          </View>
-
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
           </View>
 
           <View style={[styles.tableRow, styles.tableHeader]}>

@@ -331,20 +331,26 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
   const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "—";
   const deliveryDate = order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "—";
 
-  const totalAmount = Number(order.totalAmount || 0);
+  // Recalculate totalAmount as sum of items (avoids double-counting for old orders
+  // where transportation/labour may have been incorrectly baked into totalAmount)
+  const itemsSubTotal = (order.items || []).reduce(
+    (sum, item) => sum + Number(item.finalPrice || 0), 0
+  );
+  // Use the recalculated items sum; fall back to stored totalAmount if no items
+  const totalAmount = itemsSubTotal > 0 ? Math.round(itemsSubTotal * 100) / 100 : Number(order.totalAmount || 0);
   const transportationCharge = Number(order.transportationCharge || 0);
   const labourCharge = Number(order.labourCharge || 0);
   const discountAmount = Number(order.discountAmount || 0);
-  const priceBeforeTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (totalAmount - discountAmount));
+  const priceBeforeTax = Math.round((totalAmount - discountAmount + transportationCharge + labourCharge) * 100) / 100;
   
   const gstRate = parseFloat(settings.GST_RATE || 18);
   const halfGst = gstRate / 2;
-  const cgst = Number(order.cgst !== undefined ? order.cgst : (priceBeforeTax * (halfGst / 100)));
-  const sgst = Number(order.sgst !== undefined ? order.sgst : (priceBeforeTax * (halfGst / 100)));
-  const finalAmount = Number(order.finalAmount || (priceBeforeTax + cgst + sgst + transportationCharge + labourCharge));
+  const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+  const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+  const finalAmount = Math.round((priceBeforeTax + cgst + sgst) * 100) / 100;
   const advancePaid = Number(order.advancePaid || 0);
   const paidAmount = Number(order.paidAmount || 0);
-  const balanceDue = Math.max(0, finalAmount - paidAmount);
+  const balanceDue = Math.max(0, Math.round((finalAmount - paidAmount) * 100) / 100);
 
   return (
     <Document>
@@ -531,6 +537,15 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             </View>
           )}
 
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
+            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
+          </View>
+
           <View style={[styles.tableRow, styles.tableHeader]}>
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total payable before taxes</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{priceBeforeTax.toFixed(2)}</Text>
@@ -543,15 +558,6 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
           <View style={styles.tableRow}>
             <Text style={[styles.tableCell, { width: "88%" }]}>SGST @{halfGst}%</Text>
             <Text style={[styles.tableCell, { width: "12%" }]}>{sgst.toFixed(2)}</Text>
-          </View>
-
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Transportation</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{transportationCharge.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Labour Charges</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{labourCharge.toFixed(2)}</Text>
           </View>
 
           <View style={[styles.tableRow, styles.tableHeader]}>

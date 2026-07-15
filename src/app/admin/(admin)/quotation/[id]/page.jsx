@@ -37,6 +37,8 @@ export default function OrderDetailsPage() {
   const [coupons, setCoupons] = useState([]);
   const [updateorder, setUpdateorder] = useState(true);
 
+  const isModifiable = order?.status !== "cancelled";
+
   useEffect(() => {
     fetchOrder();
     fetchProducts();
@@ -254,6 +256,22 @@ export default function OrderDetailsPage() {
       </Card>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {!isModifiable && (
+          <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-md text-black">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-amber-700 font-medium">
+                  ⚠️ This quotation has been cancelled and cannot be modified.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="space-y-4">
           {items.map((item, index) => (
             <Card key={index}>
@@ -277,6 +295,7 @@ export default function OrderDetailsPage() {
                       handleItemChange(index, "length", e.target.value)
                     }
                     placeholder="Length"
+                    disabled={!isModifiable}
                   />
                 )}
                 {item.product?.pricingType === "area" && (
@@ -288,6 +307,7 @@ export default function OrderDetailsPage() {
                         handleItemChange(index, "length", e.target.value)
                       }
                       placeholder="Length"
+                      disabled={!isModifiable}
                     />
                     <Input
                       type="number"
@@ -296,6 +316,7 @@ export default function OrderDetailsPage() {
                         handleItemChange(index, "width", e.target.value)
                       }
                       placeholder="Width"
+                      disabled={!isModifiable}
                     />
                   </div>
                 )}
@@ -309,6 +330,7 @@ export default function OrderDetailsPage() {
                     handleItemChange(index, "days", e.target.value)
                   }
                   placeholder="Days"
+                  disabled={!isModifiable}
                 />
 
                 <p className="text-sm text-muted-foreground">Quantity</p>
@@ -319,6 +341,7 @@ export default function OrderDetailsPage() {
                       handleItemChange(index, "quantity", e.target.value)
                     }
                     placeholder="Quantity"
+                    disabled={!isModifiable}
                   />
 
                 {/* ✅ Service Charge Toggle */}
@@ -330,8 +353,9 @@ export default function OrderDetailsPage() {
                   onValueChange={(val) =>
                     handleItemChange(index, "withService", val === "true")
                   }
+                  disabled={!isModifiable}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-[200px] text-black bg-white">
                     <SelectValue placeholder="Include Service" />
                   </SelectTrigger>
                   <SelectContent>
@@ -360,6 +384,7 @@ export default function OrderDetailsPage() {
                     value={item.customPrice ?? ""}
                     onChange={(e) => handleItemChange(index, "customPrice", e.target.value || null)}
                     placeholder="Custom Price (optional)"
+                    disabled={!isModifiable}
                   />
 
 
@@ -372,6 +397,7 @@ export default function OrderDetailsPage() {
                     variant="destructive"
                     size="sm"
                     onClick={() => removeItem(index)}
+                    disabled={!isModifiable}
                   >
                     Remove
                   </Button>
@@ -387,6 +413,7 @@ export default function OrderDetailsPage() {
             type="number"
             value={transportationCharge}
             onChange={(e) => setTransportationCharge(e.target.value)}
+            disabled={!isModifiable}
           />
         </div>
         <div>
@@ -400,6 +427,7 @@ export default function OrderDetailsPage() {
                 labourCharge: Number(e.target.value),
               }))
             }
+            disabled={!isModifiable}
           />
         </div>
         <div>
@@ -409,8 +437,9 @@ export default function OrderDetailsPage() {
             onValueChange={(val) =>
               setCouponCode(val === "__none__" ? '' : val)
             }
+            disabled={!isModifiable}
           >
-            <SelectTrigger className="w-[300px]">
+            <SelectTrigger className="w-[300px] text-black bg-white">
               <SelectValue placeholder="Select coupon or remove" />
             </SelectTrigger>
             <SelectContent>
@@ -428,26 +457,62 @@ export default function OrderDetailsPage() {
           </Select>
         </div>
 
-        <div className="flex gap-4 flex-wrap">
-          <Button type="submit" disabled={!updateorder}>{updateorder ? "Update Order" : "Updating..."}</Button>
-          <Select value={status} onValueChange={(val) => setStatus(val)}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Change Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {[
-                "pending", "responded", "cancelled"
-              ].map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s.replace("_", " ")}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button type="button" variant="outline" onClick={handleStatusChange}>
-            Update Status
-          </Button>
-        </div>
+        {/* Dynamic status transitions matching backend state-machine rules */}
+        {(() => {
+          const QUOTATION_TRANSITIONS = {
+            pending: ["responded", "cancelled"],
+            responded: ["cancelled"],
+            cancelled: []
+          };
+          const currentStatus = order?.status;
+          const allowedNext = QUOTATION_TRANSITIONS[currentStatus] || [];
+          const statusOptions = Array.from(new Set([currentStatus, ...allowedNext])).filter(Boolean);
+          const hasTransitions = allowedNext.length > 0;
+
+          return (
+            <div className="flex gap-4 flex-wrap mt-4 items-center">
+              <Button type="submit" disabled={!isModifiable || !updateorder}>
+                {updateorder ? "Update Order" : "Updating..."}
+              </Button>
+              
+              <Select 
+                value={status} 
+                onValueChange={(val) => setStatus(val)}
+                disabled={!hasTransitions}
+              >
+                <SelectTrigger className="w-[200px] text-black bg-white">
+                  <SelectValue placeholder="Change Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((s) => (
+                    <SelectItem key={s} value={s} className="text-black bg-white">
+                      {s.replace("_", " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleStatusChange}
+                disabled={!hasTransitions}
+              >
+                Update Status
+              </Button>
+              
+              {hasTransitions && currentStatus !== "cancelled" && (
+                <Button 
+                  type="button" 
+                  variant="destructive" 
+                  onClick={cancelOrder}
+                >
+                  Cancel Order
+                </Button>
+              )}
+            </div>
+          );
+        })()}
       </form>
 
 
@@ -457,6 +522,7 @@ export default function OrderDetailsPage() {
           placeholder="Search product to add..."
           value={productSearch}
           onChange={(e) => setProductSearch(e.target.value)}
+          disabled={!isModifiable}
         />
         <Select
           onValueChange={async (productId) => {
@@ -476,9 +542,10 @@ export default function OrderDetailsPage() {
               setItems((prev) => [...prev, newItem]);
             }
           }}
+          disabled={!isModifiable}
         >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select product to add" />
+          <SelectTrigger className="w-full text-black bg-white">
+            <SelectValue placeholder={isModifiable ? "Select product to add" : "Quotation locked (cannot add products)"} />
           </SelectTrigger>
           <SelectContent>
             {filteredProducts.length ? (

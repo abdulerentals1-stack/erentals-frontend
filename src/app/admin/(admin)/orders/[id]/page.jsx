@@ -366,16 +366,36 @@ export default function OrderDetailsPage() {
           {order?.paymentStatus === "not_required" ? "Pay on Delivery" : (order?.paymentStatus || "pending").replace(/_/g, ' ')}
         </span>
       </p>
-      <p><strong>Price Before Tax:</strong> ₹{order?.priceBeforeTax?.toFixed(2) || "0.00"}</p>
-      <p><strong>Discount:</strong> ₹{order?.discountAmount?.toFixed(2) || "0.00"}</p>
-      <p><strong>Transportation:</strong> ₹{order?.transportationCharge?.toFixed(2) || "0.00"}</p>
-      <p><strong>Labour:</strong> ₹{order?.labourCharge?.toFixed(2) || "0.00"}</p>
-      <p><strong>SGST:</strong> ₹{order?.sgst?.toFixed(2) || "0.00"}</p>
-      <p><strong>CGST:</strong> ₹{order?.cgst?.toFixed(2) || "0.00"}</p>
+      {(() => {
+        // Recalculate from items to avoid double-counting transportation in old orders
+        const itemsSubTotal = (order?.items || []).reduce((sum, item) => sum + Number(item.finalPrice || 0), 0);
+        const totalAmount = itemsSubTotal > 0 ? Math.round(itemsSubTotal * 100) / 100 : Number(order?.totalAmount || 0);
+        const transportationCharge = Number(order?.transportationCharge || 0);
+        const labourCharge = Number(order?.labourCharge || 0);
+        const discountAmount = Number(order?.discountAmount || 0);
+        
+        const priceBeforeTax = Math.round((totalAmount - discountAmount + transportationCharge + labourCharge) * 100) / 100;
+        const halfGst = 9;
+        const cgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+        const sgst = Math.round(priceBeforeTax * (halfGst / 100) * 100) / 100;
+        const finalAmount = Math.round((priceBeforeTax + cgst + sgst) * 100) / 100;
+
+        return (
+          <>
+            <p><strong>Sub Total:</strong> ₹{totalAmount.toFixed(2)}</p>
+            <p><strong>Price Before Tax:</strong> ₹{priceBeforeTax.toFixed(2)}</p>
+            <p><strong>Discount:</strong> ₹{discountAmount.toFixed(2)}</p>
+            <p><strong>Transportation:</strong> ₹{transportationCharge.toFixed(2)}</p>
+            <p><strong>Labour:</strong> ₹{labourCharge.toFixed(2)}</p>
+            <p><strong>SGST:</strong> ₹{sgst.toFixed(2)}</p>
+            <p><strong>CGST:</strong> ₹{cgst.toFixed(2)}</p>
+            <p className="col-span-1 sm:col-span-2 mt-3 text-lg font-bold text-indigo-700">
+              Final Amount: ₹{finalAmount.toFixed(2)}
+            </p>
+          </>
+        );
+      })()}
     </div>
-    <p className="mt-3 text-lg font-bold text-indigo-700">
-      Final Amount: ₹{order?.finalAmount?.toFixed(2) || "0.00"}
-    </p>
     {order?.paymentMethod === "cod" && order?.paymentStatus !== "paid" && (
       <div className="mt-3 bg-blue-50 border border-blue-200 text-blue-800 rounded p-2.5 text-xs">
         💡 <strong>Cash on Delivery (COD):</strong> The customer can convert this to online payment and pay via their dashboard. Once paid, the status will automatically update to <strong>Paid (Razorpay)</strong>.

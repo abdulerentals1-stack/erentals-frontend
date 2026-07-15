@@ -5,7 +5,8 @@ import ProductCard from "@/components/ui/ProductCard";
 
 import Script from "next/script";
 
-export const revalidate = 600; // Revalidate products page every 10 minutes (ISR)
+export const revalidate = 600; // Revalidate products via ISR every 10 minutes
+export const dynamicParams = true; // Allow on-demand rendering for slugs not pre-built
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
@@ -16,19 +17,10 @@ function getCleanCategoryName(name) {
   return name.replace(/^(Category\s*[\/\-]\s*)/i, "").trim();
 }
 
+// Return empty array — all product pages are rendered on first request (ISR)
+// This avoids build-time API calls to a potentially unavailable backend
 export async function generateStaticParams() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    const products = data?.products || [];
-    return products.map((p) => ({
-      slug: p.slug,
-    }));
-  } catch (err) {
-    console.error("Failed to generate static params for products:", err);
-    return [];
-  }
+  return [];
 }
 
 // ✅ Dynamic metadata for each product

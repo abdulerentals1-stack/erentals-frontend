@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ['@react-pdf/renderer'],
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

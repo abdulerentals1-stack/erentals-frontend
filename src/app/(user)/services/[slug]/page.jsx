@@ -2,23 +2,15 @@ import { getPublicServiceBySlug, fetchPublicServicesISR } from '@/services/servi
 import ServiceDetailClient from './ServiceDetailClient';
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
+export const dynamicParams = true; // Allow on-demand rendering for slugs not pre-built
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 const logoUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/e-rental-logo.png` : "https://e-rentals.in/e-rental-logo.png";
 const ogImageUrl = typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.jpg` : "https://e-rentals.in/og-image.jpg";
 
+// Return empty array — all service pages render on first request (ISR)
 export async function generateStaticParams() {
-  try {
-    const { fetchPublicServicesISR } = await import('@/services/serviceService');
-    const res = await fetchPublicServicesISR(1, 100);
-    const services = res.data?.services || [];
-    return services.map((service) => ({
-      slug: service.slug,
-    }));
-  } catch (err) {
-    console.error("Failed to generate static params for services:", err);
-    return [];
-  }
+  return [];
 }
 
 // 🚀 Dynamic Meta Generation for Search Ranking
