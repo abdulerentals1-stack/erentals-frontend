@@ -335,13 +335,13 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
   const transportationCharge = Number(order.transportationCharge || 0);
   const labourCharge = Number(order.labourCharge || 0);
   const discountAmount = Number(order.discountAmount || 0);
-  const priceBeforeTax = Number(order.priceBeforeTax !== undefined ? order.priceBeforeTax : (totalAmount - discountAmount));
+  const priceBeforeTax = totalAmount - discountAmount + transportationCharge + labourCharge;
   
   const gstRate = parseFloat(settings.GST_RATE || 18);
   const halfGst = gstRate / 2;
-  const cgst = Number(order.cgst !== undefined ? order.cgst : (priceBeforeTax * (halfGst / 100)));
-  const sgst = Number(order.sgst !== undefined ? order.sgst : (priceBeforeTax * (halfGst / 100)));
-  const finalAmount = Number(order.finalAmount || (priceBeforeTax + cgst + sgst + transportationCharge + labourCharge));
+  const cgst = Math.round(priceBeforeTax * (halfGst / 100));
+  const sgst = Math.round(priceBeforeTax * (halfGst / 100));
+  const finalAmount = priceBeforeTax + cgst + sgst;
   const advancePaid = Number(order.advancePaid || 0);
   const paidAmount = Number(order.paidAmount || 0);
   const balanceDue = Math.max(0, finalAmount - paidAmount);
