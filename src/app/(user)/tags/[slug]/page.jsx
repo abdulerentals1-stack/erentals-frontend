@@ -98,12 +98,22 @@ export default async function TagPage({ params, searchParams }) {
   const page = parseInt(resolvedSearchParams?.page || "1");
   const limit = 20;
 
-  // ✅ 1. Fetch tag data by slug
-  const tagRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}`, {
-    next: { revalidate: 300 },
-  });
-  const tagData = await tagRes.json();
-  const tag = tagData?.tag;
+  let tag = null;
+  let products = [];
+  let total = 0;
+
+  try {
+    // ✅ 1. Fetch tag data by slug
+    const tagRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}`, {
+      next: { revalidate: 300 },
+    });
+    if (tagRes.ok) {
+      const tagData = await tagRes.json();
+      tag = tagData?.tag;
+    }
+  } catch (err) {
+    console.error("Failed to fetch tag:", slug, err);
+  }
 
   if (!tag) {
     return (
@@ -113,15 +123,20 @@ export default async function TagPage({ params, searchParams }) {
     );
   }
 
-  // ✅ 2. Fetch products for this tag
-  const productRes = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/products/search?tags=${tag._id}&page=${page}&limit=${limit}`,
-    { next: { revalidate: 300 } }
-  );
-
-  const productData = await productRes.json();
-  const products = productData?.products || [];
-  const total = productData?.total || 0;
+  try {
+    // ✅ 2. Fetch products for this tag
+    const productRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/search?tags=${tag._id}&page=${page}&limit=${limit}`,
+      { next: { revalidate: 300 } }
+    );
+    if (productRes.ok) {
+      const productData = await productRes.json();
+      products = productData?.products || [];
+      total = productData?.total || 0;
+    }
+  } catch (err) {
+    console.error("Failed to fetch products for tag:", slug, err);
+  }
 
   // ✅ 3. JSON-LD Structured Data for Google Rich Results
   const structuredData = {
