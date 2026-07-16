@@ -106,12 +106,22 @@ export default async function CategoryPage({ params, searchParams }) {
   const page = parseInt(resolvedSearchParams?.page || "1");
   const limit = 20;
 
-  // ✅ 1. Fetch category data by slug
-  const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`, {
-    next: { revalidate: 300 },
-  });
-  const catData = await catRes.json();
-  const category = catData?.category;
+  let category = null;
+  let products = [];
+  let total = 0;
+
+  try {
+    // ✅ 1. Fetch category data by slug
+    const catRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`, {
+      next: { revalidate: 300 },
+    });
+    if (catRes.ok) {
+      const catData = await catRes.json();
+      category = catData?.category;
+    }
+  } catch (err) {
+    console.error("Failed to fetch category:", slug, err);
+  }
 
   if (!category) {
     return (
@@ -121,15 +131,20 @@ export default async function CategoryPage({ params, searchParams }) {
     );
   }
 
-  // ✅ 2. Fetch products for this category
-  const productRes = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/products/search?categories=${category._id}&page=${page}&limit=${limit}`,
-    { next: { revalidate: 300 } }
-  );
-
-  const productData = await productRes.json();
-  const products = productData?.products || [];
-  const total = productData?.total || 0;
+  try {
+    // ✅ 2. Fetch products for this category
+    const productRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/search?categories=${category._id}&page=${page}&limit=${limit}`,
+      { next: { revalidate: 300 } }
+    );
+    if (productRes.ok) {
+      const productData = await productRes.json();
+      products = productData?.products || [];
+      total = productData?.total || 0;
+    }
+  } catch (err) {
+    console.error("Failed to fetch products for category:", slug, err);
+  }
 
   const cleanName = getCleanCategoryName(category.name);
 
