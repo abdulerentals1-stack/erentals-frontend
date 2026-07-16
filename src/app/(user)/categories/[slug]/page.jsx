@@ -12,12 +12,22 @@ function getCleanCategoryName(name) {
   return name.replace(/^(Category\s*[\/\-]\s*)/i, "").trim();
 }
 
-// Return empty array — all category pages render on first request (ISR)
-export async function generateStaticParams() {
-  return [];
-}
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+export const dynamicParams = true; // Allow on-demand rendering for new slugs
 
-export const dynamicParams = true;
+export async function generateStaticParams() {
+  try {
+    const { fetchCategoriesISR } = await import('@/services/category');
+    const res = await fetchCategoriesISR();
+    const categories = res.data?.categories || [];
+    return categories.map((c) => ({
+      slug: c.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for categories:", err);
+    return [];
+  }
+}
 
 // ✅ Dynamic Metadata for Category Page
 export async function generateMetadata({ params }) {
