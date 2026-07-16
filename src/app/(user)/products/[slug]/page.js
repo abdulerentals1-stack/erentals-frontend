@@ -17,10 +17,20 @@ function getCleanCategoryName(name) {
   return name.replace(/^(Category\s*[\/\-]\s*)/i, "").trim();
 }
 
-// Return empty array — all product pages are rendered on first request (ISR)
-// This avoids build-time API calls to a potentially unavailable backend
+// Pre-render product pages at build time; falls back gracefully if API unavailable
 export async function generateStaticParams() {
-  return [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const products = data?.products || [];
+    return products.map((p) => ({
+      slug: p.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for products:", err);
+    return [];
+  }
 }
 
 // ✅ Dynamic metadata for each product

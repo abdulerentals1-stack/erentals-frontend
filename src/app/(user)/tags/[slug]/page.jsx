@@ -7,12 +7,23 @@ import Script from "next/script";
 
 const siteDomain = process.env.NEXT_PUBLIC_BASE_URL || "https://e-rentals.in";
 
-// Return empty array — all tag pages render on first request (ISR)
-export async function generateStaticParams() {
-  return [];
-}
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+export const dynamicParams = true; // Allow on-demand rendering for new slugs
 
-export const dynamicParams = true;
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const tags = data?.tags || [];
+    return tags.map((t) => ({
+      slug: t.slug,
+    }));
+  } catch (err) {
+    console.error("Failed to generate static params for tags:", err);
+    return [];
+  }
+}
 
 // ✅ Dynamic Metadata for Tag Page
 export async function generateMetadata({ params }) {
