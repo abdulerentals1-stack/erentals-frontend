@@ -394,7 +394,7 @@ const QuotationPDF = ({ quotation, settings }) => {
 
           {items.map((item, i) => {
             let particulars = item.product?.name || "";
-            let qtyDisplay = `${item.quantity || 0} pcs`;
+            let qtyDisplay = `${item.quantity || 0}`;
 
             const baseRate = item.withService && item.product?.serviceChargePercent
               ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
@@ -405,11 +405,9 @@ const QuotationPDF = ({ quotation, settings }) => {
             if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
               particulars += ` (${item.length}x${item.width} ft)`;
               displayRate = baseRate * item.length * item.width;
-              qtyDisplay = `${item.quantity || 0} pcs`;
             } else if (item.pricingType === "length_width" && item.length > 0) {
               particulars += ` (${item.length} ft)`;
               displayRate = baseRate * item.length;
-              qtyDisplay = `${item.quantity || 0} pcs`;
             }
 
             return (

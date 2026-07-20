@@ -504,7 +504,7 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
 
           {order.items?.map((item, i) => {
             let particulars = item.product?.name || "";
-            let qtyDisplay = `${item.quantity || 0} pcs`;
+            let qtyDisplay = `${item.quantity || 0}`;
             
             const baseRate = item.withService && item.product?.serviceChargePercent
               ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
@@ -624,7 +624,7 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             } else if (item.pricingType === "length_width" && item.length > 0) {
               qtyDisplay = `${item.length * item.quantity} ft`;
             } else {
-              qtyDisplay = `${item.quantity} pcs`;
+              qtyDisplay = `${item.quantity}`;
             }
             return (
               <View key={i} style={styles.tableRow}>
