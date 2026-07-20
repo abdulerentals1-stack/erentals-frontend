@@ -471,8 +471,9 @@ const QuotationPDF = ({ quotation, settings }) => {
           {(() => {
             let activeTerms = [];
             try {
-              if (settings.TERMS_AND_CONDITIONS) {
-                activeTerms = JSON.parse(settings.TERMS_AND_CONDITIONS);
+              const rawTerms = settings.QUOTATION_TERMS_AND_CONDITIONS || settings.TERMS_AND_CONDITIONS;
+              if (rawTerms) {
+                activeTerms = JSON.parse(rawTerms);
               }
             } catch (err) {
               console.error("Failed to parse terms from settings", err);

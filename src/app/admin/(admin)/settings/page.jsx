@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Input } from "@/components/ui/input";
@@ -51,8 +51,14 @@ export default function AdminSettingsPage() {
   // Interactive Lists State
   const [phoneList, setPhoneList] = useState([]);
   const [bankAccountsList, setBankAccountsList] = useState([]);
-  const [termsList, setTermsList] = useState([]);
+  const [invoiceTermsList, setInvoiceTermsList] = useState([]);
+  const [quotationTermsList, setQuotationTermsList] = useState([]);
   const [personsList, setPersonsList] = useState([]);
+
+  // Scroll Refs for UX enhancements
+  const invoiceScrollRef = useRef(null);
+  const quotationScrollRef = useRef(null);
+  const personnelScrollRef = useRef(null);
 
   // Fetch the configuration on mount
   useEffect(() => {
@@ -113,12 +119,39 @@ export default function AdminSettingsPage() {
         }
 
         // Load interactive terms lists
-        const termsObj = configList.find(c => c.key === "TERMS_AND_CONDITIONS");
-        if (termsObj) {
+        const invoiceTermsObj = configList.find(c => c.key === "INVOICE_TERMS_AND_CONDITIONS");
+        if (invoiceTermsObj) {
           try {
-            setTermsList(JSON.parse(termsObj.value));
+            setInvoiceTermsList(JSON.parse(invoiceTermsObj.value));
           } catch (e) {
-            setTermsList([]);
+            setInvoiceTermsList([]);
+          }
+        } else {
+          const termsObj = configList.find(c => c.key === "TERMS_AND_CONDITIONS");
+          if (termsObj) {
+            try {
+              setInvoiceTermsList(JSON.parse(termsObj.value));
+            } catch (e) {
+              setInvoiceTermsList([]);
+            }
+          }
+        }
+
+        const quotationTermsObj = configList.find(c => c.key === "QUOTATION_TERMS_AND_CONDITIONS");
+        if (quotationTermsObj) {
+          try {
+            setQuotationTermsList(JSON.parse(quotationTermsObj.value));
+          } catch (e) {
+            setQuotationTermsList([]);
+          }
+        } else {
+          const termsObj = configList.find(c => c.key === "TERMS_AND_CONDITIONS");
+          if (termsObj) {
+            try {
+              setQuotationTermsList(JSON.parse(termsObj.value));
+            } catch (e) {
+              setQuotationTermsList([]);
+            }
           }
         }
 
@@ -213,25 +246,78 @@ export default function AdminSettingsPage() {
   };
 
   // Terms & Conditions List Modifiers
-  const handleAddTerm = () => {
-    setTermsList(prev => [...prev, ""]);
+  const handleAddInvoiceTerm = () => {
+    setInvoiceTermsList(prev => [...prev, ""]);
+    setTimeout(() => {
+      if (invoiceScrollRef.current) {
+        invoiceScrollRef.current.scrollTo({
+          top: invoiceScrollRef.current.scrollHeight,
+          behavior: "smooth"
+        });
+        const items = invoiceScrollRef.current.querySelectorAll("textarea, input");
+        if (items.length > 0) {
+          items[items.length - 1].focus();
+        }
+      }
+    }, 80);
   };
 
-  const handleUpdateTerm = (index, value) => {
-    setTermsList(prev => {
+  const handleUpdateInvoiceTerm = (index, value) => {
+    setInvoiceTermsList(prev => {
       const updated = [...prev];
       updated[index] = value;
       return updated;
     });
   };
 
-  const handleDeleteTerm = (index) => {
-    setTermsList(prev => prev.filter((_, i) => i !== index));
+  const handleDeleteInvoiceTerm = (index) => {
+    setInvoiceTermsList(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddQuotationTerm = () => {
+    setQuotationTermsList(prev => [...prev, ""]);
+    setTimeout(() => {
+      if (quotationScrollRef.current) {
+        quotationScrollRef.current.scrollTo({
+          top: quotationScrollRef.current.scrollHeight,
+          behavior: "smooth"
+        });
+        const items = quotationScrollRef.current.querySelectorAll("textarea, input");
+        if (items.length > 0) {
+          items[items.length - 1].focus();
+        }
+      }
+    }, 80);
+  };
+
+  const handleUpdateQuotationTerm = (index, value) => {
+    setQuotationTermsList(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const handleDeleteQuotationTerm = (index) => {
+    setQuotationTermsList(prev => prev.filter((_, i) => i !== index));
   };
 
   // Personnel List Modifiers
   const handleAddPerson = () => {
     setPersonsList(prev => [...prev, { name: "", role: "" }]);
+    setTimeout(() => {
+      if (personnelScrollRef.current) {
+        personnelScrollRef.current.scrollTo({
+          top: personnelScrollRef.current.scrollHeight,
+          behavior: "smooth"
+        });
+        const items = personnelScrollRef.current.querySelectorAll("input");
+        if (items.length > 0) {
+          // Focus the Name field of the new personnel row
+          items[items.length - 2].focus();
+        }
+      }
+    }, 80);
   };
 
   const handleUpdatePerson = (index, field, value) => {
@@ -253,7 +339,8 @@ export default function AdminSettingsPage() {
     e.preventDefault();
 
     // Filter empty values
-    const filteredTerms = termsList.filter(t => t.trim() !== "");
+    const filteredInvoiceTerms = invoiceTermsList.filter(t => t.trim() !== "");
+    const filteredQuotationTerms = quotationTermsList.filter(t => t.trim() !== "");
     const filteredPersons = personsList.filter(p => p.name.trim() !== "" || p.role.trim() !== "");
     const filteredPhones = phoneList.filter(p => p.trim() !== "");
     const filteredBankAccounts = bankAccountsList.filter(a => a.bankName.trim() !== "" || a.accountNumber.trim() !== "");
@@ -272,7 +359,9 @@ export default function AdminSettingsPage() {
       BANK_ACCOUNT_NO: firstAcc.accountNumber || "",
       BANK_UPI: firstAcc.upiId || "",
       BANK_ACCOUNTS: JSON.stringify(filteredBankAccounts),
-      TERMS_AND_CONDITIONS: JSON.stringify(filteredTerms),
+      INVOICE_TERMS_AND_CONDITIONS: JSON.stringify(filteredInvoiceTerms),
+      QUOTATION_TERMS_AND_CONDITIONS: JSON.stringify(filteredQuotationTerms),
+      TERMS_AND_CONDITIONS: JSON.stringify(filteredInvoiceTerms),
       DEFAULT_PERSONS: JSON.stringify(filteredPersons)
     };
 
@@ -735,27 +824,27 @@ export default function AdminSettingsPage() {
               </div>
 
               <form onSubmit={handleSaveCompanySettings} className="space-y-6">
-                <div className="flex flex-col gap-6">
-                  {/* Terms Editor Panel */}
+                <div className="space-y-6">
+                  {/* Card 1: Invoice Terms */}
                   <div className="bg-slate-50 border rounded-xl p-5 space-y-4">
                     <div className="flex items-center justify-between border-b pb-2">
                       <div>
-                        <Label className="text-sm font-semibold text-gray-800">Terms & Conditions</Label>
-                        <p className="text-[10px] text-gray-400">Added items will render as list clauses on PDFs</p>
+                        <Label className="text-sm font-semibold text-gray-800">Invoice Terms & Conditions</Label>
+                        <p className="text-[10px] text-gray-400">Added items will render as list clauses on Invoice PDFs</p>
                       </div>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={handleAddTerm}
+                        onClick={handleAddInvoiceTerm}
                         className="h-8 text-xs font-semibold text-indigo-600 border-indigo-200 hover:bg-indigo-50 transition"
                       >
-                        <Plus className="w-3.5 h-3.5 mr-1" /> Add Item
+                        <Plus className="w-3.5 h-3.5 mr-1" /> Add Clause
                       </Button>
                     </div>
                     
-                    <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-                      {termsList.map((term, index) => (
+                    <div ref={invoiceScrollRef} className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                      {invoiceTermsList.map((term, index) => (
                         <div key={index} className="flex gap-2 items-start bg-white p-2.5 rounded-lg border shadow-sm">
                           <span className="text-xs font-mono font-bold text-gray-400 mt-2 w-5 text-right">{index + 1}.</span>
                           <textarea
@@ -768,7 +857,7 @@ export default function AdminSettingsPage() {
                             }}
                             value={term}
                             onChange={(e) => {
-                              handleUpdateTerm(index, e.target.value);
+                              handleUpdateInvoiceTerm(index, e.target.value);
                               e.target.style.height = "auto";
                               e.target.style.height = e.target.scrollHeight + "px";
                             }}
@@ -780,7 +869,7 @@ export default function AdminSettingsPage() {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeleteTerm(index)}
+                            onClick={() => handleDeleteInvoiceTerm(index)}
                             className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0 shrink-0"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -788,15 +877,75 @@ export default function AdminSettingsPage() {
                         </div>
                       ))}
                       
-                      {termsList.length === 0 && (
+                      {invoiceTermsList.length === 0 && (
                         <p className="text-xs text-gray-400 italic text-center py-8">
-                          No clauses defined. Click "Add Item" to add terms.
+                          No clauses defined. Click "Add Clause" to add invoice terms.
                         </p>
                       )}
                     </div>
                   </div>
 
-                  {/* Personnel Editor Panel */}
+                  {/* Card 2: Quotation Terms */}
+                  <div className="bg-slate-50 border rounded-xl p-5 space-y-4">
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-800">Quotation Terms & Conditions</Label>
+                        <p className="text-[10px] text-gray-400">Added items will render as list clauses on Quotation PDFs</p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddQuotationTerm}
+                        className="h-8 text-xs font-semibold text-indigo-600 border-indigo-200 hover:bg-indigo-50 transition"
+                      >
+                        <Plus className="w-3.5 h-3.5 mr-1" /> Add Clause
+                      </Button>
+                    </div>
+                    
+                    <div ref={quotationScrollRef} className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                      {quotationTermsList.map((term, index) => (
+                        <div key={index} className="flex gap-2 items-start bg-white p-2.5 rounded-lg border shadow-sm">
+                          <span className="text-xs font-mono font-bold text-gray-400 mt-2 w-5 text-right">{index + 1}.</span>
+                          <textarea
+                            rows={1}
+                            ref={(el) => {
+                              if (el) {
+                                el.style.height = "auto";
+                                el.style.height = el.scrollHeight + "px";
+                              }
+                            }}
+                            value={term}
+                            onChange={(e) => {
+                              handleUpdateQuotationTerm(index, e.target.value);
+                              e.target.style.height = "auto";
+                              e.target.style.height = e.target.scrollHeight + "px";
+                            }}
+                            placeholder={`Enter clause detail #${index + 1}`}
+                            className="flex-1 text-xs resize-none bg-transparent outline-none py-0.5 text-gray-700 font-sans w-full"
+                            disabled={updatingCompany}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteQuotationTerm(index)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0 shrink-0"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      ))}
+                      
+                      {quotationTermsList.length === 0 && (
+                        <p className="text-xs text-gray-400 italic text-center py-8">
+                          No clauses defined. Click "Add Clause" to add quotation terms.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card 3: Authorized Personnel */}
                   <div className="bg-slate-50 border rounded-xl p-5 space-y-4">
                     <div className="flex items-center justify-between border-b pb-2">
                       <div>
@@ -814,22 +963,22 @@ export default function AdminSettingsPage() {
                       </Button>
                     </div>
                     
-                    <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                    <div ref={personnelScrollRef} className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                       {personsList.map((person, index) => (
                         <div key={index} className="flex gap-2 items-center bg-white p-2.5 rounded-lg border shadow-sm">
-                          <div className="flex-1 grid grid-cols-2 gap-2">
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <Input
                               value={person.name || ""}
                               onChange={(e) => handleUpdatePerson(index, "name", e.target.value)}
                               placeholder="Name (e.g. Fatima Khatoon)"
-                              className="text-xs h-8"
+                              className="text-xs h-8 bg-white"
                               disabled={updatingCompany}
                             />
                             <Input
                               value={person.role || ""}
                               onChange={(e) => handleUpdatePerson(index, "role", e.target.value)}
                               placeholder="Role (e.g. Manager)"
-                              className="text-xs h-8"
+                              className="text-xs h-8 bg-white"
                               disabled={updatingCompany}
                             />
                           </div>

@@ -234,8 +234,9 @@ export default function InvoicePreviewAndPrint({ order, className, size = "defau
   // Parse dynamic terms
   let activeTerms = terms;
   try {
-    if (activeSettings.TERMS_AND_CONDITIONS) {
-      activeTerms = JSON.parse(activeSettings.TERMS_AND_CONDITIONS);
+    const rawTerms = activeSettings.INVOICE_TERMS_AND_CONDITIONS || activeSettings.TERMS_AND_CONDITIONS;
+    if (rawTerms) {
+      activeTerms = JSON.parse(rawTerms);
     }
   } catch (err) {
     console.error("Failed to parse dynamic terms:", err);
