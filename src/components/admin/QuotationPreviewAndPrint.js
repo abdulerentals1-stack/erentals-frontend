@@ -196,7 +196,7 @@ const fallbackSettings = {
   BANK_ACCOUNT_NO: "259867348165"
 };
 
-export default function QuotationPreviewAndPrint({ quotation, className }) {
+export default function QuotationPreviewAndPrint({ quotation, className, size = "default" }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(null);
 
@@ -252,7 +252,7 @@ export default function QuotationPreviewAndPrint({ quotation, className }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"}>
+      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"} size={size}>
         🧾 Download Quotation
       </Button>
 
@@ -331,8 +331,8 @@ const QuotationPDF = ({ quotation, settings }) => {
         </View>
 
         {/* Quotation Metadata Row */}
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 20, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e2e8f0" }}>
-          <Text style={{ fontSize: 10, fontWeight: "bold", color: "#144169", fontFamily: "Helvetica-Bold" }}>
+        <View style={{ flexDirection: "column", alignItems: "flex-end", marginHorizontal: 20, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e2e8f0" }}>
+          <Text style={{ fontSize: 10, fontWeight: "bold", color: "#144169", fontFamily: "Helvetica-Bold", marginBottom: 3 }}>
             PI/QUOTATION NO: {q.quotationNumber || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT")}
           </Text>
           <Text style={{ fontSize: 9, fontWeight: "bold", color: "#475569" }}>
