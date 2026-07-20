@@ -282,7 +282,16 @@ export default function QuotationPreviewAndPrint({ quotation, className, size = 
 
           {/* Download Link */}
           <Button
-            onClick={() => window.open(pdfUrl || "#", "_blank")}
+            onClick={() => {
+              if (!pdfUrl) return;
+              const link = document.createElement("a");
+              link.href = pdfUrl;
+              const quotationNumberDisplay = q.quotationNumber || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT");
+              link.download = `eRentals_Quotation_${quotationNumberDisplay}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
             className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full"
             disabled={!pdfUrl || pdfLoading}
           >

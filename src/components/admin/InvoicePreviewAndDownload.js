@@ -315,7 +315,16 @@ export default function InvoicePreviewAndPrint({ order, className, size = "defau
 
           {/* Download Link */}
           <Button
-            onClick={() => window.open(pdfUrl || "#", "_blank")}
+            onClick={() => {
+              if (!pdfUrl) return;
+              const link = document.createElement("a");
+              link.href = pdfUrl;
+              const orderNumberDisplay = order.orderNumber || order._id.slice(-6).toUpperCase();
+              link.download = `eRentals_Invoice_${orderNumberDisplay}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
             className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full"
             disabled={!pdfUrl || pdfLoading}
           >
