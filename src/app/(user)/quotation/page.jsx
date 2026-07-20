@@ -15,6 +15,15 @@ const QuotationPreviewAndPrint = dynamic(
   { ssr: false }
 );
 
+const formatQuotationNumber = (num) => {
+  if (!num) return "";
+  const str = String(num);
+  if (/^\d{7}$/.test(str)) {
+    return `${str.slice(0, 2)}PI${str.slice(2)}`;
+  }
+  return str;
+};
+
 export default function MyQuotations() {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,7 +103,7 @@ export default function MyQuotations() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">
-                Quotation #{quote.quotationNumber || quote._id.slice(-6).toUpperCase()}
+                Quotation #{formatQuotationNumber(quote.quotationNumber) || quote._id.slice(-6).toUpperCase()}
               </span>
               <Badge
                 variant={

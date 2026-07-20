@@ -451,14 +451,10 @@ export default function OrderDetailsPage() {
                 </>
               );
             })()}
-            {order.paymentMethod !== "cod" && (
+            {Number(order.paidAmount || 0) > 0 && (
               <div className="border-t pt-2 mt-2 space-y-1 bg-yellow-50/50 p-2 rounded">
-                <div className="flex justify-between text-xs text-gray-600">
-                  <span>Advance Paid:</span>
-                  <span>₹{Number(order.advancePaid || 0).toFixed(2)}</span>
-                </div>
                 <div className="flex justify-between text-xs text-green-700 font-medium">
-                  <span>Total Paid:</span>
+                  <span>Advance Paid:</span>
                   <span>₹{Number(order.paidAmount || 0).toFixed(2)}</span>
                 </div>
                 {order.status !== "cancelled" && order.finalAmount - order.paidAmount > 0 && (

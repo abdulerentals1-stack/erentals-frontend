@@ -573,20 +573,20 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{finalAmount.toFixed(2)}</Text>
           </View>
-          {order?.paymentMethod !== "cod" && (
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { width: "88%" }]}>Advance Paid</Text>
-              <Text style={[styles.tableCell, { width: "12%" }]}>{advancePaid.toFixed(2)}</Text>
-            </View>
+          {paidAmount > 0 && (
+            <>
+              <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, { width: "88%" }]}>Advance Paid</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{paidAmount.toFixed(2)}</Text>
+              </View>
+              {balanceDue > 0 && (
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, { width: "88%" }]}>Balance Due</Text>
+                  <Text style={[styles.tableCell, { width: "12%" }]}>{balanceDue.toFixed(2)}</Text>
+                </View>
+              )}
+            </>
           )}
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Total Paid</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{paidAmount.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Balance Due</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{balanceDue.toFixed(2)}</Text>
-          </View>
         </View>
         {/* Terms & Conditions */}
         <View style={styles.section}>

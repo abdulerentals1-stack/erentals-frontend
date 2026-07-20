@@ -196,6 +196,15 @@ const fallbackSettings = {
   BANK_ACCOUNT_NO: "259867348165"
 };
 
+const formatQuotationNumber = (num) => {
+  if (!num) return "";
+  const str = String(num);
+  if (/^\d{7}$/.test(str)) {
+    return `${str.slice(0, 2)}PI${str.slice(2)}`;
+  }
+  return str;
+};
+
 export default function QuotationPreviewAndPrint({ quotation, className, size = "default" }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(null);
@@ -286,7 +295,7 @@ export default function QuotationPreviewAndPrint({ quotation, className, size = 
               if (!pdfUrl) return;
               const link = document.createElement("a");
               link.href = pdfUrl;
-              const quotationNumberDisplay = q.quotationNumber || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT");
+              const quotationNumberDisplay = formatQuotationNumber(q.quotationNumber) || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT");
               link.download = `eRentals_Quotation_${quotationNumberDisplay}.pdf`;
               document.body.appendChild(link);
               link.click();
@@ -342,7 +351,7 @@ const QuotationPDF = ({ quotation, settings }) => {
         {/* Quotation Metadata Row */}
         <View style={{ flexDirection: "column", alignItems: "flex-end", marginHorizontal: 20, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e2e8f0" }}>
           <Text style={{ fontSize: 10, fontWeight: "bold", color: "#144169", fontFamily: "Helvetica-Bold", marginBottom: 3 }}>
-            PI/QUOTATION NO: {q.quotationNumber || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT")}
+            PI/QUOTATION NO: {formatQuotationNumber(q.quotationNumber) || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT")}
           </Text>
           <Text style={{ fontSize: 9, fontWeight: "bold", color: "#475569" }}>
             Date: {createdAt}
@@ -370,9 +379,6 @@ const QuotationPDF = ({ quotation, settings }) => {
           </Text>
         </View>
 
-        <Text style={{ textAlign: "center", color: "#144169", fontSize: 13, fontWeight: "bold", marginVertical: 8 }}>
-          Quotation
-        </Text>
 
         {/* Items Table */}
         <View style={styles.table}>

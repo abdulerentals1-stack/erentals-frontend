@@ -19,6 +19,15 @@ import { getQuotationById, adminUpdateQuotation, updateQuotationStatus } from "@
 import { getAllCoupons } from "@/services/couponService";
 import dynamic from "next/dynamic";
 
+const formatQuotationNumber = (num) => {
+  if (!num) return "";
+  const str = String(num);
+  if (/^\d{7}$/.test(str)) {
+    return `${str.slice(0, 2)}PI${str.slice(2)}`;
+  }
+  return str;
+};
+
 const QuotationPreviewAndPrint = dynamic(
   () => import("@/components/admin/QuotationPreviewAndPrint"),
   { ssr: false }
@@ -186,7 +195,7 @@ export default function OrderDetailsPage() {
     <div className="p-4 mt-12 md:mt-0 max-w-4xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Quotation #{order.quotationNumber || order._id.slice(-6).toUpperCase()}</CardTitle>
+          <CardTitle>Quotation #{formatQuotationNumber(order.quotationNumber) || order._id.slice(-6).toUpperCase()}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-gray-700">
 
