@@ -191,7 +191,7 @@ const fallbackSettings = {
   BANK_ACCOUNT_NO: "259867348165"
 };
 
-export default function InvoicePreviewAndPrint({ order, className }) {
+export default function InvoicePreviewAndPrint({ order, className, size = "default" }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(null);
 
@@ -285,7 +285,7 @@ export default function InvoicePreviewAndPrint({ order, className }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"}>
+      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"} size={size}>
         {pdfUrl ? "📄 View & Download Invoice" : "⬇️ Download Invoice"}
       </Button>
 
