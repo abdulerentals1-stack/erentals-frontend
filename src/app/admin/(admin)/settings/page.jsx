@@ -21,7 +21,14 @@ import {
   Trash2,
   Plus,
   Settings,
-  CreditCard
+  CreditCard,
+  Layout,
+  Share2,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Linkedin
 } from "lucide-react";
 
 export default function AdminSettingsPage() {
@@ -343,6 +350,18 @@ export default function AdminSettingsPage() {
         </button>
         <button
           type="button"
+          onClick={() => setActiveTab("footer")}
+          className={`flex items-center gap-2 py-2.5 px-4 text-xs font-semibold rounded-lg transition-all ${
+            activeTab === "footer"
+              ? "bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100"
+              : "text-gray-500 hover:text-gray-900 hover:bg-slate-50 border border-transparent"
+          }`}
+        >
+          <Layout className="w-4 h-4" />
+          Footer Layout
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab("system")}
           className={`flex items-center gap-2 py-2.5 px-4 text-xs font-semibold rounded-lg transition-all ${
             activeTab === "system"
@@ -476,6 +495,7 @@ export default function AdminSettingsPage() {
                       disabled={updatingCompany}
                     />
                   </div>
+
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -981,6 +1001,153 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab 5: Footer Management */}
+        {activeTab === "footer" && (
+          <div className="bg-white rounded-xl border shadow-sm p-6 space-y-6">
+            <div className="flex items-start gap-4 pb-4 border-b">
+              <div className="p-3 bg-indigo-50 rounded-lg text-indigo-600">
+                <Layout className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Footer Management & Social Links</h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Configure the contact details and social media profile links displayed in the website footer.
+                </p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveCompanySettings} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Left Side: Footer Contact Info */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-indigo-600 border-b pb-1">📞 Footer Contact Details</h3>
+                  <div className="space-y-1">
+                    <Label htmlFor="FOOTER_EMAIL" className="text-xs font-semibold text-gray-700">Footer Email</Label>
+                    <Input
+                      id="FOOTER_EMAIL"
+                      type="email"
+                      value={companyConfigs.FOOTER_EMAIL || ""}
+                      onChange={(e) => handleConfigChange("FOOTER_EMAIL", e.target.value)}
+                      placeholder="e.g. sales@e-rentals.in"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="FOOTER_PHONE" className="text-xs font-semibold text-gray-700">Footer Phone</Label>
+                    <Input
+                      id="FOOTER_PHONE"
+                      type="text"
+                      value={companyConfigs.FOOTER_PHONE || ""}
+                      onChange={(e) => handleConfigChange("FOOTER_PHONE", e.target.value)}
+                      placeholder="e.g. +91 9867348165"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="FOOTER_LOCATION" className="text-xs font-semibold text-gray-700">Footer Location</Label>
+                    <Input
+                      id="FOOTER_LOCATION"
+                      type="text"
+                      value={companyConfigs.FOOTER_LOCATION || ""}
+                      onChange={(e) => handleConfigChange("FOOTER_LOCATION", e.target.value)}
+                      placeholder="e.g. Vikhroli, Mumbai, India"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                </div>
+
+                {/* Right Side: Social Media Links */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-indigo-600 border-b pb-1">🌐 Social Profile Links</h3>
+                  <div className="space-y-1">
+                    <Label htmlFor="SOCIAL_FACEBOOK" className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                      <Facebook className="w-3.5 h-3.5 text-[#1877F2]" /> Facebook URL
+                    </Label>
+                    <Input
+                      id="SOCIAL_FACEBOOK"
+                      type="text"
+                      value={companyConfigs.SOCIAL_FACEBOOK || ""}
+                      onChange={(e) => handleConfigChange("SOCIAL_FACEBOOK", e.target.value)}
+                      placeholder="https://facebook.com/yourpage"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="SOCIAL_INSTAGRAM" className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                      <Instagram className="w-3.5 h-3.5 text-[#E4405F]" /> Instagram URL
+                    </Label>
+                    <Input
+                      id="SOCIAL_INSTAGRAM"
+                      type="text"
+                      value={companyConfigs.SOCIAL_INSTAGRAM || ""}
+                      onChange={(e) => handleConfigChange("SOCIAL_INSTAGRAM", e.target.value)}
+                      placeholder="https://instagram.com/yourprofile"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="SOCIAL_TWITTER" className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                      <Twitter className="w-3.5 h-3.5 text-[#1DA1F2]" /> Twitter / X URL
+                    </Label>
+                    <Input
+                      id="SOCIAL_TWITTER"
+                      type="text"
+                      value={companyConfigs.SOCIAL_TWITTER || ""}
+                      onChange={(e) => handleConfigChange("SOCIAL_TWITTER", e.target.value)}
+                      placeholder="https://twitter.com/yourhandle"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="SOCIAL_YOUTUBE" className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                      <Youtube className="w-3.5 h-3.5 text-[#FF0000]" /> YouTube Channel URL
+                    </Label>
+                    <Input
+                      id="SOCIAL_YOUTUBE"
+                      type="text"
+                      value={companyConfigs.SOCIAL_YOUTUBE || ""}
+                      onChange={(e) => handleConfigChange("SOCIAL_YOUTUBE", e.target.value)}
+                      placeholder="https://youtube.com/c/yourchannel"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="SOCIAL_LINKEDIN" className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                      <Linkedin className="w-3.5 h-3.5 text-[#0A66C2]" /> LinkedIn Page URL
+                    </Label>
+                    <Input
+                      id="SOCIAL_LINKEDIN"
+                      type="text"
+                      value={companyConfigs.SOCIAL_LINKEDIN || ""}
+                      onChange={(e) => handleConfigChange("SOCIAL_LINKEDIN", e.target.value)}
+                      placeholder="https://linkedin.com/company/yourpage"
+                      className="text-xs h-9 bg-white"
+                      disabled={updatingCompany}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end border-t pt-4">
+                <Button
+                  type="submit"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs h-9 px-4 rounded-md"
+                  disabled={updatingCompany}
+                >
+                  {updatingCompany ? "Saving Changes..." : "Save Footer Layout"}
+                </Button>
+              </div>
+            </form>
           </div>
         )}
       </div>
