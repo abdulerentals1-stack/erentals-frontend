@@ -191,7 +191,7 @@ const fallbackSettings = {
   BANK_ACCOUNT_NO: "259867348165"
 };
 
-export default function InvoicePreviewAndPrint({ order, className }) {
+export default function InvoicePreviewAndPrint({ order, className, size = "default" }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(null);
 
@@ -234,8 +234,9 @@ export default function InvoicePreviewAndPrint({ order, className }) {
   // Parse dynamic terms
   let activeTerms = terms;
   try {
-    if (activeSettings.TERMS_AND_CONDITIONS) {
-      activeTerms = JSON.parse(activeSettings.TERMS_AND_CONDITIONS);
+    const rawTerms = activeSettings.INVOICE_TERMS_AND_CONDITIONS || activeSettings.TERMS_AND_CONDITIONS;
+    if (rawTerms) {
+      activeTerms = JSON.parse(rawTerms);
     }
   } catch (err) {
     console.error("Failed to parse dynamic terms:", err);
@@ -285,7 +286,7 @@ export default function InvoicePreviewAndPrint({ order, className }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"}>
+      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"} size={size}>
         {pdfUrl ? "📄 View & Download Invoice" : "⬇️ Download Invoice"}
       </Button>
 
@@ -315,7 +316,16 @@ export default function InvoicePreviewAndPrint({ order, className }) {
 
           {/* Download Link */}
           <Button
-            onClick={() => window.open(pdfUrl || "#", "_blank")}
+            onClick={() => {
+              if (!pdfUrl) return;
+              const link = document.createElement("a");
+              link.href = pdfUrl;
+              const orderNumberDisplay = order.orderNumber || order._id.slice(-6).toUpperCase();
+              link.download = `eRentals_Invoice_${orderNumberDisplay}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
             className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full"
             disabled={!pdfUrl || pdfLoading}
           >
@@ -495,7 +505,7 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
 
           {order.items?.map((item, i) => {
             let particulars = item.product?.name || "";
-            let qtyDisplay = `${item.quantity || 0} pcs`;
+            let qtyDisplay = `${item.quantity || 0}`;
             
             const baseRate = item.withService && item.product?.serviceChargePercent
               ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
@@ -564,20 +574,20 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             <Text style={[styles.tableHeaderCell, { width: "88%" }]}>Total Payable</Text>
             <Text style={[styles.tableHeaderCell, { width: "12%" }]}>{finalAmount.toFixed(2)}</Text>
           </View>
-          {order?.paymentMethod !== "cod" && (
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, { width: "88%" }]}>Advance Paid</Text>
-              <Text style={[styles.tableCell, { width: "12%" }]}>{advancePaid.toFixed(2)}</Text>
-            </View>
+          {paidAmount > 0 && (
+            <>
+              <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, { width: "88%" }]}>Advance Paid</Text>
+                <Text style={[styles.tableCell, { width: "12%" }]}>{paidAmount.toFixed(2)}</Text>
+              </View>
+              {balanceDue > 0 && (
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, { width: "88%" }]}>Balance Due</Text>
+                  <Text style={[styles.tableCell, { width: "12%" }]}>{balanceDue.toFixed(2)}</Text>
+                </View>
+              )}
+            </>
           )}
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Total Paid</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{paidAmount.toFixed(2)}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { width: "88%" }]}>Balance Due</Text>
-            <Text style={[styles.tableCell, { width: "12%" }]}>{balanceDue.toFixed(2)}</Text>
-          </View>
         </View>
         {/* Terms & Conditions */}
         <View style={styles.section}>
@@ -615,7 +625,7 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             } else if (item.pricingType === "length_width" && item.length > 0) {
               qtyDisplay = `${item.length * item.quantity} ft`;
             } else {
-              qtyDisplay = `${item.quantity} pcs`;
+              qtyDisplay = `${item.quantity}`;
             }
             return (
               <View key={i} style={styles.tableRow}>

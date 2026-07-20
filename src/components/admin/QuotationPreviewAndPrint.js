@@ -196,7 +196,16 @@ const fallbackSettings = {
   BANK_ACCOUNT_NO: "259867348165"
 };
 
-export default function QuotationPreviewAndPrint({ quotation, className }) {
+const formatQuotationNumber = (num) => {
+  if (!num) return "";
+  const str = String(num);
+  if (/^\d{7}$/.test(str)) {
+    return `${str.slice(0, 2)}PI${str.slice(2)}`;
+  }
+  return str;
+};
+
+export default function QuotationPreviewAndPrint({ quotation, className, size = "default" }) {
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(null);
 
@@ -252,7 +261,7 @@ export default function QuotationPreviewAndPrint({ quotation, className }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"}>
+      <Button onClick={() => setOpen(true)} className={className || "bg-[#144169] text-white"} size={size}>
         🧾 Download Quotation
       </Button>
 
@@ -282,7 +291,16 @@ export default function QuotationPreviewAndPrint({ quotation, className }) {
 
           {/* Download Link */}
           <Button
-            onClick={() => window.open(pdfUrl || "#", "_blank")}
+            onClick={() => {
+              if (!pdfUrl) return;
+              const link = document.createElement("a");
+              link.href = pdfUrl;
+              const quotationNumberDisplay = formatQuotationNumber(q.quotationNumber) || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT");
+              link.download = `eRentals_Quotation_${quotationNumberDisplay}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
             className="bg-green-600 text-white mt-4 hover:bg-green-700 w-full"
             disabled={!pdfUrl || pdfLoading}
           >
@@ -331,9 +349,9 @@ const QuotationPDF = ({ quotation, settings }) => {
         </View>
 
         {/* Quotation Metadata Row */}
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 20, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e2e8f0" }}>
-          <Text style={{ fontSize: 10, fontWeight: "bold", color: "#144169", fontFamily: "Helvetica-Bold" }}>
-            PI/QUOTATION NO: {q.quotationNumber || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT")}
+        <View style={{ flexDirection: "column", alignItems: "flex-end", marginHorizontal: 20, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: "#e2e8f0" }}>
+          <Text style={{ fontSize: 10, fontWeight: "bold", color: "#144169", fontFamily: "Helvetica-Bold", marginBottom: 3 }}>
+            PI/QUOTATION NO: {formatQuotationNumber(q.quotationNumber) || (q._id ? q._id.slice(-6).toUpperCase() : "DRAFT")}
           </Text>
           <Text style={{ fontSize: 9, fontWeight: "bold", color: "#475569" }}>
             Date: {createdAt}
@@ -361,9 +379,6 @@ const QuotationPDF = ({ quotation, settings }) => {
           </Text>
         </View>
 
-        <Text style={{ textAlign: "center", color: "#144169", fontSize: 13, fontWeight: "bold", marginVertical: 8 }}>
-          Quotation
-        </Text>
 
         {/* Items Table */}
         <View style={styles.table}>
@@ -379,7 +394,7 @@ const QuotationPDF = ({ quotation, settings }) => {
 
           {items.map((item, i) => {
             let particulars = item.product?.name || "";
-            let qtyDisplay = `${item.quantity || 0} pcs`;
+            let qtyDisplay = `${item.quantity || 0}`;
 
             const baseRate = item.withService && item.product?.serviceChargePercent
               ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
@@ -390,11 +405,9 @@ const QuotationPDF = ({ quotation, settings }) => {
             if (item.pricingType === "area" && item.length > 0 && item.width > 0) {
               particulars += ` (${item.length}x${item.width} ft)`;
               displayRate = baseRate * item.length * item.width;
-              qtyDisplay = `${item.quantity || 0} pcs`;
             } else if (item.pricingType === "length_width" && item.length > 0) {
               particulars += ` (${item.length} ft)`;
               displayRate = baseRate * item.length;
-              qtyDisplay = `${item.quantity || 0} pcs`;
             }
 
             return (
@@ -458,8 +471,9 @@ const QuotationPDF = ({ quotation, settings }) => {
           {(() => {
             let activeTerms = [];
             try {
-              if (settings.TERMS_AND_CONDITIONS) {
-                activeTerms = JSON.parse(settings.TERMS_AND_CONDITIONS);
+              const rawTerms = settings.QUOTATION_TERMS_AND_CONDITIONS || settings.TERMS_AND_CONDITIONS;
+              if (rawTerms) {
+                activeTerms = JSON.parse(rawTerms);
               }
             } catch (err) {
               console.error("Failed to parse terms from settings", err);

@@ -15,6 +15,15 @@ const QuotationPreviewAndPrint = dynamic(
   { ssr: false }
 );
 
+const formatQuotationNumber = (num) => {
+  if (!num) return "";
+  const str = String(num);
+  if (/^\d{7}$/.test(str)) {
+    return `${str.slice(0, 2)}PI${str.slice(2)}`;
+  }
+  return str;
+};
+
 export default function MyQuotations() {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +58,7 @@ export default function MyQuotations() {
   if (!ready) return <Skeleton className="w-full h-80 rounded-xl" />;
   if (loading) {
     return (
-      <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black">
+      <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black pt-4 sm:pt-4">
         <h2 className="text-xl font-bold">My Quotations</h2>
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-zinc-900 animate-pulse">
@@ -82,7 +91,7 @@ export default function MyQuotations() {
   }
 
   return (
-    <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black">
+    <div className="p-4 space-y-4 px-2 sm:px-12 md:px-16 lg:px-12 2xl:px-28 text-black pt-4 sm:pt-4">
       <h2 className="text-xl font-bold">My Quotations</h2>
 
       {quotations.map((quote) => (
@@ -94,7 +103,7 @@ export default function MyQuotations() {
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">
-                Quotation #{quote.quotationNumber || quote._id.slice(-6).toUpperCase()}
+                Quotation #{formatQuotationNumber(quote.quotationNumber) || quote._id.slice(-6).toUpperCase()}
               </span>
               <Badge
                 variant={
@@ -114,11 +123,15 @@ export default function MyQuotations() {
             <p className="text-xs text-gray-600">Delivery Date: {new Date(quote.deliveryDate).toLocaleDateString("en-IN")}</p>
           </div>
 
-          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full md:w-auto justify-between md:justify-end">
             {/* Show Preview & Download only when status is "responded" */}
             {quote.status === "responded" && (
-              <div onClick={(e) => e.stopPropagation()}>
-                <QuotationPreviewAndPrint quotation={quote} />
+              <div onClick={(e) => e.stopPropagation()} className="w-full sm:w-auto">
+                <QuotationPreviewAndPrint
+                  quotation={quote}
+                  className="w-full sm:w-auto bg-[#144169] hover:bg-[#103454] text-white text-xs"
+                  size="sm"
+                />
               </div>
             )}
             

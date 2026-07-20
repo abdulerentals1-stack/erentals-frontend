@@ -14,6 +14,15 @@ const QuotationPreviewAndPrint = dynamic(
   { ssr: false }
 );
 
+const formatQuotationNumber = (num) => {
+  if (!num) return "";
+  const str = String(num);
+  if (/^\d{7}$/.test(str)) {
+    return `${str.slice(0, 2)}PI${str.slice(2)}`;
+  }
+  return str;
+};
+
 function DetailPageSkeleton({ title }) {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6 text-black animate-pulse">
@@ -81,7 +90,7 @@ export default function QuotationDetailsPage() {
   if (loading) return <DetailPageSkeleton title="Quotation" />;
   if (!quotation) return <div className="p-4 text-red-500">Quotation not found.</div>;
 
-  const quotationNumberDisplay = `Quotation #${quotation.quotationNumber || quotation._id.slice(-6).toUpperCase()}`;
+  const quotationNumberDisplay = `Quotation #${formatQuotationNumber(quotation.quotationNumber) || quotation._id.slice(-6).toUpperCase()}`;
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-black">
