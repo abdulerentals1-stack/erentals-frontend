@@ -718,10 +718,18 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
           })()}
         </View>
 
-        {/* Footer Image */}
-        <Image
-          src="/Erental_Footer.png"
-          style={{ width: "100%", marginTop: 10 }}
+        {/* Footer Image - Rendered strictly on the last page at the bottom */}
+        <View
+          style={styles.footerContainer}
+          fixed
+          render={({ pageNumber, totalPages }) =>
+            pageNumber === totalPages ? (
+              <Image
+                src="/Erental_Footer.png"
+                style={styles.footerImage}
+              />
+            ) : null
+          }
         />
       </Page>
     </Document>
@@ -733,6 +741,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontFamily: "Helvetica",
     color: "#334155",
+    paddingBottom: 30,
   },
   section: {
     marginBottom: 4,
@@ -834,5 +843,16 @@ const styles = StyleSheet.create({
     fontSize: 9,
     marginBottom: 2,
     color: "#475569",
+  },
+  footerContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 20,
+  },
+  footerImage: {
+    width: "100%",
+    height: 20,
   },
 });
