@@ -18,6 +18,7 @@ import { getAllProducts, calculatePrice } from "@/services/productService";
 import { getQuotationById, adminUpdateQuotation, updateQuotationStatus } from "@/services/quotationOrderService";
 import { getAllCoupons } from "@/services/couponService";
 import dynamic from "next/dynamic";
+import { toast } from "sonner";
 
 const formatQuotationNumber = (num) => {
   if (!num) return "";
@@ -45,6 +46,8 @@ export default function OrderDetailsPage() {
   const [productSearch, setProductSearch] = useState("");
   const [coupons, setCoupons] = useState([]);
   const [updateorder, setUpdateorder] = useState(true);
+  const [calculatingIndex, setCalculatingIndex] = useState(null);
+  const [appliedIndex, setAppliedIndex] = useState(null);
 
   const isModifiable = order?.status !== "cancelled";
 
@@ -114,6 +117,7 @@ export default function OrderDetailsPage() {
   };
 
   const handleItemChange = async (index, field, value) => {
+    setCalculatingIndex(index);
     const newItems = [...items];
     if (field === "withService") {
       newItems[index][field] = value === "true" || value === true;
@@ -126,6 +130,17 @@ export default function OrderDetailsPage() {
     const updated = await recalculateItemViaAPI(newItems[index]);
     newItems[index] = updated;
     setItems([...newItems]);
+    setCalculatingIndex(null);
+
+    if (field === "customPrice") {
+      setAppliedIndex(index);
+      setTimeout(() => setAppliedIndex(null), 2000);
+      if (value && Number(value) > 0) {
+        toast.success(`Offered price ₹${value} applied & recalculated!`);
+      } else {
+        toast.info("Custom price cleared. Standard rate restored.");
+      }
+    }
   };
 
 
@@ -442,12 +457,24 @@ export default function OrderDetailsPage() {
                       <Button
                         type="button"
                         size="sm"
-                        variant={item.customPrice && item.customPrice > 0 ? "outline" : "default"}
-                        className={item.customPrice && item.customPrice > 0 ? "border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100" : "bg-indigo-600 text-white hover:bg-indigo-700"}
+                        variant={appliedIndex === index ? "default" : item.customPrice && item.customPrice > 0 ? "outline" : "default"}
+                        className={
+                          appliedIndex === index
+                            ? "bg-emerald-600 text-white border-emerald-600 font-semibold animate-pulse"
+                            : item.customPrice && item.customPrice > 0
+                            ? "border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100"
+                            : "bg-indigo-600 text-white hover:bg-indigo-700"
+                        }
                         onClick={() => handleItemChange(index, "customPrice", item.customPrice)}
-                        disabled={!isModifiable}
+                        disabled={!isModifiable || calculatingIndex === index}
                       >
-                        {item.customPrice && item.customPrice > 0 ? "Re-apply Rate" : "Apply Rate"}
+                        {calculatingIndex === index
+                          ? "Applying..."
+                          : appliedIndex === index
+                          ? "✓ Rate Applied!"
+                          : item.customPrice && item.customPrice > 0
+                          ? "Re-apply Rate"
+                          : "Apply Rate"}
                       </Button>
 
                       {item.customPrice && item.customPrice > 0 && (
