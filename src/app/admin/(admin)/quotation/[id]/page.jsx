@@ -18,6 +18,7 @@ import { getAllProducts, calculatePrice } from "@/services/productService";
 import { getQuotationById, adminUpdateQuotation, updateQuotationStatus } from "@/services/quotationOrderService";
 import { getAllCoupons } from "@/services/couponService";
 import dynamic from "next/dynamic";
+import { toast } from "sonner";
 
 const formatQuotationNumber = (num) => {
   if (!num) return "";
@@ -45,6 +46,8 @@ export default function OrderDetailsPage() {
   const [productSearch, setProductSearch] = useState("");
   const [coupons, setCoupons] = useState([]);
   const [updateorder, setUpdateorder] = useState(true);
+  const [calculatingIndex, setCalculatingIndex] = useState(null);
+  const [appliedIndex, setAppliedIndex] = useState(null);
 
   const isModifiable = order?.status !== "cancelled";
 
@@ -95,6 +98,7 @@ export default function OrderDetailsPage() {
         quantity: item.quantity || 1,
         days: item.days || 1,
         includeServiceCharge: item.withService || false,
+        customPrice: item.customPrice && item.customPrice > 0 ? Number(item.customPrice) : null,
       };
       if (item.product.pricingType === "length_width") payload.length = item.length || 1;
       if (item.product.pricingType === "area") {
@@ -104,7 +108,7 @@ export default function OrderDetailsPage() {
       const { data } = await calculatePrice(payload);
       return {
         ...item,
-        unitPrice: data.discountPrice,
+        unitPrice: data.finalDayPrice || data.discountPrice,
         finalPrice: data.finalPrice,
       };
     } catch {
@@ -113,11 +117,12 @@ export default function OrderDetailsPage() {
   };
 
   const handleItemChange = async (index, field, value) => {
+    setCalculatingIndex(index);
     const newItems = [...items];
     if (field === "withService") {
-      newItems[index][field] = value;
+      newItems[index][field] = value === "true" || value === true;
     } else if (field === "customPrice") {
-      newItems[index][field] = value === "" ? null : Number(value);
+      newItems[index][field] = (value === "" || value === null) ? null : Number(value);
     } else {
       newItems[index][field] = Number(value);
     }
@@ -125,6 +130,17 @@ export default function OrderDetailsPage() {
     const updated = await recalculateItemViaAPI(newItems[index]);
     newItems[index] = updated;
     setItems([...newItems]);
+    setCalculatingIndex(null);
+
+    if (field === "customPrice") {
+      setAppliedIndex(index);
+      setTimeout(() => setAppliedIndex(null), 2000);
+      if (value && Number(value) > 0) {
+        toast.success(`Offered price ₹${value} applied & recalculated!`);
+      } else {
+        toast.info("Custom price cleared. Standard rate restored.");
+      }
+    }
   };
 
 
@@ -194,10 +210,15 @@ export default function OrderDetailsPage() {
   return (
     <div className="p-4 mt-12 md:mt-0 max-w-4xl mx-auto space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Quotation #{formatQuotationNumber(order.quotationNumber) || order._id.slice(-6).toUpperCase()}</CardTitle>
+        <CardHeader className="border-b pb-3">
+          <CardTitle className="text-xl font-bold text-gray-900">
+            Quotation #{formatQuotationNumber(order.quotationNumber) || order._id.slice(-6).toUpperCase()}
+          </CardTitle>
+          <p className="text-xs text-gray-500 font-mono mt-0.5">
+            ID: <span className="select-all text-gray-700 font-medium">{order._id}</span>
+          </p>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm text-gray-700">
+        <CardContent className="space-y-4 text-sm text-gray-700 pt-4">
 
   {/* 👤 User Info */}
   <div className="border p-4 rounded-md shadow-sm bg-white">
@@ -374,27 +395,118 @@ export default function OrderDetailsPage() {
                 </Select>
 
                 {/* Unit Price Display */}
-                  <p className="text-sm">
-                    <strong>Unit Price:</strong> ₹
-                    {item.withService && item.product?.serviceChargePercent
-                      ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
-                      : item.unitPrice || 0}
-                    {item.withService && item.product?.serviceChargePercent > 0 && (
-                      <span className="text-xs text-amber-600 font-medium ml-1.5">
-                        ({item.product.serviceChargePercent}% Service Included)
-                      </span>
-                    )}
-                  </p>
+                {(() => {
+                  const effectiveBaseRate = (item.customPrice && item.customPrice > 0) ? Number(item.customPrice) : (item.unitPrice || 0);
+                  const displayUnitPrice = item.withService && item.product?.serviceChargePercent
+                    ? parseFloat(Number(effectiveBaseRate * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                    : effectiveBaseRate;
 
-                  {/* Custom Price Input */}
-                  <p className="text-sm text-muted-foreground">Custom Price (per unit):</p>
-                  <Input
-                    type="number"
-                    value={item.customPrice ?? ""}
-                    onChange={(e) => handleItemChange(index, "customPrice", e.target.value || null)}
-                    placeholder="Custom Price (optional)"
-                    disabled={!isModifiable}
-                  />
+                  return (
+                    <div className="space-y-1">
+                      <p className="text-sm flex items-center gap-2 flex-wrap">
+                        <span><strong>Unit Price:</strong> ₹{displayUnitPrice}</span>
+                        {item.customPrice && item.customPrice > 0 && (
+                          <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded border border-emerald-200">
+                            Offered Price Active (Base: ₹{item.product?.discountPrice || item.product?.basePrice || item.unitPrice})
+                          </span>
+                        )}
+                      </p>
+                      {item.withService && item.product?.serviceChargePercent > 0 && (
+                        <p className="text-xs text-amber-600 font-medium">
+                          ({item.product.serviceChargePercent}% Service Included)
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                  {/* Custom Price Input & Controls */}
+                  <div className="space-y-2 pt-2 border-t mt-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-gray-700">Custom Offered Price (Per Base Unit):</p>
+                      {item.customPrice && item.customPrice > 0 ? (
+                        <span className="text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          ✓ Offered Price Active
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-gray-500 font-normal">
+                          Standard rate active
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                        <Input
+                          type="number"
+                          value={item.customPrice ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value === "" ? null : Number(e.target.value);
+                            const newItems = [...items];
+                            newItems[index].customPrice = val;
+                            setItems(newItems);
+                          }}
+                          onBlur={() => handleItemChange(index, "customPrice", item.customPrice)}
+                          placeholder="Override base rate (optional)"
+                          className="pl-7 text-sm"
+                          disabled={!isModifiable}
+                        />
+                      </div>
+
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={appliedIndex === index ? "default" : item.customPrice && item.customPrice > 0 ? "outline" : "default"}
+                        className={
+                          appliedIndex === index
+                            ? "bg-emerald-600 text-white border-emerald-600 font-semibold animate-pulse"
+                            : item.customPrice && item.customPrice > 0
+                            ? "border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100"
+                            : "bg-indigo-600 text-white hover:bg-indigo-700"
+                        }
+                        onClick={() => handleItemChange(index, "customPrice", item.customPrice)}
+                        disabled={!isModifiable || calculatingIndex === index}
+                      >
+                        {calculatingIndex === index
+                          ? "Applying..."
+                          : appliedIndex === index
+                          ? "✓ Rate Applied!"
+                          : item.customPrice && item.customPrice > 0
+                          ? "Re-apply Rate"
+                          : "Apply Rate"}
+                      </Button>
+
+                      {item.customPrice && item.customPrice > 0 && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-600 hover:bg-red-50 text-xs px-2"
+                          onClick={() => handleItemChange(index, "customPrice", null)}
+                          disabled={!isModifiable}
+                        >
+                          Clear
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Multi-day formula explanation helper */}
+                    {item.days > 1 && (
+                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed">
+                        ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong>{" "}
+                        {item.customPrice && item.customPrice > 0 ? (
+                          <span>
+                            Offered base rate <strong>₹{item.customPrice}</strong> $\rightarrow$ Adjusted per-unit rate for full {item.days} days is <strong>₹{item.unitPrice}</strong> (includes day-wise variation).
+                          </span>
+                        ) : (
+                          <span>
+                            Standard base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> $\rightarrow$ Adjusted per-unit rate for full {item.days} days is <strong>₹{item.unitPrice}</strong> (includes day-wise variation).
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
 
                 {/* Final Price + Remove */}
