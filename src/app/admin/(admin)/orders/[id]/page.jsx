@@ -186,6 +186,7 @@ export default function OrderDetailsPage() {
         quantity: item.quantity || 1,
         days: item.days || 1,
         includeServiceCharge: item.withService || false,
+        customPrice: item.customPrice && item.customPrice > 0 ? Number(item.customPrice) : null,
       };
       if (item.product.pricingType === "length_width") payload.length = item.length || 1;
       if (item.product.pricingType === "area") {
@@ -195,7 +196,7 @@ export default function OrderDetailsPage() {
       const { data } = await calculatePrice(payload);
       return {
         ...item,
-        unitPrice: data.discountPrice,
+        unitPrice: data.finalDayPrice || data.discountPrice,
         finalPrice: data.finalPrice,
       };
     } catch {
@@ -206,9 +207,9 @@ export default function OrderDetailsPage() {
   const handleItemChange = async (index, field, value) => {
     const newItems = [...items];
     if (field === "withService") {
-      newItems[index][field] = value;
+      newItems[index][field] = value === "true" || value === true;
     } else if (field === "customPrice") {
-      newItems[index][field] = value === "" ? null : Number(value);
+      newItems[index][field] = (value === "" || value === null) ? null : Number(value);
     } else {
       newItems[index][field] = Number(value);
     }
@@ -653,17 +654,30 @@ export default function OrderDetailsPage() {
                 </Select>
 
                 {/* Unit Price Display */}
-                  <p className="text-sm">
-                    <strong>Unit Price:</strong> ₹
-                    {item.withService && item.product?.serviceChargePercent
-                      ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
-                      : item.unitPrice || 0}
-                    {item.withService && item.product?.serviceChargePercent > 0 && (
-                      <span className="text-xs text-amber-600 font-medium ml-1.5">
-                        ({item.product.serviceChargePercent}% Service Included)
-                      </span>
-                    )}
-                  </p>
+                {(() => {
+                  const effectiveBaseRate = (item.customPrice && item.customPrice > 0) ? Number(item.customPrice) : (item.unitPrice || 0);
+                  const displayUnitPrice = item.withService && item.product?.serviceChargePercent
+                    ? parseFloat(Number(effectiveBaseRate * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+                    : effectiveBaseRate;
+
+                  return (
+                    <div className="space-y-1">
+                      <p className="text-sm flex items-center gap-2 flex-wrap">
+                        <span><strong>Unit Price:</strong> ₹{displayUnitPrice}</span>
+                        {item.customPrice && item.customPrice > 0 && (
+                          <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded border border-emerald-200">
+                            Offered Price Active (Base: ₹{item.product?.discountPrice || item.product?.basePrice || item.unitPrice})
+                          </span>
+                        )}
+                      </p>
+                      {item.withService && item.product?.serviceChargePercent > 0 && (
+                        <p className="text-xs text-amber-600 font-medium">
+                          ({item.product.serviceChargePercent}% Service Included)
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
 
                   {/* Custom Price Input */}
                   <p className="text-sm text-muted-foreground">Custom Price (per unit):</p>
