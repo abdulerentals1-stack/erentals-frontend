@@ -312,10 +312,15 @@ export default function OrderDetailsPage() {
   return (
     <div className="p-4 mt-12 md:mt-0 max-w-4xl mx-auto space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Order #{order._id.slice(-6)}</CardTitle>
+        <CardHeader className="border-b pb-3">
+          <CardTitle className="text-xl font-bold text-gray-900">
+            Order #{order.orderNumber || order._id.slice(-6).toUpperCase()}
+          </CardTitle>
+          <p className="text-xs text-gray-500 font-mono mt-0.5">
+            ID: <span className="select-all text-gray-700 font-medium">{order._id}</span>
+          </p>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm text-gray-700">
+        <CardContent className="space-y-4 text-sm text-gray-700 pt-4">
 
   {/* 👤 User Info */}
   <div className="border p-4 rounded-md shadow-sm bg-white">
