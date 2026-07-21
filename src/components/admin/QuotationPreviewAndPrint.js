@@ -410,6 +410,16 @@ const QuotationPDF = ({ quotation, settings }) => {
               displayRate = baseRate * item.length;
             }
 
+            // Fallback for legacy items where unitPrice was zero or unpopulated
+            if (!displayRate || displayRate <= 0) {
+              const finalVal = parseFloat(item.finalPrice || 0);
+              const qtyVal = Number(item.quantity || 1);
+              const daysVal = Number(item.days || 1);
+              if (finalVal > 0 && qtyVal > 0 && daysVal > 0) {
+                displayRate = finalVal / (qtyVal * daysVal);
+              }
+            }
+
             return (
               <View key={i} style={styles.tableRow}>
                 <Text style={[styles.tableCell, { width: "8%" }]}>{i + 1}</Text>
