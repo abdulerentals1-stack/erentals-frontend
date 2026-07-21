@@ -679,15 +679,81 @@ export default function OrderDetailsPage() {
                   );
                 })()}
 
-                  {/* Custom Price Input */}
-                  <p className="text-sm text-muted-foreground">Custom Price (per unit):</p>
-                  <Input
-                    type="number"
-                    value={item.customPrice ?? ""}
-                    onChange={(e) => handleItemChange(index, "customPrice", e.target.value || null)}
-                    placeholder="Custom Price (optional)"
-                    disabled={!isModifiable}
-                  />
+                  {/* Custom Price Input & Controls */}
+                  <div className="space-y-2 pt-2 border-t mt-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-gray-700">Custom Offered Price (Per Base Unit):</p>
+                      {item.customPrice && item.customPrice > 0 ? (
+                        <span className="text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          ✓ Offered Price Active
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-gray-500 font-normal">
+                          Standard rate active
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 items-center">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₹</span>
+                        <Input
+                          type="number"
+                          value={item.customPrice ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value === "" ? null : Number(e.target.value);
+                            const newItems = [...items];
+                            newItems[index].customPrice = val;
+                            setItems(newItems);
+                          }}
+                          onBlur={() => handleItemChange(index, "customPrice", item.customPrice)}
+                          placeholder="Override base rate (optional)"
+                          className="pl-7 text-sm"
+                          disabled={!isModifiable}
+                        />
+                      </div>
+
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={item.customPrice && item.customPrice > 0 ? "outline" : "default"}
+                        className={item.customPrice && item.customPrice > 0 ? "border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100" : "bg-indigo-600 text-white hover:bg-indigo-700"}
+                        onClick={() => handleItemChange(index, "customPrice", item.customPrice)}
+                        disabled={!isModifiable}
+                      >
+                        {item.customPrice && item.customPrice > 0 ? "Re-apply Rate" : "Apply Rate"}
+                      </Button>
+
+                      {item.customPrice && item.customPrice > 0 && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-600 hover:bg-red-50 text-xs px-2"
+                          onClick={() => handleItemChange(index, "customPrice", null)}
+                          disabled={!isModifiable}
+                        >
+                          Clear
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Multi-day formula explanation helper */}
+                    {item.days > 1 && (
+                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed">
+                        ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong>{" "}
+                        {item.customPrice && item.customPrice > 0 ? (
+                          <span>
+                            Offered base rate <strong>₹{item.customPrice}</strong> $\rightarrow$ Adjusted per-unit rate for full {item.days} days is <strong>₹{item.unitPrice}</strong> (includes day-wise variation).
+                          </span>
+                        ) : (
+                          <span>
+                            Standard base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> $\rightarrow$ Adjusted per-unit rate for full {item.days} days is <strong>₹{item.unitPrice}</strong> (includes day-wise variation).
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
 
                 {/* Final Price + Remove */}
