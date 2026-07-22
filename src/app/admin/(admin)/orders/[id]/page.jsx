@@ -835,8 +835,6 @@ export default function OrderDetailsPage() {
                                   ({isFlatCustomRate && item.customPrice ? 'Flat 100% daily rate' : `with ${variationPct}% day variation`})
                                 </span>
                               )}
-                                </span>
-                              )}
                             </>
                           ) : (
                             <>
@@ -847,14 +845,7 @@ export default function OrderDetailsPage() {
                                 <span>Base rate <strong>₹{baseRate}</strong>/{unitSuffix}</span>
                               )}
                               <span>× <strong>{metricText}</strong> = <strong>₹{item.finalPrice}</strong></span>
-<<<<<<< HEAD
-=======
-                              {variationPct !== undefined && variationPct !== null && (
-                                <span className="text-slate-500 font-medium ml-0.5">
-                                  (with {variationPct}% day variation)
-                                </span>
-                              )}
->>>>>>> origin/main
+
                             </>
                           )}
                           {servicePct > 0 && (
