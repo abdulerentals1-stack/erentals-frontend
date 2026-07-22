@@ -99,6 +99,7 @@ export default function OrderDetailsPage() {
         days: item.days || 1,
         includeServiceCharge: item.withService || false,
         customPrice: item.customPrice && item.customPrice > 0 ? Number(item.customPrice) : null,
+        customPriceVariation: item.customPriceVariation !== undefined && item.customPriceVariation !== null ? Number(item.customPriceVariation) : null,
       };
       if (item.product.pricingType === "length_width") payload.length = item.length || 1;
       if (item.product.pricingType === "area") {
@@ -123,6 +124,8 @@ export default function OrderDetailsPage() {
       newItems[index][field] = value === "true" || value === true;
     } else if (field === "customPrice") {
       newItems[index][field] = (value === "" || value === null) ? null : Number(value);
+    } else if (field === "customPriceVariation") {
+      newItems[index][field] = value === null || value === undefined ? null : Number(value);
     } else {
       newItems[index][field] = Number(value);
     }
@@ -162,6 +165,7 @@ export default function OrderDetailsPage() {
         days: item.days,
         withService: item.withService,
         customPrice: item.customPrice,
+        customPriceVariation: item.customPriceVariation ?? null,
       }));
 
       const res = await adminUpdateQuotation(id, {
@@ -491,6 +495,26 @@ export default function OrderDetailsPage() {
                       )}
                     </div>
 
+                    {/* Multi-Day Rate Mode option when custom price is set */}
+                    {item.customPrice && item.customPrice > 0 && (
+                      <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100">
+                        <span className="text-xs font-semibold text-slate-700">Custom Price Day Variation:</span>
+                        <select
+                          value={item.customPriceVariation ?? 100}
+                          onChange={(e) => handleItemChange(index, "customPriceVariation", Number(e.target.value))}
+                          className="text-xs border border-slate-300 rounded px-2 py-1 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium"
+                          disabled={!isModifiable}
+                        >
+                          <option value={100}>Flat Daily Rate (100% - No Multi-day Discount)</option>
+                          {item.product?.dayWiseVariationPercent !== undefined && item.product?.dayWiseVariationPercent !== null && (
+                            <option value={item.product.dayWiseVariationPercent}>
+                              Apply Product Variation ({item.product.dayWiseVariationPercent}%)
+                            </option>
+                          )}
+                        </select>
+                      </div>
+                    )}
+
                     {/* Rental formula explanation helper */}
                     {(() => {
                       const pType = item.pricingType || item.product?.pricingType || "quantity";
@@ -510,24 +534,31 @@ export default function OrderDetailsPage() {
                         ? item.customPrice 
                         : (item.product?.discountPrice || item.product?.basePrice || item.unitPrice);
 
-                      const variationPct = item.product?.dayWiseVariationPercent;
+                      const isFlatCustomRate = item.customPrice && item.customPrice > 0 && (item.customPriceVariation === 100 || item.customPriceVariation === null || item.customPriceVariation === undefined);
+                      const variationPct = item.customPrice && item.customPrice > 0 
+                        ? (isFlatCustomRate ? 100 : item.customPriceVariation)
+                        : item.product?.dayWiseVariationPercent;
+
                       const servicePct = item.withService ? item.product?.serviceChargePercent : 0;
 
                       return (
-                        <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap">
+                        <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap mt-2">
                           {item.days > 1 ? (
                             <>
                               <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
                               {item.customPrice && item.customPrice > 0 ? (
-                                <span>Custom rate <strong>₹{item.customPrice}</strong></span>
+                                isFlatCustomRate ? (
+                                  <span>Custom rate <strong>₹{item.customPrice}</strong>/unit × {item.days} days = <strong>₹{item.unitPrice}</strong>/unit</span>
+                                ) : (
+                                  <span>Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days</span>
+                                )
                               ) : (
-                                <span>Base rate <strong>₹{baseRate}</strong></span>
+                                <span>Base rate <strong>₹{baseRate}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days</span>
                               )}
-                              <span>→ <strong>₹{item.unitPrice}</strong>/{unitSuffix} for {item.days} days</span>
                               <span>× <strong>{metricText}</strong> = <strong>₹{item.finalPrice}</strong></span>
                               {variationPct !== undefined && variationPct !== null && (
                                 <span className="text-slate-500 font-medium ml-0.5">
-                                  (with {variationPct}% day variation)
+                                  ({isFlatCustomRate && item.customPrice ? 'Flat 100% daily rate' : `with ${variationPct}% day variation`})
                                 </span>
                               )}
                             </>
@@ -540,11 +571,6 @@ export default function OrderDetailsPage() {
                                 <span>Base rate <strong>₹{baseRate}</strong>/{unitSuffix}</span>
                               )}
                               <span>× <strong>{metricText}</strong> = <strong>₹{item.finalPrice}</strong></span>
-                              {variationPct !== undefined && variationPct !== null && (
-                                <span className="text-slate-500 font-medium ml-0.5">
-                                  (with {variationPct}% day variation)
-                                </span>
-                              )}
                             </>
                           )}
                           {servicePct > 0 && (
