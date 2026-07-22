@@ -493,15 +493,20 @@ export default function OrderDetailsPage() {
 
                     {/* Multi-day formula explanation helper */}
                     {item.days > 1 && (
-                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed">
-                        ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong>{" "}
+                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap">
+                        <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
                         {item.customPrice && item.customPrice > 0 ? (
                           <span>
-                            Offered base rate <strong>₹{item.customPrice}</strong> $\rightarrow$ Adjusted per-unit rate for full {item.days} days is <strong>₹{item.unitPrice}</strong> (includes day-wise variation).
+                            Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong> total per unit
                           </span>
                         ) : (
                           <span>
-                            Standard base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> $\rightarrow$ Adjusted per-unit rate for full {item.days} days is <strong>₹{item.unitPrice}</strong> (includes day-wise variation).
+                            Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> → <strong>₹{item.unitPrice}</strong> total per unit
+                          </span>
+                        )}
+                        {item.product?.dayWiseVariationPercent !== undefined && item.product?.dayWiseVariationPercent !== null && (
+                          <span className="text-slate-500 font-medium">
+                            (with {item.product.dayWiseVariationPercent}% day variation)
                           </span>
                         )}
                       </div>
