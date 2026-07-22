@@ -765,29 +765,47 @@ export default function OrderDetailsPage() {
                       )}
                     </div>
 
-                    {/* Multi-day formula explanation helper */}
-                    {item.days > 1 && (
-                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap">
-                        <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
-                        {item.customPrice && item.customPrice > 0 ? (
+                    {/* Rental formula explanation helper */}
+                    <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap">
+                      {item.days > 1 ? (
+                        <>
+                          <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
+                          {item.customPrice && item.customPrice > 0 ? (
+                            <span>
+                              Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
+                            </span>
+                          ) : (
+                            <span>
+                              Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
+                            </span>
+                          )}
                           <span>
-                            Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
+                            × <strong>{item.quantity || 1} units</strong> = <strong>₹{item.finalPrice}</strong>
                           </span>
-                        ) : (
+                          {item.product?.dayWiseVariationPercent !== undefined && item.product?.dayWiseVariationPercent !== null && (
+                            <span className="text-slate-500 font-medium ml-0.5">
+                              (with {item.product.dayWiseVariationPercent}% day variation)
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <span>ℹ️ <strong>1-Day Rental:</strong></span>
+                          {item.customPrice && item.customPrice > 0 ? (
+                            <span>
+                              Custom rate <strong>₹{item.customPrice}</strong>/unit
+                            </span>
+                          ) : (
+                            <span>
+                              Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice || item.unitPrice}</strong>/unit
+                            </span>
+                          )}
                           <span>
-                            Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
+                            × <strong>{item.quantity || 1} units</strong> = <strong>₹{item.finalPrice}</strong>
                           </span>
-                        )}
-                        <span>
-                          × <strong>{item.quantity || 1} units</strong> = <strong>₹{item.finalPrice}</strong>
-                        </span>
-                        {item.product?.dayWiseVariationPercent !== undefined && item.product?.dayWiseVariationPercent !== null && (
-                          <span className="text-slate-500 font-medium ml-0.5">
-                            (with {item.product.dayWiseVariationPercent}% day variation)
-                          </span>
-                        )}
-                      </div>
-                    )}
+                        </>
+                      )}
+                    </div>
                   </div>
 
 
