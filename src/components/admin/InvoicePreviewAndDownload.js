@@ -507,9 +507,13 @@ const InvoicePDF = ({ order, terms, persons, settings }) => {
             let particulars = item.product?.name || "";
             let qtyDisplay = `${item.quantity || 0}`;
             
-            const baseRate = item.withService && item.product?.serviceChargePercent
-              ? parseFloat(Number(item.unitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+            const effectiveUnitPrice = (item.customPrice && Number(item.customPrice) > 0)
+              ? Number(item.customPrice)
               : (item.unitPrice || 0);
+
+            const baseRate = item.withService && item.product?.serviceChargePercent
+              ? parseFloat(Number(effectiveUnitPrice * (1 + item.product.serviceChargePercent / 100)).toFixed(2))
+              : effectiveUnitPrice;
 
             let displayRate = baseRate;
 
