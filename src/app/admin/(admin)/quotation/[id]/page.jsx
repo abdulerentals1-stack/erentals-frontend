@@ -497,15 +497,18 @@ export default function OrderDetailsPage() {
                         <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
                         {item.customPrice && item.customPrice > 0 ? (
                           <span>
-                            Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong> total per unit
+                            Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
                           </span>
                         ) : (
                           <span>
-                            Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> → <strong>₹{item.unitPrice}</strong> total per unit
+                            Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
                           </span>
                         )}
+                        <span>
+                          × <strong>{item.quantity || 1} units</strong> = <strong>₹{item.finalPrice}</strong>
+                        </span>
                         {item.product?.dayWiseVariationPercent !== undefined && item.product?.dayWiseVariationPercent !== null && (
-                          <span className="text-slate-500 font-medium">
+                          <span className="text-slate-500 font-medium ml-0.5">
                             (with {item.product.dayWiseVariationPercent}% day variation)
                           </span>
                         )}
