@@ -766,46 +766,69 @@ export default function OrderDetailsPage() {
                     </div>
 
                     {/* Rental formula explanation helper */}
-                    <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap">
-                      {item.days > 1 ? (
-                        <>
-                          <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
-                          {item.customPrice && item.customPrice > 0 ? (
-                            <span>
-                              Custom rate <strong>₹{item.customPrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
-                            </span>
+                    {(() => {
+                      const pType = item.pricingType || item.product?.pricingType || "quantity";
+                      const unitSuffix = pType === "area" ? "sq.ft" : pType === "length_width" ? "ft" : "unit";
+                      const unitPlural = pType === "area" ? "sq.ft" : pType === "length_width" ? "ft" : "units";
+
+                      let metricText = `${item.quantity || 1} ${item.quantity === 1 ? unitSuffix : unitPlural}`;
+                      if (pType === "area" && item.length > 0 && item.width > 0) {
+                        const totalArea = Number((item.length * item.width * (item.quantity || 1)).toFixed(2));
+                        metricText = `${totalArea} sq.ft (${item.length}×${item.width} ft${item.quantity > 1 ? ` × ${item.quantity}` : ""})`;
+                      } else if (pType === "length_width" && item.length > 0) {
+                        const totalLen = Number((item.length * (item.quantity || 1)).toFixed(2));
+                        metricText = `${totalLen} ft (${item.length} ft${item.quantity > 1 ? ` × ${item.quantity}` : ""})`;
+                      }
+
+                      const baseRate = item.customPrice && item.customPrice > 0 
+                        ? item.customPrice 
+                        : (item.product?.discountPrice || item.product?.basePrice || item.unitPrice);
+
+                      const variationPct = item.product?.dayWiseVariationPercent;
+                      const servicePct = item.withService ? item.product?.serviceChargePercent : 0;
+
+                      return (
+                        <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-200 leading-relaxed flex items-center gap-1 flex-wrap">
+                          {item.days > 1 ? (
+                            <>
+                              <span>ℹ️ <strong>Multi-day Rental ({item.days} Days):</strong></span>
+                              {item.customPrice && item.customPrice > 0 ? (
+                                <span>Custom rate <strong>₹{item.customPrice}</strong></span>
+                              ) : (
+                                <span>Base rate <strong>₹{baseRate}</strong></span>
+                              )}
+                              <span>→ <strong>₹{item.unitPrice}</strong>/{unitSuffix} for {item.days} days</span>
+                              <span>× <strong>{metricText}</strong> = <strong>₹{item.finalPrice}</strong></span>
+                              {variationPct !== undefined && variationPct !== null && (
+                                <span className="text-slate-500 font-medium ml-0.5">
+                                  (with {variationPct}% day variation)
+                                </span>
+                              )}
+                            </>
                           ) : (
-                            <span>
-                              Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice}</strong> → <strong>₹{item.unitPrice}</strong>/unit for {item.days} days
+                            <>
+                              <span>ℹ️ <strong>1-Day Rental:</strong></span>
+                              {item.customPrice && item.customPrice > 0 ? (
+                                <span>Custom rate <strong>₹{item.customPrice}</strong>/{unitSuffix}</span>
+                              ) : (
+                                <span>Base rate <strong>₹{baseRate}</strong>/{unitSuffix}</span>
+                              )}
+                              <span>× <strong>{metricText}</strong> = <strong>₹{item.finalPrice}</strong></span>
+                              {variationPct !== undefined && variationPct !== null && (
+                                <span className="text-slate-500 font-medium ml-0.5">
+                                  (with {variationPct}% day variation)
+                                </span>
+                              )}
+                            </>
+                          )}
+                          {servicePct > 0 && (
+                            <span className="text-amber-600 font-medium ml-0.5">
+                              (+{servicePct}% service charge)
                             </span>
                           )}
-                          <span>
-                            × <strong>{item.quantity || 1} units</strong> = <strong>₹{item.finalPrice}</strong>
-                          </span>
-                          {item.product?.dayWiseVariationPercent !== undefined && item.product?.dayWiseVariationPercent !== null && (
-                            <span className="text-slate-500 font-medium ml-0.5">
-                              (with {item.product.dayWiseVariationPercent}% day variation)
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <span>ℹ️ <strong>1-Day Rental:</strong></span>
-                          {item.customPrice && item.customPrice > 0 ? (
-                            <span>
-                              Custom rate <strong>₹{item.customPrice}</strong>/unit
-                            </span>
-                          ) : (
-                            <span>
-                              Base rate <strong>₹{item.product?.discountPrice || item.product?.basePrice || item.unitPrice}</strong>/unit
-                            </span>
-                          )}
-                          <span>
-                            × <strong>{item.quantity || 1} units</strong> = <strong>₹{item.finalPrice}</strong>
-                          </span>
-                        </>
-                      )}
-                    </div>
+                        </div>
+                      );
+                    })()}
                   </div>
 
 
